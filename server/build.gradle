@@ -1,0 +1,41 @@
+plugins {
+    id 'scala'
+    id 'java-library'
+}
+
+group 'crichton.server'
+version '1.0-SNAPSHOT'
+
+sourceSets.main.scala.srcDir "src/main/java"
+sourceSets.main.java.srcDirs = []
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'crichton.server.ServerApplication'
+        attributes 'GIT_HASH': 'git describe --long --abbrev=8'.execute().text.trim()
+    }
+    jar.enabled = true
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.springframework.boot', name: 'spring-boot', version: '2.6.0'
+    implementation group: 'org.springframework', name: 'spring-core', version: '5.3.13'
+    implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    testImplementation group: 'org.springframework.security', name: 'spring-security-test', version: '5.6.0'
+    implementation group: 'org.springframework', name: 'spring-context', version: '5.3.13'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.6.0'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.6.0'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.6.0'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
