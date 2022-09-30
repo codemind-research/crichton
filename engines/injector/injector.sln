@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "injector", "injector\injector.fsproj", "{A346DF7A-02F7-4992-9334-019B36C672F7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A346DF7A-02F7-4992-9334-019B36C672F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A346DF7A-02F7-4992-9334-019B36C672F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A346DF7A-02F7-4992-9334-019B36C672F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A346DF7A-02F7-4992-9334-019B36C672F7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
