@@ -2,6 +2,8 @@
 **/out
 **/build
 **/.gradle
+**/bin
+**/obj
 server/gradle
 server/gradlew
 server/gradlew.bat
