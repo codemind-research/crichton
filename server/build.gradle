@@ -1,9 +1,26 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.7.RELEASE' // build.gradle에 전역변수로 springBootVersion을 추가함
+    }
+    repositories {
+        mavenCentral() // 플러그인을 받을 레포지토리 지장
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") // 이 스크립트의 경우 플러그인으로 2.1.7.RELEASE를 사용한다는 의미임
+    }
+}
+
 plugins {
     id 'scala'
     id 'java-library'
-    id 'org.springframework.boot' version '3.0.0'
-    id 'io.spring.dependency-management' version '1.1.0'
 }
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management' // 스프링 의존성 관리 플러그인
+
+
 
 group 'crichton.server'
 version '1.0-SNAPSHOT'
@@ -24,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0'
