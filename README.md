@@ -16,3 +16,4 @@ This project is a sub-project of a STPA project.
 - Spring Frmaework 5.3.13
 - Spring Boot 2.6.0
 - Gradle 7.5
+- java 17
