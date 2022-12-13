@@ -1,13 +1,13 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.7.RELEASE' // build.gradle에 전역변수로 springBootVersion을 추가함
+        springBootVersion = '3.0.0' // build.gradle에 전역변수로 springBootVersion을 추가함
     }
     repositories {
         mavenCentral() // 플러그인을 받을 레포지토리 지장
         jcenter()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") // 이 스크립트의 경우 플러그인으로 2.1.7.RELEASE를 사용한다는 의미임
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") // 이 스크립트의 경우 플러그인으로 3.0.0 를 사용한다는 의미임
     }
 }
 
