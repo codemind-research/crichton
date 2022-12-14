@@ -16,19 +16,27 @@ using namespace Crichton;
 static FrontendPluginRegistry::Add<CrichtonAction> X("crichton", "Print the names of functions inside the file.");
 
 unique_ptr<ASTConsumer> CrichtonAction::CreateASTConsumer(CompilerInstance &ci, StringRef InFile) {
-  return make_unique<CrichtonASTConsumer>(ci);
+  if (option.output.empty()) {
+    SmallString<128> ReplaceName(ci.getFrontendOpts().OutputFile);
+    llvm::sys::path::replace_extension(ReplaceName, ".output");
+    option.output = ReplaceName.c_str();
+  }
+  return make_unique<CrichtonASTConsumer>(ci, option);
 }
 
 bool CrichtonAction::ParseArgs(const CompilerInstance &ci, const vector<string>& args) {
   bool show_err = false;
   auto lang = ci.getLangOpts();
   for (unsigned i = 0, size = args.size(); i < size; i++) {
+    string opt;
     stringstream arg(args[i]);
-    string str = arg.str();
+    getline(arg, opt, '=');
 
-    if (str == "-show-error")
+    if (opt == "-show-error")
       show_err = true;
-    else if (str == "-help") {
+    else if (opt == "-output") {
+      getline(arg, option.output);
+    } else if (opt == "-help") {
       printHelp();
       return false;
     }

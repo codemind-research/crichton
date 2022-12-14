@@ -6,11 +6,14 @@ class CrichtonMatcher : public MatchFinder::MatchCallback {
   protected:
     CrichtonASTConsumer *consumer;
   public:
-    CrichtonMatcher(CrichtonASTConsumer *cs) : consumer(cs) {
-    }
+    CrichtonMatcher(CrichtonASTConsumer *cs) : consumer(cs) {}
 
     SourceManager &getSourceManager() {
       return consumer->getSourceManager();
+    }
+
+    CrichtonItems *getCrichtonItems() {
+      return consumer != nullptr ? consumer->getCrichtonItems() : nullptr;
     }
 };
 
@@ -19,7 +22,8 @@ class FunctionMatcher : public CrichtonMatcher {
     FunctionMatcher(CrichtonASTConsumer *cs) : CrichtonMatcher(cs) {}
     void run(const MatchFinder::MatchResult &Results) override {
       auto fd = Results.Nodes.getNodeAs<FunctionDecl>("function");
-      outs() << fd->getQualifiedNameAsString() << "\n";
+      if (auto items = getCrichtonItems())
+        items->addFunction(fd);
     }
 };
 
@@ -31,4 +35,6 @@ void CrichtonASTConsumer::HandleTranslationUnit(ASTContext &ctx) {
     codegenFunction.get());
 
   finder.matchAST(ctx);
+
+  items->writeProto(option.output);
 }
