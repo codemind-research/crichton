@@ -12,19 +12,29 @@
 #include <set>
 #include <string>
 
+#include "CrichtonItems.h"
+
 namespace Crichton {
   using namespace std;
   using namespace llvm;
   using namespace clang;
   using namespace ast_matchers;
 
+  struct Option {
+    string output;
+  };
+
   class CrichtonASTConsumer : public ASTConsumer {
     private:
+      Option option;
       MatchFinder finder;
       const CompilerInstance &compiler;
       vector<shared_ptr<MatchFinder::MatchCallback>> callbacks;
+      unique_ptr<CrichtonItems> items;
     public:
-      CrichtonASTConsumer(const CompilerInstance &ci) : compiler(ci) {
+      CrichtonASTConsumer(const CompilerInstance &ci, Option& opt) : compiler(ci) {
+        option = opt;
+        items = make_unique<CrichtonItems>(ci);
       }
 
       void HandleTranslationUnit(ASTContext &ctx) override;
@@ -55,6 +65,10 @@ namespace Crichton {
 
       void addMatcher(shared_ptr<MatchFinder::MatchCallback> callback) {
         callbacks.push_back(callback);
+      }
+
+      CrichtonItems *getCrichtonItems() {
+        return items.get();
       }
   };
 }

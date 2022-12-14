@@ -15,6 +15,8 @@ namespace Crichton {
   using namespace clang;
 
   class CrichtonAction : public PluginASTAction {
+    private:
+      Option option;
     public:
       unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &ci, StringRef InFile) override;
       bool ParseArgs(const CompilerInstance &ci, const vector<string>& args) override;

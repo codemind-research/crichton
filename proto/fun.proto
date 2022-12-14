@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package crichton.proto;
+
+message Fun {
+  repeated string name                           =   1;
+}
