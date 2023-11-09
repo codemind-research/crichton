@@ -42,14 +42,18 @@ dependencies {
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'org.junit.jupiter:junit-jupiter-api'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
     implementation group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final', ext: 'pom'
+    implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12'
 }
 
 test {
     useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed" // 테스트 결과 출력 설정
+    }
 }

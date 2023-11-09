@@ -2,8 +2,6 @@ package crichton.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -14,13 +12,12 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 /**
  * Swagger API 문서를 생성하는 클래스
- * 추후 https 프로토콜을 사용할 경우 사용 
+ * 추후 https 프로토콜을 사용할 경우 사용
  * 기본 URL 주소 : https://localhost:[port]/swagger-ui/index.html#/
  * 포트 번호나 IP 경우에 따라 알맞게 변경
  */
 @Configuration("Swagger")
-@EnableWebMvc
-public class SwaggerConfig extends WebMvcConfigurationSupport {
+public class SwaggerConfig {
 
     @Bean
     public Docket api() {

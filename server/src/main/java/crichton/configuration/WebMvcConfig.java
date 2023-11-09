@@ -18,4 +18,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowCredentials(false)  // 자격 증명 정보 허용
                 .maxAge(3600);  // 사전 요청 결과를 캐시하는 시간
     }
+
 }
