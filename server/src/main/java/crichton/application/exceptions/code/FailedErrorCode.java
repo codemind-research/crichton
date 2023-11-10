@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum FailedErrorCode implements ErrorCode {
     NOT_EXIST_DIRECTORY("F001", "Not Exist Directory"),
-    UNIT_TEST_FAILED("F002", "Unit Test Failed"),
-    INJECTION_TEST_FAILED("F003", "Injection Test Failed");
+    UPLOAD_FAILED("F002", "Upload Failed"),
+    LOG_READ_FAILED("F003", "Log Read Failed");
 
     private final String code;
     private final String message;

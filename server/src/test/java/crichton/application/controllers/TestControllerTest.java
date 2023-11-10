@@ -3,6 +3,7 @@ package crichton.application.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import crichton.application.exceptions.handler.GlobalExceptionResponse;
 import crichton.domian.dtos.TestDTO;
+import crichton.enumeration.TestResult;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,8 +40,9 @@ public class TestControllerTest {
     @Test
     @Order(1)
     void doUnitTestBlankException() throws Exception {
-        TestDTO.TestRequest request = new TestDTO.TestRequest("");
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit")
+        TestDTO.TestRequest request = new TestDTO.TestRequest();
+        request.setSourcePath("");
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
                                               .contentType(MediaType.APPLICATION_JSON)
                                               .content(mapper.writeValueAsString(request)))
                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
@@ -57,8 +59,9 @@ public class TestControllerTest {
     @Test
     @Order(2)
     void doUnitTestNotFileExistException() throws Exception {
-        TestDTO.TestRequest request = new TestDTO.TestRequest("%2ka1oll");
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit")
+        TestDTO.TestRequest request = new TestDTO.TestRequest();
+        request.setSourcePath("%2ka1oll");
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
                                                               .contentType(MediaType.APPLICATION_JSON)
                                                               .content(mapper.writeValueAsString(request)))
                                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
@@ -72,17 +75,54 @@ public class TestControllerTest {
         assertEquals("F001", response.getCode());
     }
 
-
     @Test
     @Order(3)
-    void doUnitTest() throws Exception {
-        TestDTO.TestRequest request = new TestDTO.TestRequest(sourcePath);
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit")
-                                              .contentType(MediaType.APPLICATION_JSON)
-                                              .content(mapper.writeValueAsString(request)))
-               .andExpect(MockMvcResultMatchers.status().isOk())
-               .andDo(MockMvcResultHandlers.print());
+    void doPassTest() throws Exception {
+        TestDTO.TestRequest request = new TestDTO.TestRequest();
+        request.setSourcePath(sourcePath);
+        request.setUnitTest(false);
+        request.setInjectionTest(false);
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
+                                                              .contentType(MediaType.APPLICATION_JSON)
+                                                              .content(mapper.writeValueAsString(request)))
+                               .andExpect(MockMvcResultMatchers.status().isOk())
+                               .andDo(MockMvcResultHandlers.print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
+        TestDTO.TestResponse response = mapper.readValue(result ,TestDTO.TestResponse.class);
+        assertEquals(TestResult.PASS,response.getUnitTestResult());
+        assertEquals(TestResult.PASS,response.getInjectionTestResult());
     }
 
 
+    @Test
+    @Order(4)
+    void doUnitTest() throws Exception {
+        TestDTO.TestRequest request = new TestDTO.TestRequest();
+        request.setSourcePath(sourcePath);
+        request.setUnitTest(true);
+        request.setInjectionTest(false);
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
+                                              .contentType(MediaType.APPLICATION_JSON)
+                                              .content(mapper.writeValueAsString(request)))
+               .andExpect(MockMvcResultMatchers.status().isOk())
+               .andDo(MockMvcResultHandlers.print())
+               .andReturn()
+               .getResponse()
+               .getContentAsString()
+               .replaceAll("^\"|\"$", "");
+        TestDTO.TestResponse response = mapper.readValue(result ,TestDTO.TestResponse.class);
+        assertEquals(TestResult.SUCCESS,response.getUnitTestResult());
+        assertEquals(TestResult.PASS,response.getInjectionTestResult());
+    }
+    
+    @Test
+    @Order(5)
+    void getLog() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/log"))
+                               .andExpect(MockMvcResultMatchers.status().isOk())
+                               .andDo(MockMvcResultHandlers.print());
+    }
 }

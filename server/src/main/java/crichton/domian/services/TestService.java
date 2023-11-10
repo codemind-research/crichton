@@ -1,11 +1,12 @@
 package crichton.domian.services;
 
 import crichton.application.exceptions.CustomException;
+import crichton.domian.dtos.TestDTO;
 
 public interface TestService {
 
-    void doUnitTest(String sourcePath) throws CustomException;
+    TestDTO.TestResponse doTest(TestDTO.TestRequest testRequest) throws CustomException;
 
-    String doInjectionTest();
+    String getLog() throws CustomException;
 
 }

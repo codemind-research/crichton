@@ -49,6 +49,8 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
     implementation group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final', ext: 'pom'
     implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.5'
+    implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14'
 }
 
 test {

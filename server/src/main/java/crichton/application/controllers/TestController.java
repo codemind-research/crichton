@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Paths;
-
 @CrossOrigin
 @RestController("TestController")
 @RequestMapping("/api/v1/crichton/test")
@@ -18,19 +16,20 @@ public class TestController {
 
     private final TestService testService;
 
-    @PostMapping("/unit")
-    @ApiOperation(value = "단위 테스트", notes = "자동 단위 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doUnitTest(@RequestBody TestDTO.TestRequest request) throws CustomException {
-        testService.doUnitTest(request.getSourcePath());
-        //TODO: reportPath 추후 개선
-        String reportPath = Paths.get(System.getProperty("user.home"),"coyoteCli","report").toString();
-        return ResponseEntity.ok(TestDTO.TestResponse.builder().reportPath(reportPath).build());
+    @PostMapping("/run")
+    @ApiOperation(value = "테스트 시작", notes = "자동 테스트를 시작하는 Api")
+    public ResponseEntity<TestDTO.TestResponse> doTest(@RequestBody TestDTO.TestRequest request) throws CustomException {
+        TestDTO.TestResponse response = testService.doTest(request);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/injection")
-    @ApiOperation(value = "결함 테스트", notes = "결함 테스트를 시작하는 Api")
-    public String doInjectionTest() {
-        return "injectionTest";
+    @GetMapping("/log")
+    @ApiOperation(value = "로그 정보 가져오기", notes = "Cli 관련 로그 정보 가져오기")
+    public ResponseEntity<TestDTO.LogResponse> getLog() throws CustomException {
+        String log = testService.getLog();
+        return ResponseEntity.ok(TestDTO.LogResponse.builder()
+                                                    .log(log)
+                                                    .build());
     }
 
 }
