@@ -7,3 +7,4 @@
 server/gradle
 server/gradlew
 server/gradlew.bat
+client/node_modules

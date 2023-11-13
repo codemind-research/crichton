@@ -1,0 +1,52 @@
+.upload_input_component {
+  display: flex;
+  align-items: center;
+
+  .input_with_button {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    margin-left: 10px;
+
+    input {
+      position: absolute;
+      display: none;
+    }
+    span {
+      display: inline-block;
+      width: 190px;
+      height: 33px;
+      padding: 0px 5px;
+      border: 1px solid gray;
+      font-size: 15px;
+      line-height: 2;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    button {
+      position: absolute;
+      width: 25px;
+      height: 35px;
+      top: 0;
+      right: 0;
+    }
+  }
+
+  .upload_button {
+    width: 60px;
+    height: 30px;
+    margin-left: 10px;
+  }
+}
+
+.log_component {
+  margin-top: 55px;
+  .log_div_area {
+    width: 50vw;
+    height: 35vh;
+    padding: 20px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    overflow: auto;
+  }
+}

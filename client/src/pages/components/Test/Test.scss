@@ -1,0 +1,40 @@
+.running_test_component {
+  margin-top: 45px;
+  .test_option_button {
+    display: block;
+    text-align: center;
+    button {
+      min-width: 80px;
+      padding: 8px 10px;
+    }
+  }
+}
+hr {
+  border: none;
+  border-top: 1px solid gray;
+  margin: 30px 0;
+  width: 50vw;
+}
+
+.select_test_type_component {
+  label {
+    margin-left: 5px;
+  }
+  .injection_checkbox_option {
+    margin-top: 20px;
+    .option {
+      margin-top: 15px;
+      label {
+        margin-left: 40px;
+      }
+      input {
+        width: 60px;
+        height: 25px;
+        font-size: 15px;
+      }
+      span {
+        margin-left: 5px;
+      }
+    }
+  }
+}
