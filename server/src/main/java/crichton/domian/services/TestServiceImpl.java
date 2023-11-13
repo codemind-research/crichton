@@ -4,17 +4,20 @@ import crichton.application.exceptions.CustomException;
 import crichton.application.exceptions.code.FailedErrorCode;
 import crichton.domian.dtos.TestDTO;
 import crichton.enumeration.TestResult;
-import crichton.runner.CliRunner;
+import crichton.runner.ProgressRunner;
+import crichton.runner.RunResult;
+import crichton.runner.UnitTestRunner;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.Optional;
 
 @Service("TestService")
 public class TestServiceImpl implements TestService{
 
     @Override
     public TestDTO.TestResponse doTest(TestDTO.TestRequest testRequest) throws CustomException {
-        if (!checkSourcePath(testRequest.getSourcePath()))
+        if (!isCheckSourcePath(testRequest.getSourcePath()))
             throw new CustomException(FailedErrorCode.NOT_EXIST_DIRECTORY);
 
         TestResult isUnitTestDone = testRequest.getUnitTest()
@@ -30,19 +33,21 @@ public class TestServiceImpl implements TestService{
     }
 
     @Override
-    public String getLog() throws CustomException {
+    public String getProgress() throws CustomException {
         try {
-            return CliRunner.runProgress();
-        } catch (Exception e) {
+            ProgressRunner progressRunner = new ProgressRunner();
+            Optional<RunResult> result = progressRunner.run();
+            return result.orElseGet(result::orElseThrow).getData();
+        }catch (Exception e){
             throw new CustomException(FailedErrorCode.LOG_READ_FAILED);
         }
     }
 
     private TestResult runUnitTest(TestDTO.TestRequest testRequest){
         try {
-            CliRunner cliRunner = new CliRunner(testRequest.getSourcePath());
-            cliRunner.run();
-            return new File(cliRunner.getReportPath()).exists() ? TestResult.SUCCESS : TestResult.FAILURE;
+            UnitTestRunner runner = new UnitTestRunner(testRequest.getSourcePath());
+            runner.run();
+            return runner.isSuccessUnitTest() ? TestResult.SUCCESS : TestResult.FAILURE;
         } catch (Exception e) {
             return TestResult.FAILURE;
         }
@@ -54,7 +59,7 @@ public class TestServiceImpl implements TestService{
     }
 
 
-    private boolean checkSourcePath(String sourcePath) {
+    private boolean isCheckSourcePath(String sourcePath) {
         return !sourcePath.isBlank() && new File(sourcePath).exists();
     }
 

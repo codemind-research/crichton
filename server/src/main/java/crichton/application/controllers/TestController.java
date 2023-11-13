@@ -23,10 +23,10 @@ public class TestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/log")
-    @ApiOperation(value = "로그 정보 가져오기", notes = "Cli 관련 로그 정보 가져오기")
-    public ResponseEntity<TestDTO.LogResponse> getLog() throws CustomException {
-        String log = testService.getLog();
+    @GetMapping("/progress")
+    @ApiOperation(value = "테스트 프로그레스 정보 가져오기")
+    public ResponseEntity<TestDTO.LogResponse> getProgress() throws CustomException {
+        String log = testService.getProgress();
         return ResponseEntity.ok(TestDTO.LogResponse.builder()
                                                     .log(log)
                                                     .build());

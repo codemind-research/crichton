@@ -21,8 +21,11 @@ public class ManifestUtil {
             Manifest manifest = manifest(ServerApplication.class);
             String gitHash = manifest.getMainAttributes().getValue("GIT_HASH");
             Matcher matcher = RegexPatterns.VERSION_PATTERN.matcher(gitHash);
+
             if (matcher.find()){
                 version.append(matcher.group(1)).append(".").append(matcher.group(2));
+            }else {
+                version.append("1.0");
             }
         } catch (Exception e) {
             version.append("1.0");

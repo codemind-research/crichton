@@ -1,4 +1,4 @@
-package crichton.executors;
+package crichton.runner;
 
 import java.util.ArrayList;
 import java.util.List;

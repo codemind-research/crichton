@@ -7,6 +7,6 @@ public interface TestService {
 
     TestDTO.TestResponse doTest(TestDTO.TestRequest testRequest) throws CustomException;
 
-    String getLog() throws CustomException;
+    String getProgress() throws CustomException;
 
 }

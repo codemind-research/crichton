@@ -120,8 +120,8 @@ public class TestControllerTest {
     
     @Test
     @Order(5)
-    void getLog() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/log"))
+    void getProgress() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress"))
                                .andExpect(MockMvcResultMatchers.status().isOk())
                                .andDo(MockMvcResultHandlers.print());
     }
