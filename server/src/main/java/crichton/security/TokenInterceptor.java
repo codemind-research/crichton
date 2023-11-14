@@ -22,7 +22,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     private final RefreshTokenService refreshTokenService;
     private final AccessTokenService accessTokenService;
 
-    private String decodeBase64(String base64) {
+    public String decodeBase64(String base64) {
         byte[] decodedBytes = Base64.getDecoder().decode(base64);
         return new String(decodedBytes);
     }
@@ -39,8 +39,8 @@ public class TokenInterceptor implements HandlerInterceptor {
             String[] tokenParts = accessToken.split("\\.");
             String payload = decodeBase64(tokenParts[1]);
             PayloadDTO payloadDTO = ObjectMapperUtils.convertJsonStringToObject(payload, PayloadDTO.class);
-            // 1. accessToken 만료되지 않았을때는 return true;
-            if (accessTokenService.validateAccessToken(accessToken, payloadDTO)){
+            // 1. accessToken 무결성 검사 및 만료날짜 검사
+            if (accessTokenService.validateAccessToken(accessToken, payloadDTO) && accessTokenService.isAccessTokenExpired(payloadDTO)){
                 return true;
             }
             //2. refreshToken 값이 header에 포함되서 날라오고 refreshToken 기간이 만료되지않았을때

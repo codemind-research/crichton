@@ -26,7 +26,7 @@ public class AccessTokenServiceImpl implements AccessTokenService{
 
     private final ObjectMapper objectMapper;
 
-    private Long expirationTimeMillis = 60 * 60 *1000L; //1시간 제한
+    private Long expirationTimeMillis = 3 *1000L; //1시간 제한
 
     private static byte[] generateSecretKey() {
         byte[] keyBytes = new byte[32];
@@ -34,7 +34,9 @@ public class AccessTokenServiceImpl implements AccessTokenService{
         return keyBytes;
     }
 
-    private String generatePayload(String userId, long expirationTime) {
+
+    @Override
+    public String generatePayload(String userId, long expirationTime) {
         try {
             Map<String, Object> payloadMap = new HashMap<>();
             payloadMap.put("sub", userId);
@@ -45,7 +47,8 @@ public class AccessTokenServiceImpl implements AccessTokenService{
         }
     }
 
-    private String generateSignature(String payload) {
+    @Override
+    public String generateSignature(String payload) {
         try {
             Mac sha256Hmac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY, "HmacSHA256");
@@ -68,30 +71,27 @@ public class AccessTokenServiceImpl implements AccessTokenService{
         return token + "." +payload + "." + signature;
     }
 
-    // 무결성 검사 추가
+    // 토큰 무결성 검사 추가 및 서명 검사
     @Override
     public boolean validateAccessToken(String token, PayloadDTO payloadDTO) {
         String[] parts = token.split("\\.");
-        if (parts.length != 3 || payloadDTO == null) {
+        if (parts.length != 3 || payloadDTO == null)
             return false; // 토큰 형식이 잘못되었음
-        }
 
         String payload = parts[1];
         String signature = parts[2];
-        // 서명 검증
-        String expectedSignature = generateSignature(payload);
-        return expectedSignature.equals(signature) && !isAccessTokenExpired(payloadDTO);
+        return generateSignature(payload).equals(signature);
     }
 
     @Override
     public boolean isAccessTokenExpired(PayloadDTO payloadDTO) {
-        return System.currentTimeMillis() > payloadDTO.getExp();
+        return System.currentTimeMillis() < payloadDTO.getExp();
     }
 
     @Override
     public String refreshAccessToken(String token, PayloadDTO payloadDTO) {
-        if (!validateAccessToken(token, payloadDTO)) {
-            return generateAccessToken(payloadDTO.getSub());
+        if (validateAccessToken(token, payloadDTO)) {
+            return isAccessTokenExpired(payloadDTO) ? token: generateAccessToken(payloadDTO.getSub());
         } else {
             return null;
         }

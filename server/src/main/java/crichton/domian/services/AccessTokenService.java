@@ -12,4 +12,7 @@ public interface AccessTokenService {
 
     String refreshAccessToken(String token, PayloadDTO payloadDTO);
 
+    String generatePayload(String userId, long expirationTime);
+
+    String generateSignature(String payload);
 }
