@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -20,12 +21,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccessTokenServiceImpl implements AccessTokenService{
 
-    //TODO: 추후 key 값어디에 저장해야될지 정하기
-    private static final String SECRET_KEY = "secret_key ";
+    //TODO : SECRET_KEY DB 추가되면 DB 에저장
+    private final static byte[] SECRET_KEY = generateSecretKey();
 
     private final ObjectMapper objectMapper;
 
     private Long expirationTimeMillis = 60 * 60 *1000L; //1시간 제한
+
+    private static byte[] generateSecretKey() {
+        byte[] keyBytes = new byte[32];
+        new SecureRandom().nextBytes(keyBytes);
+        return keyBytes;
+    }
 
     private String generatePayload(String userId, long expirationTime) {
         try {
@@ -41,7 +48,7 @@ public class AccessTokenServiceImpl implements AccessTokenService{
     private String generateSignature(String payload) {
         try {
             Mac sha256Hmac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes("UTF-8"), "HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY, "HmacSHA256");
             sha256Hmac.init(secretKey);
             byte[] signatureBytes = sha256Hmac.doFinal(payload.getBytes("UTF-8"));
 
