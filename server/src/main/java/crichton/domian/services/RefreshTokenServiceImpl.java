@@ -33,8 +33,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
        RefreshTokenDTO customTokenDTO = tokenStoreMap.getOrDefault(userId,null);
         if (customTokenDTO != null) {
             return customTokenDTO.getToken().equals(token) && !isRefreshTokenExpired(customTokenDTO);
+        }else {
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -49,8 +50,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public void addRefreshToken(String userId, String token ) {
-        long expirationTime = System.currentTimeMillis() + expirationTimeMillis;
+    public void addRefreshToken(String userId, String token, Long expiredDate) {
+        long expirationTime = System.currentTimeMillis() + expiredDate;
         tokenStoreMap.put(userId, RefreshTokenDTO.builder()
                                                  .token(token)
                                                  .expireDate(expirationTime)

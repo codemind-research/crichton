@@ -10,6 +10,6 @@ public interface RefreshTokenService {
 
     boolean isRefreshTokenExpired(RefreshTokenDTO customTokenDTO);
 
-    void addRefreshToken(String userId, String token);
+    void addRefreshToken(String userId, String token, Long expiredDate);
 
 }
