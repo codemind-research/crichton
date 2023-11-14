@@ -6,7 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,6 +19,9 @@ import java.util.UUID;
 @Service("AccessTokenService")
 @RequiredArgsConstructor
 public class AccessTokenServiceImpl implements AccessTokenService{
+
+    //TODO: 추후 key 값어디에 저장해야될지 정하기
+    private static final String SECRET_KEY = "secret_key ";
 
     private final ObjectMapper objectMapper;
 
@@ -30,21 +38,42 @@ public class AccessTokenServiceImpl implements AccessTokenService{
         }
     }
 
+    private String generateSignature(String payload) {
+        try {
+            Mac sha256Hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes("UTF-8"), "HmacSHA256");
+            sha256Hmac.init(secretKey);
+            byte[] signatureBytes = sha256Hmac.doFinal(payload.getBytes("UTF-8"));
+
+            return Base64.encodeBase64URLSafeString(signatureBytes);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException | InvalidKeyException e) {
+            throw new RuntimeException("Error generating signature", e);
+        }
+    }
+
 
     @Override
     public String generateAccessToken(String userId) {
         long expirationTime = System.currentTimeMillis() + expirationTimeMillis;
         String token = UUID.randomUUID().toString();
-        return token + "." +generatePayload(userId, expirationTime);
+        String payload = generatePayload(userId,expirationTime);
+        String signature = generateSignature(payload);
+        return token + "." +payload + "." + signature;
     }
 
-    //TODO: 무결성 검사 추가
+    // 무결성 검사 추가
     @Override
-    public boolean validateAccessToken(PayloadDTO payloadDTO) {
-        if (payloadDTO != null) {
-            return !isAccessTokenExpired(payloadDTO);
+    public boolean validateAccessToken(String token, PayloadDTO payloadDTO) {
+        String[] parts = token.split("\\.");
+        if (parts.length != 3 || payloadDTO == null) {
+            return false; // 토큰 형식이 잘못되었음
         }
-        return false;
+
+        String payload = parts[1];
+        String signature = parts[2];
+        // 서명 검증
+        String expectedSignature = generateSignature(payload);
+        return expectedSignature.equals(signature) && !isAccessTokenExpired(payloadDTO);
     }
 
     @Override
@@ -53,8 +82,8 @@ public class AccessTokenServiceImpl implements AccessTokenService{
     }
 
     @Override
-    public String refreshAccessToken(PayloadDTO payloadDTO) {
-        if (!validateAccessToken(payloadDTO)) {
+    public String refreshAccessToken(String token, PayloadDTO payloadDTO) {
+        if (!validateAccessToken(token, payloadDTO)) {
             return generateAccessToken(payloadDTO.getSub());
         } else {
             return null;

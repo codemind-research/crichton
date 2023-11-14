@@ -6,10 +6,10 @@ public interface AccessTokenService {
 
     String generateAccessToken(String userId);
 
-    boolean validateAccessToken(PayloadDTO payloadDTO);
+    boolean validateAccessToken(String token, PayloadDTO payloadDTO);
 
     boolean isAccessTokenExpired(PayloadDTO payloadDTO);
 
-    String refreshAccessToken(PayloadDTO payloadDTO);
+    String refreshAccessToken(String token, PayloadDTO payloadDTO);
 
 }

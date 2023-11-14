@@ -40,12 +40,12 @@ public class TokenInterceptor implements HandlerInterceptor {
             String payload = decodeBase64(tokenParts[1]);
             PayloadDTO payloadDTO = ObjectMapperUtils.convertJsonStringToObject(payload, PayloadDTO.class);
             // 1. accessToken 만료되지 않았을때는 return true;
-            if (accessTokenService.validateAccessToken(payloadDTO)){
+            if (accessTokenService.validateAccessToken(accessToken, payloadDTO)){
                 return true;
             }
             //2. refreshToken 값이 header에 포함되서 날라오고 refreshToken 기간이 만료되지않았을때
             if (refreshToken != null && refreshTokenService.validateRefreshToken(payloadDTO.getSub(),refreshToken)) {
-                String newAccessToken = accessTokenService.refreshAccessToken(payloadDTO);
+                String newAccessToken = accessTokenService.refreshAccessToken(accessToken, payloadDTO);
                 //3. 새로운 accessToken 이 성공적으로 발급되었을 때 헤더에 포함해서 전달
                 if (newAccessToken != null) {
                     response.setHeader("Authorization", newAccessToken);
