@@ -1,21 +1,79 @@
 package crichton.security;
 
+import crichton.domian.dtos.PayloadDTO;
+import crichton.domian.services.AccessTokenService;
+import crichton.domian.services.RefreshTokenService;
+import crichton.util.ObjectMapperUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Base64;
+
+@Component("TokenInterceptor")
+@RequiredArgsConstructor
 public class TokenInterceptor implements HandlerInterceptor {
+
+    private final static String HEADER_AUTH = "Authorization";
+    private final static String REFRESH_TOKEN = "RefreshToken";
+    private final RefreshTokenService refreshTokenService;
+    private final AccessTokenService accessTokenService;
+
+    private String decodeBase64(String base64) {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64);
+        return new String(decodedBytes);
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 여기에서 토큰 검증 및 처리 로직을 구현합니다.
-        // 예를 들어, request.getHeader("Authorization")로 헤더에서 토큰을 가져오고 검증합니다.
-
-        // 만약 토큰이 유효하면 true를 반환하고, 그렇지 않으면 false를 반환합니다.
-        // 유효하지 않은 경우, response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 등을 사용하여 응답 상태를 설정할 수 있습니다.
-
-        return true;
+        String requestURI = request.getRequestURI();
+        if (requestURI.startsWith("/api/v1/crichton/auth/token")) {
+            return true;
+        }
+        try {
+            String accessToken = request.getHeader(HEADER_AUTH);
+            String refreshToken = request.getHeader(REFRESH_TOKEN);
+            String[] tokenParts = accessToken.split("\\.");
+            String payload = decodeBase64(tokenParts[1]);
+            PayloadDTO payloadDTO = ObjectMapperUtils.convertJsonStringToObject(payload, PayloadDTO.class);
+            // 1. accessToken 만료되지 않았을때는 return true;
+            if (accessTokenService.validateAccessToken(payloadDTO)){
+                return true;
+            }
+            //2. refreshToken 값이 header에 포함되서 날라오고 refreshToken 기간이 만료되지않았을때
+            if (refreshToken != null && refreshTokenService.validateRefreshToken(payloadDTO.getSub(),refreshToken)) {
+                String newAccessToken = accessTokenService.refreshAccessToken(payloadDTO);
+                //3. 새로운 accessToken 이 성공적으로 발급되었을 때 헤더에 포함해서 전달
+                if (newAccessToken != null) {
+                    response.setHeader("Authorization", newAccessToken);
+                    return true;
+                } else {
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+            }
+            //4. refreshToken 값이 header에 포함되지않거나 refreshToken 기간이 만료되었을때
+            else {
+                // 5. refreshToken 값이 header에 포함되지않았는지 확인
+                if (refreshToken != null){
+                    // 해당 분기는 refreshToken 기간이 만료되었을 때
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("RefreshToken has Expired");
+                }
+                else {
+                    // 해당 분기는 accessToken 기간이 만료되었을때
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter()
+                            .write("AccessToken has Expired");
+                }
+            }
+        }catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return false;
+        }
+        return false;
     }
 
     @Override

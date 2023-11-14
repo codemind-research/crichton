@@ -33,8 +33,8 @@ public class TestDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class LogResponse {
-        @Schema(description = "로그", required = true)
-        private String log;
+    public static class ProgressResponse {
+        @Schema(description = "테스트 진행 상태", required = true)
+        private String progress;
     }
 }

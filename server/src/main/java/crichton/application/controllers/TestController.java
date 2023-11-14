@@ -25,10 +25,10 @@ public class TestController {
 
     @GetMapping("/progress")
     @ApiOperation(value = "테스트 프로그레스 정보 가져오기")
-    public ResponseEntity<TestDTO.LogResponse> getProgress() throws CustomException {
-        String log = testService.getProgress();
-        return ResponseEntity.ok(TestDTO.LogResponse.builder()
-                                                    .log(log)
+    public ResponseEntity<TestDTO.ProgressResponse> getProgress() throws CustomException {
+        String progress = testService.getProgress();
+        return ResponseEntity.ok(TestDTO.ProgressResponse.builder()
+                                                    .progress(progress)
                                                     .build());
     }
 

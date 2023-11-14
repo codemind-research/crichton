@@ -46,7 +46,7 @@ public class TestServiceImpl implements TestService{
     private TestResult runUnitTest(TestDTO.TestRequest testRequest){
         try {
             UnitTestRunner runner = new UnitTestRunner(testRequest.getSourcePath());
-            runner.run();
+            runner.run().map(RunResult::isSuccess).orElseThrow(NoSuchFieldException::new);
             return runner.isSuccessUnitTest() ? TestResult.SUCCESS : TestResult.FAILURE;
         } catch (Exception e) {
             return TestResult.FAILURE;

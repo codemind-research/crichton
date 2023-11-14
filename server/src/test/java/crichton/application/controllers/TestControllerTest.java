@@ -3,6 +3,8 @@ package crichton.application.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import crichton.application.exceptions.handler.GlobalExceptionResponse;
 import crichton.domian.dtos.TestDTO;
+import crichton.domian.services.AccessTokenService;
+import crichton.domian.services.RefreshTokenService;
 import crichton.enumeration.TestResult;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,10 +32,21 @@ public class TestControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    private AccessTokenService accessTokenService;
+
     private String sourcePath;
+    private static String accessToken;
+    private static String refreshToken;
 
     @BeforeEach
     void sourcePathInit() {
+        String userId = UUID.randomUUID().toString();
+        accessToken = accessToken == null ? accessTokenService.generateAccessToken(userId) : accessToken;
+        refreshToken = refreshToken == null ? refreshTokenService.generateRefreshToken(userId) : refreshToken;
         sourcePath = Paths.get(System.getProperty("user.home"),"git","crichton","tests","c++-samples").toString();
     }
 
@@ -44,7 +58,9 @@ public class TestControllerTest {
         request.setSourcePath("");
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
                                               .contentType(MediaType.APPLICATION_JSON)
-                                              .content(mapper.writeValueAsString(request)))
+                                              .content(mapper.writeValueAsString(request))
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken))
                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                .andDo(print())
                .andReturn()
@@ -63,7 +79,9 @@ public class TestControllerTest {
         request.setSourcePath("%2ka1oll");
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
                                                               .contentType(MediaType.APPLICATION_JSON)
-                                                              .content(mapper.writeValueAsString(request)))
+                                                              .content(mapper.writeValueAsString(request))
+                                                              .header("Authorization", accessToken)
+                                                              .header("RefreshToken", refreshToken))
                                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                                .andDo(print())
                                .andReturn()
@@ -84,7 +102,9 @@ public class TestControllerTest {
         request.setInjectionTest(false);
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
                                                               .contentType(MediaType.APPLICATION_JSON)
-                                                              .content(mapper.writeValueAsString(request)))
+                                                              .content(mapper.writeValueAsString(request))
+                                                              .header("Authorization", accessToken)
+                                                              .header("RefreshToken", refreshToken))
                                .andExpect(MockMvcResultMatchers.status().isOk())
                                .andDo(MockMvcResultHandlers.print())
                                .andReturn()
@@ -106,7 +126,9 @@ public class TestControllerTest {
         request.setInjectionTest(false);
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/run")
                                               .contentType(MediaType.APPLICATION_JSON)
-                                              .content(mapper.writeValueAsString(request)))
+                                              .content(mapper.writeValueAsString(request))
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andDo(MockMvcResultHandlers.print())
                .andReturn()
@@ -121,7 +143,9 @@ public class TestControllerTest {
     @Test
     @Order(5)
     void getProgress() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken))
                                .andExpect(MockMvcResultMatchers.status().isOk())
                                .andDo(MockMvcResultHandlers.print());
     }

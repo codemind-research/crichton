@@ -2,9 +2,12 @@ package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import crichton.application.exceptions.handler.GlobalExceptionResponse;
+import crichton.domian.services.AccessTokenService;
+import crichton.domian.services.RefreshTokenService;
 import crichton.paths.DirectoryPaths;
 import crichton.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -34,17 +38,39 @@ public class StorageControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+    @Autowired
+    private AccessTokenService accessTokenService;
+
+    private String accessToken;
+    private String refreshToken;
+
+    @BeforeEach
+    void sourcePathInit() {
+        String userId = UUID.randomUUID().toString();
+        accessToken = accessTokenService.generateAccessToken(userId);
+        refreshToken = refreshTokenService.generateRefreshToken(userId);
+    }
+
+    private void deleteUploadSource(File source, File zip){
+        if (source.exists()){
+            FileUtils.removeDirectory(source);
+        }
+        if (zip.exists()){
+            zip.delete();
+        }
+
+    }
 
     @AfterEach
-    public void deleteUploadSource() {
+    public void delete() {
         File uploadSource =  DirectoryPaths.generateUnzipPath("uploadTest").toFile();
         File uploadSourceZiP =  DirectoryPaths.generateZipPath("uploadTest").toFile();
-        if (uploadSource.exists()){
-            FileUtils.removeDirectory(uploadSource);
-        }
-        if (uploadSourceZiP.exists()){
-            uploadSourceZiP.delete();
-        }
+        deleteUploadSource(uploadSource,uploadSourceZiP);
+        File uploadFailedSource =  DirectoryPaths.generateUnzipPath("FailedTest").toFile();
+        File uploadFailedSourceZiP =  DirectoryPaths.generateZipPath("FailedTest").toFile();
+        deleteUploadSource(uploadFailedSource,uploadFailedSourceZiP);
     }
 
     private Path createZipFile(String zipFileName, byte[] content) throws IOException {
@@ -69,7 +95,9 @@ public class StorageControllerTest {
                 MediaType.APPLICATION_OCTET_STREAM_VALUE,
                 Files.newInputStream(zipFilePath)
         );
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/storage/upload").file(file))
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/storage/upload").file(file)
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andDo(MockMvcResultHandlers.print());
     }
@@ -79,12 +107,14 @@ public class StorageControllerTest {
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",                      // 파라미터 이름
-                "test.txt",                  // 파일 이름
+                "FailedTest",                  // 파일 이름
                 MediaType.TEXT_PLAIN_VALUE,  // 파일 타입
                 "Hello, World!".getBytes()   // 파일 내용
         );
 
-        String result =  mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/storage/upload").file(file))
+        String result =  mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/storage/upload").file(file)
+                                                               .header("Authorization", accessToken)
+                                                               .header("RefreshToken", refreshToken))
                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                .andDo(MockMvcResultHandlers.print())
                .andReturn()
