@@ -17,7 +17,7 @@ public class AccessTokenServiceImpl implements AccessTokenService{
 
     private final ObjectMapper objectMapper;
 
-    private Long expirationTimeMillis = 3*1000L; //1시간 제한
+    private Long expirationTimeMillis = 60 * 60 *1000L; //1시간 제한
 
     private String generatePayload(String userId, long expirationTime) {
         try {
