@@ -85,13 +85,13 @@ public class AccessTokenServiceImpl implements AccessTokenService{
 
     @Override
     public boolean isAccessTokenExpired(PayloadDTO payloadDTO) {
-        return System.currentTimeMillis() < payloadDTO.getExp();
+        return System.currentTimeMillis() > payloadDTO.getExp();
     }
 
     @Override
     public String refreshAccessToken(String token, PayloadDTO payloadDTO) {
         if (validateAccessToken(token, payloadDTO)) {
-            return isAccessTokenExpired(payloadDTO) ? token: generateAccessToken(payloadDTO.getSub());
+            return !isAccessTokenExpired(payloadDTO) ? token: generateAccessToken(payloadDTO.getSub());
         } else {
             return null;
         }

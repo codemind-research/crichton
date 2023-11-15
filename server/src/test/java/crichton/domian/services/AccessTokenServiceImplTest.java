@@ -100,7 +100,7 @@ public class AccessTokenServiceImplTest {
         PayloadDTO payloadDTO = generatePayloadDTO(signedToken);
         boolean result = accessTokenService
                 .isAccessTokenExpired(payloadDTO);
-        assertFalse(result);
+        assertTrue(result);
     }
 
 

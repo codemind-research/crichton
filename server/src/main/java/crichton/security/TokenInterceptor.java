@@ -40,7 +40,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             String payload = decodeBase64(tokenParts[1]);
             PayloadDTO payloadDTO = ObjectMapperUtils.convertJsonStringToObject(payload, PayloadDTO.class);
             // 1. accessToken 무결성 검사 및 만료날짜 검사
-            if (accessTokenService.validateAccessToken(accessToken, payloadDTO) && accessTokenService.isAccessTokenExpired(payloadDTO)){
+            if (accessTokenService.validateAccessToken(accessToken, payloadDTO) && !accessTokenService.isAccessTokenExpired(payloadDTO)){
                 return true;
             }
             //2. refreshToken 값이 header에 포함되서 날라오고 refreshToken 기간이 만료되지않았을때
@@ -51,7 +51,8 @@ public class TokenInterceptor implements HandlerInterceptor {
                     response.setHeader("Authorization", newAccessToken);
                     return true;
                 } else {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("The access token provided is invalid");
                 }
             }
             //4. refreshToken 값이 header에 포함되지않거나 refreshToken 기간이 만료되었을때
@@ -70,7 +71,8 @@ public class TokenInterceptor implements HandlerInterceptor {
                 }
             }
         }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("The access token provided is invalid");
             return false;
         }
         return false;

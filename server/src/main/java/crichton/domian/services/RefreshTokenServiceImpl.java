@@ -51,10 +51,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public void addRefreshToken(String userId, String token, Long expiredDate) {
-        long expirationTime = System.currentTimeMillis() + expiredDate;
         tokenStoreMap.put(userId, RefreshTokenDTO.builder()
                                                  .token(token)
-                                                 .expireDate(expirationTime)
+                                                 .expireDate(expiredDate)
                                                  .build());
     }
 }
