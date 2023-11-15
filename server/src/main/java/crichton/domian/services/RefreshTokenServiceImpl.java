@@ -1,7 +1,6 @@
 package crichton.domian.services;
 
 import crichton.domian.dtos.RefreshTokenDTO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service("RefreshTokenService")
-@RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     //TODO: 추후 Map 데이터를 DB로 변경
@@ -55,5 +53,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                                                  .token(token)
                                                  .expireDate(expiredDate)
                                                  .build());
+    }
+
+    @Override
+    public void deleteRefreshToken(String userId) {
+        tokenStoreMap.remove(userId);
     }
 }

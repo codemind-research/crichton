@@ -18,5 +18,13 @@ public class AuthDTO {
         @Schema(description = "Refresh Token ", required = true)
         private String refreshToken;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TokenRequest {
+        @Schema(description = "사용자 고유 ID", required = true)
+        private String userId;
+    }
 }
 

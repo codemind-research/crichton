@@ -12,4 +12,6 @@ public interface RefreshTokenService {
 
     void addRefreshToken(String userId, String token, Long expiredDate);
 
+    void deleteRefreshToken(String userId);
+
 }
