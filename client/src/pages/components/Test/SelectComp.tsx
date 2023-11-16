@@ -1,19 +1,17 @@
-import { useState } from "react";
-
-export default function SelectComp() {
-  const [checkedTestType, setTestType] = useState({
-    whitebox: "false",
-    injection: "false",
-  });
-  const [testDuration, setTestDuration] = useState(60);
+const SelectComp = (props: any) => {
+  const checkedTestType: { whitebox: string; injection: string } = {
+    whitebox: props.testType.whitebox,
+    injection: props.testType.injection,
+  };
+  const duration: number = props.duration;
 
   const handleCheckboxChange = (event: any) => {
     const { id, checked } = event.target;
 
-    setTestType((prevState) => ({
-      ...prevState,
-      [id]: checked.toString(),
-    }));
+    props.testTypeChange(id, checked.toString());
+  };
+  const handleInputChange = (event: any) => {
+    props.durationChange(event.target.value);
   };
 
   return (
@@ -25,16 +23,11 @@ export default function SelectComp() {
         <label htmlFor="injection">Injection Test</label>
         <div className="option">
           <label htmlFor="quantity">· Test duration: </label>
-          <input
-            type="number"
-            id="quantity"
-            min="1"
-            value={testDuration}
-            onChange={(e) => setTestDuration(Number(e.target.value))}
-          />
+          <input type="number" id="quantity" min="1" value={duration} onChange={handleInputChange} />
           <span>sec</span>
         </div>
       </div>
     </div>
   );
-}
+};
+export default SelectComp;

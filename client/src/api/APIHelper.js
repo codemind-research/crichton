@@ -1,43 +1,46 @@
 import Axios from "axios";
 
+const port = "https://localhost:9090";
+
 export default {
-  POST_DATA_TOKEN: async function (url, port, data, token) {
-    let config = {
+  POST_DATA_TOKEN: async function (url, data, token) {
+    const config = {
       headers: { userauth: token, "content-type": "application/json" },
       timeout: 1000000,
     };
 
-    return await this.GetRestApi("POST", url, port, data, config);
+    return await this.GetRestApi("POST", url, data, config);
   },
-  POST_DATA_RESOURCE: async function (url, port, data, token) {
-    let config = {
+  POST_DATA_RESOURCE: async function (url, data, token) {
+    const config = {
       headers: { userauth: token },
       timeout: 1000000,
       responseType: "blob",
     };
 
-    return await this.GetRestApi("POST", url, port, data, config);
+    return await this.GetRestApi("POST", url, data, config);
   },
 
-  GET_TOKEN: async function (url, port, token) {
-    let config = {
-      headers: { userauth: token },
+  GET_TOKEN: async function (url, token) {
+    const config = {
+      headers: { userauth: token, "content-type": "application/json" },
       timeout: 10000000,
     };
 
-    return await this.GetRestApi("GET", url, port, undefined, config);
+    return await this.GetRestApi("GET", url, undefined, config);
   },
 
-  GetRestApi: async function (httpMethod, url, port, data, config) {
+  GetRestApi: async function (httpMethod, url, data, config) {
     let response = undefined;
     let result = undefined;
+
     try {
       switch (httpMethod) {
         case "POST":
-          response = await Axios.post(port + url, data, config);
+          response = await Axios.post(url, data, config);
           break;
         case "GET":
-          response = await Axios.get(port + url, config);
+          response = await Axios.get(url, config);
           break;
         default:
           break;
@@ -46,15 +49,10 @@ export default {
       response = error.response;
     }
 
-    if (response.status === 200) {
-      result = { successful: true, status: response.status, result: response.data };
-    } else {
-      result = {
-        successful: false,
-        status: response.status,
-        result: response.data ? response.data : undefined,
-      };
-    }
+    result = {
+      successful: response.status === 200,
+      result: response.data ? response.data : undefined,
+    };
 
     return result;
   },
