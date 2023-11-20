@@ -17,19 +17,12 @@ import java.util.Optional;
 public class TestServiceImpl implements TestService{
 
     @Override
-    public TestDTO.TestResponse doTest(TestDTO.TestRequest testRequest, MultipartFile settings) throws CustomException {
-        if (!isCheckSourcePath(testRequest.getSourcePath()))
+    public TestDTO.TestResponse doUnitTest(String sourcePath, MultipartFile settings) throws CustomException {
+        if (!isCheckSourcePath(sourcePath))
             throw new CustomException(FailedErrorCode.NOT_EXIST_DIRECTORY);
-
-        TestResult isUnitTestDone = testRequest.getUnitTest()
-                ? runUnitTest(testRequest, settings) : TestResult.PASS;
-
-        TestResult isInjectionDone = testRequest.getInjectionTest()
-                ? runInjectionTest(testRequest) : TestResult.PASS;
-
+        TestResult isUnitTestDone = runUnitTest(sourcePath, settings);
         return TestDTO.TestResponse.builder()
-                                   .unitTestResult(isUnitTestDone)
-                                   .injectionTestResult(isInjectionDone)
+                                   .testResult(isUnitTestDone)
                                    .build();
     }
 
@@ -44,9 +37,9 @@ public class TestServiceImpl implements TestService{
         }
     }
 
-    private TestResult runUnitTest(TestDTO.TestRequest testRequest, MultipartFile settings){
+    private TestResult runUnitTest(String sourcePath, MultipartFile settings){
         try {
-            UnitTestRunner runner = new UnitTestRunner(testRequest.getSourcePath(), Optional.ofNullable(settings));
+            UnitTestRunner runner = new UnitTestRunner(sourcePath, Optional.ofNullable(settings));
             runner.run().map(RunResult::isSuccess).orElseThrow(NoSuchFieldException::new);
             return runner.isSuccessUnitTest() ? TestResult.SUCCESS : TestResult.FAILURE;
         } catch (Exception e) {
@@ -54,7 +47,7 @@ public class TestServiceImpl implements TestService{
         }
     }
 
-    private TestResult runInjectionTest(TestDTO.TestRequest testRequest){
+    private TestResult runInjectionTest( ){
         //추후 결함주입테스트 플러그인 추가
         return  TestResult.FAILURE;
     }

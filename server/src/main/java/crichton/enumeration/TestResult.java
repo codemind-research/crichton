@@ -2,7 +2,6 @@ package crichton.enumeration;
 
 public enum TestResult {
 
-    PASS(0),
     SUCCESS(1),
     FAILURE(2);
 

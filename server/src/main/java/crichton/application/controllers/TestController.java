@@ -17,11 +17,11 @@ public class TestController {
 
     private final TestService testService;
 
-    @PostMapping("/run")
-    @ApiOperation(value = "테스트 시작", notes = "자동 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doTest(@RequestBody TestDTO.TestRequest request,
+    @PostMapping("/unit/run")
+    @ApiOperation(value = "단위 테스트 시작", notes = "자동 테스트를 시작하는 Api")
+    public ResponseEntity<TestDTO.TestResponse> doUnitTest(@RequestBody TestDTO.UnitTestRequest request,
                                                        @RequestPart(value = "file", required = false) MultipartFile settings) throws CustomException {
-        TestDTO.TestResponse response = testService.doTest(request, settings);
+        TestDTO.TestResponse response = testService.doUnitTest(request.getSourcePath(), settings);
         return ResponseEntity.ok(response);
     }
 

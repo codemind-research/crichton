@@ -9,15 +9,9 @@ public class TestDTO {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class TestRequest {
+    public static class UnitTestRequest {
         @Schema(description = "테스트할 소스코드 경로", required = true)
         private String sourcePath;
-        @Schema(description = "단위 테스트", required = true)
-        private Boolean unitTest;
-        @Schema(description = "결함 주입 테스트", required = true)
-        private Boolean injectionTest;
-        @Schema(description = "결함 주입 테스트에 들어가는 지속시간", required = true)
-        private int testDuration;
     }
 
     @Getter
@@ -25,10 +19,8 @@ public class TestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TestResponse {
-        @Schema(description = "단위 테스트 결과", required = true)
-        private TestResult unitTestResult;
-        @Schema(description = "결함 주입 테스트 결과", required = true)
-        private TestResult injectionTestResult;
+        @Schema(description = "테스트 결과", required = true)
+        private TestResult testResult;
     }
 
     @Getter
