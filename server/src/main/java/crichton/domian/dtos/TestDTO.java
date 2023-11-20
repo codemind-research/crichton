@@ -16,6 +16,8 @@ public class TestDTO {
         private Boolean unitTest;
         @Schema(description = "결함 주입 테스트", required = true)
         private Boolean injectionTest;
+        @Schema(description = "결함 주입 테스트에 들어가는 지속시간", required = true)
+        private int testDuration;
     }
 
     @Getter
