@@ -18,6 +18,7 @@ public class ReportDTO {
     public static class DataResponse {
         private HashMap<String,String> project;
         private List<HashMap<String,String>> file;
+        private List<HashMap<String,String>> unit;
     }
 
     @Getter

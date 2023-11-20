@@ -1,5 +1,6 @@
 package crichton.infrastructure.csv;
 
+import crichton.domian.dtos.ReportDTO;
 import crichton.util.RegexPatterns;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class CsvParser {
                                   .orElse(null));
     }
 
-    public String parser(String csvData) {
+    public ReportDTO.DataResponse parser(String csvData) {
         List<String> lines = Arrays.stream(csvData.split("\n"))
                                    .toList();
         HashMap<String,String> projectInfo = new ProjectInfo(lines.
@@ -42,10 +43,11 @@ public class CsvParser {
                                              .filter(totalIndex::contains)
                                              .mapToObj(lines::get)
                                              .toList();
-        HashMap<String,String> totalInfo = new TotalInfo(totalLines).
-                getInfo();
 
-        return null;
+        projectInfo.putAll(new TotalInfo(totalLines).
+                getInfo());
+
+        return ReportDTO.DataResponse.builder().project(projectInfo).file(fileInfo).unit(unitInfo).build();
     }
 
 

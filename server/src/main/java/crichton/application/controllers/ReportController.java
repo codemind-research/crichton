@@ -19,8 +19,8 @@ public class ReportController {
     @PostMapping("/data")
     @ApiOperation(value = "csv 레포트 데이터 가공", notes = "Cli 에서 떨군 csv 레포트를 클라이언트에서 사용할 수 있게 데이터를 가공한다.")
     public ResponseEntity<ReportDTO.DataResponse> transformCsvData(@RequestBody ReportDTO.DataRequest request) throws CustomException {
-        reportService.transformCsvData(request.getSourcePath());
-        return ResponseEntity.ok(null);
+        ReportDTO.DataResponse data = reportService.transformCsvData(request.getSourcePath());
+        return ResponseEntity.ok().body(data);
     }
 
 

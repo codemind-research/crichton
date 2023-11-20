@@ -1,8 +1,5 @@
 package crichton.infrastructure.csv;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,22 +14,6 @@ public class ProjectInfo extends Information<HashMap<String,String>>{
     protected void addInfo(Object... values) {
         getInfo().put(values[0].toString(),values[1].toString());
     }
-
-
-    @Override
-    protected void parser(List<String> lines) {
-        List<List<String>> convertList =
-                lines.stream()
-                     .filter(StringUtils::isNotBlank)
-                     .map(pl -> Arrays.stream(pl.split(","))
-                                      .toList()
-                                      .stream()
-                                      .filter(StringUtils::isNotBlank).toList())
-                     .filter(pl->!pl.isEmpty())
-                     .toList();
-        convert(convertList);
-    }
-
 
     @Override
     protected void convert(List<List<String>> lists) {

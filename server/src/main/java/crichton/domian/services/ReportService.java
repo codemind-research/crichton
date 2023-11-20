@@ -1,7 +1,8 @@
 package crichton.domian.services;
 
 import crichton.application.exceptions.CustomException;
+import crichton.domian.dtos.ReportDTO;
 
 public interface ReportService {
-    String transformCsvData(String sourcePath) throws CustomException;
+    ReportDTO.DataResponse transformCsvData(String sourcePath) throws CustomException;
 }

@@ -15,7 +15,7 @@ public class TotalInfo extends Information<HashMap<String,String>> {
 
     @Override
     protected void addInfo(Object... values) {
-
+        getInfo().put(values[0].toString(),values[1].toString());
     }
 
     @Override
@@ -25,8 +25,7 @@ public class TotalInfo extends Information<HashMap<String,String>> {
                      .filter(StringUtils::isNotBlank)
                      .map(pl -> Arrays.stream(pl.split(","))
                                       .toList()
-                                      .stream()
-                                      .filter(StringUtils::isNotBlank).toList())
+                                      .stream().toList())
                      .filter(pl->!pl.isEmpty())
                      .toList();
         convert(convertList);
@@ -40,7 +39,7 @@ public class TotalInfo extends Information<HashMap<String,String>> {
             for (int j = 0; j < Math.min(currentList.size(), nextList.size()); j++) {
                 String key = currentList.get(j);
                 String value = nextList.get(j);
-                addInfo(key,value);
+                if (!value.isBlank() && !key.isBlank()) addInfo(key,value);
             }
         }
     }

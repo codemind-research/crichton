@@ -77,7 +77,7 @@ class ReportControllerTest {
                                                               .content(mapper.writeValueAsString(request))
                                                               .header("Authorization", accessToken)
                                                               .header("RefreshToken", refreshToken))
-                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                               .andExpect(MockMvcResultMatchers.status().isOk())
                                .andDo(print());
 
     }
