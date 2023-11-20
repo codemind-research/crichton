@@ -127,6 +127,8 @@ public class AccessTokenServiceImplTest {
         String payload = parts[1];
         PayloadDTO payloadDTO = generatePayloadDTO(accessToken);
         String forgedToken = token + "." + payload + "." + "checksumTest";
-        assertNull(accessTokenService.refreshAccessToken(forgedToken,payloadDTO));
+        String refreshAccessToken = accessTokenService.refreshAccessToken(forgedToken,payloadDTO);
+        PayloadDTO refreshPayload = generatePayloadDTO(refreshAccessToken);
+        assertTrue(accessTokenService.validateAccessToken(refreshAccessToken,refreshPayload));
     }
 }

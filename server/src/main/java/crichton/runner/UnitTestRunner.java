@@ -1,21 +1,29 @@
 package crichton.runner;
 
 import crichton.paths.DirectoryPaths;
+import crichton.util.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
+import java.util.Optional;
 
 public class UnitTestRunner extends ProcessRunner implements Runner{
 
     private final String sourcePath;
-    private final String reportPath;
+    private final String baseName;
+    private final File reportFile;
+    private final File settingFile;
 
-    public UnitTestRunner(String sourcePath) {
+    public UnitTestRunner(String sourcePath, Optional<MultipartFile> optionalSettings) {
         super();
         this.sourcePath = sourcePath;
-        this.reportPath = DirectoryPaths
-                .generateUnitReportFilePath(FilenameUtils.getBaseName(sourcePath)).toString();
+        this.baseName = FilenameUtils.getBaseName(sourcePath);
+        this.reportFile = DirectoryPaths
+                .generateUnitReportFilePath(baseName).toFile();
+        this.settingFile = DirectoryPaths.generateSettingsPath(baseName).toFile();
+        optionalSettings.ifPresent(settings -> FileUtils.readMultipartFile(settings, settingFile));
         deleteReport();
     }
 
@@ -32,17 +40,17 @@ public class UnitTestRunner extends ProcessRunner implements Runner{
         CommandBuilder command = new CommandBuilder();
         command.addOption("coyoteCli");
         command.addOption("-n", sourcePath);
-        command.addOption("-o", reportPath);
+        command.addOption("-o", reportFile.getAbsolutePath());
+        command.checkAndAddOption("-p", settingFile.getAbsolutePath(), settingFile::exists);
         return command;
     }
 
     private void deleteReport() {
-        File file = new File(reportPath);
-        if (file.exists())
-            file.delete();
+        if (reportFile.exists())
+            reportFile.delete();
     }
 
     public boolean isSuccessUnitTest() {
-        return new File(reportPath).exists();
+        return reportFile.exists();
     }
 }

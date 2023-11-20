@@ -8,6 +8,7 @@ import crichton.runner.ProgressRunner;
 import crichton.runner.RunResult;
 import crichton.runner.UnitTestRunner;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.Optional;
@@ -16,12 +17,12 @@ import java.util.Optional;
 public class TestServiceImpl implements TestService{
 
     @Override
-    public TestDTO.TestResponse doTest(TestDTO.TestRequest testRequest) throws CustomException {
+    public TestDTO.TestResponse doTest(TestDTO.TestRequest testRequest, MultipartFile settings) throws CustomException {
         if (!isCheckSourcePath(testRequest.getSourcePath()))
             throw new CustomException(FailedErrorCode.NOT_EXIST_DIRECTORY);
 
         TestResult isUnitTestDone = testRequest.getUnitTest()
-                ? runUnitTest(testRequest) : TestResult.PASS;
+                ? runUnitTest(testRequest, settings) : TestResult.PASS;
 
         TestResult isInjectionDone = testRequest.getInjectionTest()
                 ? runInjectionTest(testRequest) : TestResult.PASS;
@@ -43,9 +44,9 @@ public class TestServiceImpl implements TestService{
         }
     }
 
-    private TestResult runUnitTest(TestDTO.TestRequest testRequest){
+    private TestResult runUnitTest(TestDTO.TestRequest testRequest, MultipartFile settings){
         try {
-            UnitTestRunner runner = new UnitTestRunner(testRequest.getSourcePath());
+            UnitTestRunner runner = new UnitTestRunner(testRequest.getSourcePath(), Optional.ofNullable(settings));
             runner.run().map(RunResult::isSuccess).orElseThrow(NoSuchFieldException::new);
             return runner.isSuccessUnitTest() ? TestResult.SUCCESS : TestResult.FAILURE;
         } catch (Exception e) {

@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin
 @RestController("TestController")
@@ -18,8 +19,9 @@ public class TestController {
 
     @PostMapping("/run")
     @ApiOperation(value = "테스트 시작", notes = "자동 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doTest(@RequestBody TestDTO.TestRequest request) throws CustomException {
-        TestDTO.TestResponse response = testService.doTest(request);
+    public ResponseEntity<TestDTO.TestResponse> doTest(@RequestBody TestDTO.TestRequest request,
+                                                       @RequestPart(value = "file", required = false) MultipartFile settings) throws CustomException {
+        TestDTO.TestResponse response = testService.doTest(request, settings);
         return ResponseEntity.ok(response);
     }
 

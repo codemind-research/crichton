@@ -90,10 +90,10 @@ public class AccessTokenServiceImpl implements AccessTokenService{
 
     @Override
     public String refreshAccessToken(String token, PayloadDTO payloadDTO) {
-        if (validateAccessToken(token, payloadDTO)) {
-            return !isAccessTokenExpired(payloadDTO) ? token: generateAccessToken(payloadDTO.getSub());
+        if (validateAccessToken(token, payloadDTO) && !isAccessTokenExpired(payloadDTO)) {
+            return token;
         } else {
-            return null;
+            return generateAccessToken(payloadDTO.getSub());
         }
     }
 

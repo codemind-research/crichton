@@ -1,5 +1,7 @@
 package crichton.security;
 
+import crichton.application.exceptions.CustomException;
+import crichton.application.exceptions.code.TokenErrorCode;
 import crichton.domian.dtos.PayloadDTO;
 import crichton.domian.services.AccessTokenService;
 import crichton.domian.services.RefreshTokenService;
@@ -28,7 +30,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws CustomException {
         String requestURI = request.getRequestURI();
         if (requestURI.startsWith("/api/v1/crichton/auth/token")) {
             return true;
@@ -47,35 +49,28 @@ public class TokenInterceptor implements HandlerInterceptor {
             if (refreshToken != null && refreshTokenService.validateRefreshToken(payloadDTO.getSub(),refreshToken)) {
                 String newAccessToken = accessTokenService.refreshAccessToken(accessToken, payloadDTO);
                 //3. 새로운 accessToken 이 성공적으로 발급되었을 때 헤더에 포함해서 전달
-                if (newAccessToken != null) {
-                    response.setHeader("Authorization", newAccessToken);
-                    return true;
-                } else {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("The access token provided is invalid");
-                }
+                response.setHeader("Authorization", newAccessToken);
+                return true;
             }
             //4. refreshToken 값이 header에 포함되지않거나 refreshToken 기간이 만료되었을때
             else {
                 // 5. refreshToken 값이 header에 포함되지않았는지 확인
                 if (refreshToken != null){
                     // 해당 분기는 refreshToken 기간이 만료되었을 때
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("RefreshToken has Expired");
+                    throw new CustomException(TokenErrorCode.INVALID_REFRESH_TOKEN);
                 }
                 else {
                     // 해당 분기는 accessToken 기간이 만료되었을때
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter()
-                            .write("AccessToken has Expired");
+                    throw new CustomException(TokenErrorCode.INVALID_ACCESS_TOKEN);
                 }
             }
-        }catch (Exception e){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("The access token provided is invalid");
-            return false;
         }
-        return false;
+        catch (CustomException customException) {
+            throw customException;
+        }
+        catch (Exception e){
+            throw new CustomException(TokenErrorCode.INVALID_ACCESS_TOKEN);
+        }
     }
 
     @Override

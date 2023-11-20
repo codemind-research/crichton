@@ -1,6 +1,7 @@
 package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import crichton.application.exceptions.handler.GlobalExceptionResponse;
 import crichton.domian.services.AccessTokenService;
 import crichton.domian.services.RefreshTokenService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,13 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.util.AssertionErrors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -73,26 +75,27 @@ public class TokenInterceptorTest {
 
     @Test
     void invalidTokenInterceptor() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
                                               .header("Authorization", "%hk21iga!"))
-               .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-               .andDo(MockMvcResultHandlers.print());
+               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                               .andDo(MockMvcResultHandlers.print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("T001", response.getCode());
     }
 
     @Test
     void invalidAccessTokenInterceptor() throws Exception {
         String invalidAccessToken = generateInvalidAccessToken();
         String refreshToken = refreshTokenService.generateRefreshToken(userId);
-        String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
                                               .header("Authorization", invalidAccessToken)
                                               .header("RefreshToken", refreshToken))
-               .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-               .andDo(MockMvcResultHandlers.print())
-               .andReturn()
-               .getResponse()
-               .getContentAsString()
-               .replaceAll("^\"|\"$", "");
-        AssertionErrors.assertEquals("AccessToken 예외 메세지가 일치하지 않습니다.","The access token provided is invalid" , result);
+               .andExpect(MockMvcResultMatchers.status().isOk())
+               .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
@@ -100,13 +103,14 @@ public class TokenInterceptorTest {
         String oneHoursAgoToken = generateOneHoursAgoToken();
         String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
                                                               .header("Authorization", oneHoursAgoToken))
-                               .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                                .andDo(MockMvcResultHandlers.print())
                                .andReturn()
                                .getResponse()
                                .getContentAsString()
                                .replaceAll("^\"|\"$", "");
-        AssertionErrors.assertEquals("AccessToken 예외 메세지가 일치하지 않습니다.","AccessToken has Expired" , result);
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("T001", response.getCode());
     }
 
     @Test
@@ -127,13 +131,14 @@ public class TokenInterceptorTest {
         String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
                                                               .header("Authorization", oneHoursAgoToken)
                                                               .header("RefreshToken", fifthDaysAgoToken))
-                               .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                                .andDo(MockMvcResultHandlers.print())
                                .andReturn()
                                .getResponse()
                                .getContentAsString()
                                .replaceAll("^\"|\"$", "");
-        AssertionErrors.assertEquals("RefreshToken 예외 메세지가 일치하지 않습니다.","RefreshToken has Expired" , result);
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("T002", response.getCode());
     }
 
 }

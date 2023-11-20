@@ -26,4 +26,8 @@ public class DirectoryPaths {
         return REPORT_PATH.resolve(sourceName+"_injectionTest.csv");
     }
 
+    public static Path generateSettingsPath(String sourceName) {
+        return CLI_PATH.resolve(sourceName+"_projectSettings.json");
+    }
+
 }

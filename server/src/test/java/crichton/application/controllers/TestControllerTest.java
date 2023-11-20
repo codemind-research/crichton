@@ -10,12 +10,16 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.UUID;
 
@@ -49,6 +53,16 @@ public class TestControllerTest {
         refreshToken = refreshToken == null ? refreshTokenService.generateRefreshToken(userId) : refreshToken;
         sourcePath = Paths.get(System.getProperty("user.home"),"git","crichton","tests","c++-samples").toString();
     }
+
+    private static MockMultipartFile convert(String jsonFilePath) throws IOException {
+        ClassPathResource resource = new ClassPathResource(jsonFilePath);
+        InputStream inputStream = resource.getInputStream();
+        byte[] content = inputStream.readAllBytes();
+
+        // MockMultipartFile 생성
+        return new MockMultipartFile("file", resource.getFilename(), "application/json", content);
+    }
+
 
 
     @Test
@@ -135,6 +149,33 @@ public class TestControllerTest {
                .getResponse()
                .getContentAsString()
                .replaceAll("^\"|\"$", "");
+        TestDTO.TestResponse response = mapper.readValue(result ,TestDTO.TestResponse.class);
+        assertEquals(TestResult.SUCCESS,response.getUnitTestResult());
+        assertEquals(TestResult.PASS,response.getInjectionTestResult());
+    }
+
+    @Test
+    @Order(5)
+    void doUnitTestAndProjectSetting() throws Exception {
+        TestDTO.TestRequest request = new TestDTO.TestRequest();
+        request.setSourcePath(sourcePath);
+        request.setUnitTest(true);
+        request.setInjectionTest(false);
+        String jsonResourcePath = "projectSetting_default.json";
+        MockMultipartFile multipartFile = convert(jsonResourcePath);
+
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/run")
+                                                              .file(multipartFile)
+                                                              .contentType(MediaType.APPLICATION_JSON)
+                                                              .content(mapper.writeValueAsString(request))
+                                                              .header("Authorization", accessToken)
+                                                              .header("RefreshToken", refreshToken))
+                               .andExpect(MockMvcResultMatchers.status().isOk())
+                               .andDo(MockMvcResultHandlers.print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
         TestDTO.TestResponse response = mapper.readValue(result ,TestDTO.TestResponse.class);
         assertEquals(TestResult.SUCCESS,response.getUnitTestResult());
         assertEquals(TestResult.PASS,response.getInjectionTestResult());
