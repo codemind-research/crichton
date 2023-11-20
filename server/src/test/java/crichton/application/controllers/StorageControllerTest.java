@@ -91,7 +91,7 @@ public class StorageControllerTest {
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "uploadTest",
+                "uploadTest.zip",
                 MediaType.APPLICATION_OCTET_STREAM_VALUE,
                 Files.newInputStream(zipFilePath)
         );

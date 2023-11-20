@@ -4,6 +4,7 @@ import crichton.application.exceptions.CustomException;
 import crichton.application.exceptions.code.FailedErrorCode;
 import crichton.paths.DirectoryPaths;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.zeroturnaround.zip.ZipUtil;
@@ -29,7 +30,7 @@ public class StorageServiceImpl implements StorageService{
             FileOutputStream fos = new FileOutputStream(downloadSourcePath);
             fos.write(source.getBytes());
             fos.close();
-            File unzipPath = DirectoryPaths.generateUnzipPath(source.getOriginalFilename()).toFile();
+            File unzipPath = DirectoryPaths.generateUnzipPath(FilenameUtils.getBaseName(source.getOriginalFilename())).toFile();
             if (unzipPath.exists()) {
                 FileDeleteStrategy.FORCE.delete(unzipPath);
             }

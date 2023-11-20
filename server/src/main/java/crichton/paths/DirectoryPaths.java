@@ -14,8 +14,8 @@ public class DirectoryPaths {
         return UPLOAD_PATH.resolve(sourceName);
     }
 
-    public static Path generateZipPath(String sourceName) {
-        return UPLOAD_PATH.resolve(sourceName+".zip");
+    public static Path generateZipPath(String zipPath) {
+        return UPLOAD_PATH.resolve(zipPath);
     }
 
     public static Path generateUnitReportFilePath(String sourceName) {
