@@ -37,9 +37,9 @@ public class TotalInfo extends Information<HashMap<String,String>> {
             List<String> currentList = lists.get(i);
             List<String> nextList = lists.get(i + 1);
             for (int j = 0; j < Math.min(currentList.size(), nextList.size()); j++) {
-                String key = currentList.get(j);
+                String key = keyConvert(currentList.get(j));
                 String value = nextList.get(j);
-                if (!value.isBlank() && !key.isBlank()) addInfo(key,value);
+                if (!value.isBlank() && !key.isBlank() && !value.equals("Total")) addInfo(key,value);
             }
         }
     }

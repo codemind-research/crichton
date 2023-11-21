@@ -25,7 +25,7 @@ public class FileInfo extends Information<List<HashMap<String,String>>>{
             List<String> currentList = lists.get(i);
             IntStream.range(0, currentList.size())
                      .forEach(index -> {
-                         hashMap.put(column.get(index),currentList.get(index));
+                         hashMap.put(keyConvert(column.get(index)),currentList.get(index));
                      });
             addInfo(hashMap);
         }

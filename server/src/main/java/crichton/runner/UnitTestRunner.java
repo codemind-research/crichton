@@ -12,17 +12,17 @@ import java.util.Optional;
 public class UnitTestRunner extends ProcessRunner{
 
     private final String sourcePath;
-    private final String baseName;
+    private final String dirname;
     private final File reportFile;
     private final File settingFile;
 
     public UnitTestRunner(String sourcePath, Optional<MultipartFile> optionalSettings) {
         super();
         this.sourcePath = sourcePath;
-        this.baseName = FilenameUtils.getBaseName(sourcePath);
+        this.dirname = FilenameUtils.getBaseName(sourcePath);
         this.reportFile = DirectoryPaths
-                .generateUnitReportFilePath(baseName).toFile();
-        this.settingFile = DirectoryPaths.generateSettingsPath(baseName).toFile();
+                .generateUnitReportFilePath(dirname).toFile();
+        this.settingFile = DirectoryPaths.generateSettingsPath(dirname).toFile();
         optionalSettings.ifPresent(settings -> FileUtils.readMultipartFile(settings, settingFile));
         deleteReport();
     }

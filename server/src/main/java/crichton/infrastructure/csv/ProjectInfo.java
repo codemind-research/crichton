@@ -21,9 +21,15 @@ public class ProjectInfo extends Information<HashMap<String,String>>{
             List<String> currentList = lists.get(i);
             List<String> nextList = lists.get(i + 1);
             for (int j = 0; j < Math.min(currentList.size(), nextList.size()); j++) {
-                String key = currentList.get(j);
-                String value = nextList.get(j);
-                addInfo(key,value);
+                if (i == 0 && j == 0) {
+                    addInfo(keyConvert(currentList.get(j)), currentList.get(j+1));
+                    addInfo(keyConvert(nextList.get(j).trim()),nextList.get(j+1));
+                    j+=1;
+                }else {
+                    String key = keyConvert(currentList.get(j));
+                    String value = nextList.get(j);
+                    addInfo(key,value);
+                }
             }
         }
     }

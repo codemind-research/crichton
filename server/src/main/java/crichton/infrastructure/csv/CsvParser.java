@@ -44,10 +44,8 @@ public class CsvParser {
                                              .mapToObj(lines::get)
                                              .toList();
         new TotalInfo(totalLines).getInfo().forEach(projectInfo::putIfAbsent);
-
         return ReportDTO.DataResponse.builder().project(projectInfo).file(fileInfo).unit(unitInfo).build();
     }
-
 
     private int findProjectIndex(List<String> lines) {
         return findIndex(lines, RegexPatterns.PROJECT_PATTERN, INITIAL_INDEX);

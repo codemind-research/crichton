@@ -41,10 +41,10 @@ public class UnitInfo extends Information<List<HashMap<String,String>>> {
             HashMap<String, String> hashMap = new HashMap<>();
             List<String> currentList = lists.get(i);
             filename = currentList.get(0).isEmpty() ? filename: (currentList.get(0));
-            hashMap.put(column.get(0), filename);
+            hashMap.put(keyConvert(column.get(0)), filename);
             IntStream.range(1, currentList.size())
                      .forEach(index -> {
-                         hashMap.put(column.get(index), currentList.get(index));
+                         hashMap.put(keyConvert(column.get(index)), currentList.get(index));
                      });
             addInfo(hashMap);
         }

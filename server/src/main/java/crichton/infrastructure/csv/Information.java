@@ -34,4 +34,8 @@ public abstract class Information<T> {
         convert(convertList);
     }
 
+    protected String keyConvert(String key) {
+        return key.replaceAll("\\s+","").replaceAll("MC/DC","Pair");
+    }
+
 }

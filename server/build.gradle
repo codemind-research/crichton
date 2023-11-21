@@ -11,7 +11,6 @@ buildscript {
 }
 
 plugins {
-    id 'scala'
     id 'java-library'
 }
 apply plugin: 'java'
@@ -58,13 +57,6 @@ dependencies {
     implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12'
     implementation group: 'commons-io', name: 'commons-io', version: '2.5'
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14'
-}
-
-task myTask {
-    doLast {
-        // yyy 모듈의 작업을 호출
-        project(':engines').tasks.myScriptTask.execute()
-    }
 }
 
 test {
