@@ -8,6 +8,8 @@ public interface TestService {
 
     TestDTO.TestResponse doUnitTest(String sourcePath, MultipartFile settings) throws CustomException;
 
+    TestDTO.TestResponse doInjectionTest(MultipartFile binaryFile, int testDuration);
+
     String getProgress() throws CustomException;
 
 }

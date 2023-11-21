@@ -27,6 +27,14 @@ public class TestServiceImpl implements TestService{
     }
 
     @Override
+    public TestDTO.TestResponse doInjectionTest(MultipartFile binaryFile, int testDuration){
+        TestResult isInjectionTestDone = runInjectionTest(binaryFile, testDuration);
+        return TestDTO.TestResponse.builder()
+                                   .testResult(isInjectionTestDone)
+                                   .build();
+    }
+
+    @Override
     public String getProgress() throws CustomException {
         try {
             ProgressRunner progressRunner = new ProgressRunner();
@@ -47,9 +55,8 @@ public class TestServiceImpl implements TestService{
         }
     }
 
-    private TestResult runInjectionTest( ){
-        //추후 결함주입테스트 플러그인 추가
-        return  TestResult.FAILURE;
+    private TestResult runInjectionTest(MultipartFile binaryFile, int testDuration) {
+        return TestResult.FAILURE;
     }
 
 

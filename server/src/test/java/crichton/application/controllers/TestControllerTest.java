@@ -2,6 +2,7 @@ package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import crichton.application.exceptions.handler.GlobalExceptionResponse;
+import crichton.domian.dtos.ReportDTO;
 import crichton.domian.dtos.TestDTO;
 import crichton.domian.services.AccessTokenService;
 import crichton.domian.services.RefreshTokenService;
@@ -160,4 +161,40 @@ public class TestControllerTest {
                                .andExpect(MockMvcResultMatchers.status().isOk())
                                .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    @Order(6)
+    void notExistReport() throws Exception{
+        ReportDTO.DataRequest request = new ReportDTO.DataRequest("");
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/report/data")
+                                                              .contentType(MediaType.APPLICATION_JSON)
+                                                              .content(mapper.writeValueAsString(request))
+                                                              .header("Authorization", accessToken)
+                                                              .header("RefreshToken", refreshToken))
+                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                               .andDo(print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
+
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("F004", response.getCode());
+    }
+
+    @Test
+    @Order(7)
+    void transformCsvData() throws Exception{
+        ReportDTO.DataRequest request = new ReportDTO.DataRequest(sourcePath);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/report/data")
+                                              .contentType(MediaType.APPLICATION_JSON)
+                                              .content(mapper.writeValueAsString(request))
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken))
+               .andExpect(MockMvcResultMatchers.status().isOk())
+               .andDo(print());
+
+    }
+
+
 }

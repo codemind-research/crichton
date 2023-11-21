@@ -43,9 +43,7 @@ public class CsvParser {
                                              .filter(totalIndex::contains)
                                              .mapToObj(lines::get)
                                              .toList();
-
-        projectInfo.putAll(new TotalInfo(totalLines).
-                getInfo());
+        new TotalInfo(totalLines).getInfo().forEach(projectInfo::putIfAbsent);
 
         return ReportDTO.DataResponse.builder().project(projectInfo).file(fileInfo).unit(unitInfo).build();
     }

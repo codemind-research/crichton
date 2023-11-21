@@ -14,6 +14,15 @@ public class TestDTO {
         private String sourcePath;
     }
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class InjectionTestRequest {
+        @Schema(description = "결함 주입 테스트에 들어가는 지속시간", required = true)
+        private int testDuration;
+    }
+
+
     @Getter
     @Builder
     @AllArgsConstructor

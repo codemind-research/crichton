@@ -9,7 +9,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import java.io.File;
 import java.util.Optional;
 
-public class UnitTestRunner extends ProcessRunner implements Runner{
+public class UnitTestRunner extends ProcessRunner{
 
     private final String sourcePath;
     private final String baseName;
