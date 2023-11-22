@@ -8,7 +8,7 @@ const SelectComp = (props: any) => {
   const handleCheckboxChange = (event: any) => {
     const { id, checked } = event.target;
 
-    props.testTypeChange(id, checked.toString());
+    props.testTypeChange(id, checked);
   };
   const handleInputChange = (event: any) => {
     props.durationChange(event.target.value);

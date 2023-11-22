@@ -1,49 +1,43 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Crichton</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
-</head>
+    <link rel="stylesheet" type="text/css" />
+  </head>
 
-<body>
+  <body id="crichton_body" style="width: 100%">
     <h1>Crichton</h1>
 
     <section class="upload-section">
-        <h3>Target source:</h3>
-        <input value="demo.zip">
-        <button>Upload</button>
+      <h3>Target source:</h3>
+      <input value="demo.zip" />
+      <button>Upload</button>
     </section>
 
     <section class="test-options-section">
-        <label>
-            <input type="checkbox" id="whitebox">
-            Whitebox Unit Test
-        </label>
-        <label>
-            <input type="checkbox" id="injection">
-            Injection Test
-        </label>
-        <div>
-            <li>Test duration: </li>
-            <input type="number" id="quantity" inputmode="numeric" name="quantity" min="1" value="60">
-            <span>sec</span>
-        </div>
+      <label>
+        <input type="checkbox" id="whitebox" />
+        Whitebox Unit Test
+      </label>
+      <label>
+        <input type="checkbox" id="injection" />
+        Injection Test
+      </label>
+      <div>
+        <li>Test duration:</li>
+        <input type="number" id="quantity" inputmode="numeric" name="quantity" min="1" value="60" />
+        <span>sec</span>
+      </div>
     </section>
 
-    <hr class="custom-divider">
+    <hr class="custom-divider" />
 
     <section class="action-buttons-section">
-        <button>Run</button>
-        <button disabled="true">Download Report</button>
+      <button>Run</button>
+      <button disabled="true">Download Report</button>
     </section>
 
     <h5>Log</h5>
-    <section class="log-messages-section">
-        <p>[2023-08-24 16:46:00] Uploaded: demo.zip </p>
-        <p>[2023-08-24 16:46:02] Start whitebox test... </p>
-    </section>
-
-</body>
-
+    <section class="log-messages-section"></section>
+  </body>
 </html>

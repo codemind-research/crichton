@@ -1,22 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from "./SelectComp";
 import { Status } from "../../../util/Constants";
+import ResultReport from "../../../util/Report/ResultReport";
 import "./Test.scss";
 
 const TestComp = (props: any) => {
-  const API: { list: any; token: string; refresh: string } = props.api;
-  const canRunning: boolean = props.status === Status.Created || props.status === Status.Tested;
-  const canReporting: boolean = props.status === Status.Tested;
-  const uploadMarginStyle: Object = {
-    marginLeft: "80px",
-  };
-  const [testType, setTestType] = useState<{ whitebox: string; injection: string }>({
-    whitebox: "false",
-    injection: "false",
+  const token = window.sessionStorage.getItem("accessToken");
+  const status = props.status;
+  const projectPath = window.sessionStorage.getItem("projectPath");
+  const [testType, setTestType] = useState<{ whitebox: boolean; injection: boolean }>({
+    whitebox: false,
+    injection: false,
   });
   const [injectionDuration, setInjectionDuration] = useState<number>(60);
 
-  const handleTestTypeChange = (id: string, checked: string) => {
+  const canRunning: boolean =
+    (status === Status.Created || status === Status.Tested) && (testType.whitebox || testType.injection);
+  const canReporting: boolean = status === Status.Tested;
+  const uploadMarginStyle: Object = {
+    marginLeft: "80px",
+  };
+  const handleTestTypeChange = (id: string, checked: boolean) => {
     setTestType((prevState) => ({
       ...prevState,
       [id]: checked,
@@ -26,23 +30,40 @@ const TestComp = (props: any) => {
     setInjectionDuration(duration);
   };
 
-  const handleTestRunClick = async () => {
-    const data = {
-      project: props.projectPath,
-      whitebox: testType.whitebox,
-      injection: testType.injection,
-      duration: injectionDuration,
-    };
+  const handleTestRunClick = async (): Promise<void> => {
     props.setStatus(Status.Testing);
-    const response = await API.list.runTest(data, API.token);
+    if (testType.whitebox) await runWhiteBoxTest();
+    if (testType.injection) await runInjectionTest();
     props.setStatus(Status.Tested);
-    console.log(response); // 끝났을 때 알림
   };
 
-  const handleDownloadClick = async () => {
-    const data = { project: props.projectPath };
-    const response = await API.list.getReportData(data, API.token);
-    console.log(response); // 레포트 정보
+  const runWhiteBoxTest = async (): Promise<void> => {
+    props.setStatus(Status.Testing);
+    const data = {
+      sourcePath: projectPath,
+    };
+    const response = await props.api.runWhiteboxTest(data, token);
+    console.log(response);
+  };
+
+  const runInjectionTest = async (): Promise<void> => {
+    const data = {
+      sourcePath: projectPath,
+      testDuration: injectionDuration,
+    };
+    const response = await props.api.runWhiteBoxTest(data, token);
+    console.log(response);
+  };
+
+  const handleDownloadClick = async (): Promise<void> => {
+    const data = {
+      sourcePath: projectPath,
+    };
+    const response = await props.api.getReportData(data, token);
+
+    const htmlCode: string = ResultReport(response.result);
+    const newTab: Window | null = window.open();
+    if (newTab != null) newTab.document.body.innerHTML = htmlCode;
   };
 
   return (
@@ -55,10 +76,10 @@ const TestComp = (props: any) => {
       />
       <hr />
       <div className="test_option_button">
-        <button onClick={handleTestRunClick} disabled={canRunning}>
+        <button onClick={handleTestRunClick} disabled={!canRunning}>
           Run
         </button>
-        <button onClick={handleDownloadClick} style={uploadMarginStyle} disabled={canReporting}>
+        <button onClick={handleDownloadClick} style={uploadMarginStyle} disabled={!canReporting}>
           Download Report
         </button>
       </div>

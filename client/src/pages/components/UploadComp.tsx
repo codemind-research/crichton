@@ -3,8 +3,9 @@ import { Status } from "../../util/Constants";
 import "./Component.scss";
 
 const UploadComp = (props: any) => {
-  const API: { list: any; token: string; refresh: string } = props.api;
-  const isTesting: boolean = props.status === Status.Testing;
+  const token = window.sessionStorage.getItem("accessToken");
+  const status = Number(window.sessionStorage.getItem("projectStatus"));
+  const isTesting: boolean = status === Status.Testing;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileList, setFileList] = useState<Array<File>>();
 
@@ -12,24 +13,24 @@ const UploadComp = (props: any) => {
     setFileList(event.target.files);
   };
 
-  const handleSelectFileClick = () => {
+  const handleSelectFileClick = (): void => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  const handleUploadClick = async () => {
+  const handleUploadClick = async (): Promise<void> => {
     const zipFile = await makeZipFile();
     if (zipFile === undefined) return;
     const form = new FormData();
     form.append("file", zipFile, "crichton_project_temp.zip");
 
-    const response = await API.list.uploadFile(form, API.token);
+    const response = await props.api.uploadFile(form, token);
+    props.setProjectPath(response.result.unzipPath);
   };
 
-  const makeZipFile = async () => {
+  const makeZipFile = async (): Promise<void> => {
     const zip = require("jszip")();
-    // const save = require("save-file");
     if (fileList) {
       for (let file = 0; file < fileList.length; file++) {
         zip.file(fileList[file].name, fileList[file]);
@@ -38,7 +39,6 @@ const UploadComp = (props: any) => {
       const zipped = await zip.generateAsync({
         type: "blob",
       });
-      // await save(zipped, "crichton_project_temp.zip");
       return zipped;
     } else return undefined;
   };
