@@ -1,8 +1,8 @@
-package crichton.domian.services;
+package crichton.domain.services;
 
 import crichton.application.exceptions.CustomException;
 import crichton.application.exceptions.code.FailedErrorCode;
-import crichton.domian.dtos.ReportDTO;
+import crichton.domain.dtos.ReportDTO;
 import crichton.infrastructure.csv.CsvParser;
 import crichton.paths.DirectoryPaths;
 import crichton.util.FileUtils;

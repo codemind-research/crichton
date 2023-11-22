@@ -1,4 +1,4 @@
-package crichton.domian.services;
+package crichton.domain.services;
 
 import crichton.application.exceptions.CustomException;
 import org.springframework.web.multipart.MultipartFile;

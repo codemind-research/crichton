@@ -1,8 +1,8 @@
 package crichton.application.controllers;
 
-import crichton.domian.dtos.AuthDTO;
-import crichton.domian.services.AccessTokenService;
-import crichton.domian.services.RefreshTokenService;
+import crichton.domain.dtos.AuthDTO;
+import crichton.domain.services.AccessTokenService;
+import crichton.domain.services.RefreshTokenService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

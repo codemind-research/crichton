@@ -1,8 +1,8 @@
 package crichton.application.controllers;
 
 import crichton.application.exceptions.CustomException;
-import crichton.domian.dtos.TestDTO;
-import crichton.domian.services.TestService;
+import crichton.domain.dtos.TestDTO;
+import crichton.domain.services.TestService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

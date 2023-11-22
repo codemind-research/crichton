@@ -1,6 +1,6 @@
-package crichton.domian.services;
+package crichton.domain.services;
 
-import crichton.domian.dtos.RefreshTokenDTO;
+import crichton.domain.dtos.RefreshTokenDTO;
 import crichton.security.TokenInterceptor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

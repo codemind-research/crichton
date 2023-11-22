@@ -1,7 +1,7 @@
 package crichton.configuration;
 
-import crichton.domian.services.AccessTokenService;
-import crichton.domian.services.RefreshTokenService;
+import crichton.domain.services.AccessTokenService;
+import crichton.domain.services.RefreshTokenService;
 import crichton.security.TokenInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

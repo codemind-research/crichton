@@ -1,8 +1,8 @@
 package crichton.application.controllers;
 
 import crichton.application.exceptions.CustomException;
-import crichton.domian.dtos.StorageDTO;
-import crichton.domian.services.StorageService;
+import crichton.domain.dtos.StorageDTO;
+import crichton.domain.services.StorageService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

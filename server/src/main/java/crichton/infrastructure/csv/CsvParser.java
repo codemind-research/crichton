@@ -1,6 +1,6 @@
 package crichton.infrastructure.csv;
 
-import crichton.domian.dtos.ReportDTO;
+import crichton.domain.dtos.ReportDTO;
 import crichton.util.RegexPatterns;
 import org.springframework.stereotype.Component;
 

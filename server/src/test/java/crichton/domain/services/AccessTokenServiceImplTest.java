@@ -1,6 +1,6 @@
-package crichton.domian.services;
+package crichton.domain.services;
 
-import crichton.domian.dtos.PayloadDTO;
+import crichton.domain.dtos.PayloadDTO;
 import crichton.security.TokenInterceptor;
 import crichton.util.ObjectMapperUtils;
 import org.junit.jupiter.api.Test;

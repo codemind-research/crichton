@@ -59,9 +59,20 @@ dependencies {
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14'
 }
 
+//JUnitTest
 test {
     useJUnitPlatform()
+    filter {
+        includeTestsMatching 'crichton.application.controllers.AuthControllerTest'
+        includeTestsMatching 'crichton.application.controllers.StorageControllerTest'
+        includeTestsMatching 'crichton.application.controllers.TestControllerTest.doUnitTestBlankException'
+        includeTestsMatching 'crichton.application.controllers.TestControllerTest.doUnitTestNotFileExistException'
+        includeTestsMatching 'crichton.application.controllers.TestControllerTest.notExistReport'
+        includeTestsMatching 'crichton.application.controllers.TokenInterceptorTest'
+        includeTestsMatching 'crichton.domain.services.*'
+    }
     testLogging {
         events "passed", "skipped", "failed" // 테스트 결과 출력 설정
     }
+
 }

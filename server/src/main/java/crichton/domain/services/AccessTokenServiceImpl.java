@@ -1,7 +1,7 @@
-package crichton.domian.services;
+package crichton.domain.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import crichton.domian.dtos.PayloadDTO;
+import crichton.domain.dtos.PayloadDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;

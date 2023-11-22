@@ -1,8 +1,8 @@
-package crichton.domian.services;
+package crichton.domain.services;
 
 import crichton.application.exceptions.CustomException;
 import crichton.application.exceptions.code.FailedErrorCode;
-import crichton.domian.dtos.TestDTO;
+import crichton.domain.dtos.TestDTO;
 import crichton.enumeration.TestResult;
 import crichton.runner.ProgressRunner;
 import crichton.runner.RunResult;

@@ -2,10 +2,10 @@ package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import crichton.application.exceptions.handler.GlobalExceptionResponse;
-import crichton.domian.dtos.ReportDTO;
-import crichton.domian.dtos.TestDTO;
-import crichton.domian.services.AccessTokenService;
-import crichton.domian.services.RefreshTokenService;
+import crichton.domain.dtos.ReportDTO;
+import crichton.domain.dtos.TestDTO;
+import crichton.domain.services.AccessTokenService;
+import crichton.domain.services.RefreshTokenService;
 import crichton.enumeration.TestResult;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
