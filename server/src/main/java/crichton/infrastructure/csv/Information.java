@@ -25,6 +25,7 @@ public abstract class Information<T> {
         List<List<String>> convertList =
                 lines.stream()
                      .filter(StringUtils::isNotBlank)
+                     .map(this::removeSpacingAndMCDC)
                      .map(pl -> Arrays.stream(pl.split(","))
                                       .toList()
                                       .stream()
@@ -34,8 +35,8 @@ public abstract class Information<T> {
         convert(convertList);
     }
 
-    protected String keyConvert(String key) {
-        return key.replaceAll("\\s+","").replaceAll("MC/DC","Pair");
+    protected String removeSpacingAndMCDC(String value) {
+        return value.replaceAll("\\s+","").replaceAll("MC/DC","Pair");
     }
 
 }
