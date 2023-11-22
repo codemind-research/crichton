@@ -10,7 +10,6 @@ const LogComp = (props: any) => {
 
   useEffect(() => {
     const status = props.status;
-    console.log("!!!!!", status);
     switch (status) {
       case Status.Created:
         setLogData([]);
@@ -45,7 +44,7 @@ const LogComp = (props: any) => {
 
   const setScrollLocation = async (): Promise<void> => {
     if (logDivArea.current) {
-      logDivArea.current.scrollTop = logDivArea.current.scrollHeight + 1000;
+      logDivArea.current.scrollTop = logDivArea.current.scrollHeight;
     }
   };
 

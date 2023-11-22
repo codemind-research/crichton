@@ -60,8 +60,15 @@ const TestComp = (props: any) => {
       sourcePath: projectPath,
     };
     const response = await props.api.getReportData(data, token);
+    showCrichtonHtmlReport(response.result);
+  };
 
-    const htmlCode: string = ResultReport(response.result);
+  const showCrichtonHtmlReport = (reportData: object): void => {
+    const data = {
+      reportData: reportData,
+      testType: testType,
+    };
+    const htmlCode: string = ResultReport(data);
     const newTab: Window | null = window.open();
     if (newTab != null) newTab.document.body.innerHTML = htmlCode;
   };
