@@ -30,6 +30,10 @@ public class StorageServiceImpl implements StorageService{
             }
             unzipPath.mkdir();
             ZipUtil.unpack(downloadSourcePath, unzipPath);
+            File settingFile = DirectoryPaths.generateSettingsPath(FilenameUtils.getBaseName(source.getOriginalFilename())).toFile();
+            if (settingFile.exists()){
+                settingFile.delete();
+            }
             return unzipPath;
         }catch (Exception e) {
             throw new CustomException(FailedErrorCode.UPLOAD_FAILED);

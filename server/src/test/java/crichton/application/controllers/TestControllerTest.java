@@ -81,9 +81,10 @@ public class TestControllerTest {
     void doUnitTestBlankException() throws Exception {
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath("");
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
-                                              .contentType(MediaType.APPLICATION_JSON)
-                                              .content(mapper.writeValueAsString(request))
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
+
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+                                              .file(data)
                                               .header("Authorization", accessToken)
                                               .header("RefreshToken", refreshToken))
                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
@@ -102,9 +103,10 @@ public class TestControllerTest {
     void doUnitTestNotFileExistException() throws Exception {
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath("%2ka1oll");
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
-                                                              .contentType(MediaType.APPLICATION_JSON)
-                                                              .content(mapper.writeValueAsString(request))
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
+
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+                                                              .file(data)
                                                               .header("Authorization", accessToken)
                                                               .header("RefreshToken", refreshToken))
                                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
@@ -126,9 +128,9 @@ public class TestControllerTest {
         }
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath(sourcePath);
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
-                                              .contentType(MediaType.APPLICATION_JSON)
-                                              .content(mapper.writeValueAsString(request))
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+                                              .file(data)
                                               .header("Authorization", accessToken)
                                               .header("RefreshToken", refreshToken))
                .andExpect(MockMvcResultMatchers.status().isOk())
@@ -147,12 +149,13 @@ public class TestControllerTest {
         if (checkCoyoteCli()){
             return;
         }
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
-        request.setSourcePath(sourcePath);
         String jsonResourcePath = "projectSetting_default.json";
         MockMultipartFile multipartFile = convert(jsonResourcePath);
-
+        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        request.setSourcePath(sourcePath);
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
         String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+                                                              .file(data)
                                                               .file(multipartFile)
                                                               .contentType(MediaType.APPLICATION_JSON)
                                                               .content(mapper.writeValueAsString(request))
