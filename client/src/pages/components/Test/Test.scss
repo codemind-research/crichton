@@ -20,7 +20,7 @@ hr {
   label {
     margin-left: 5px;
   }
-  .injection_checkbox_option {
+  .checkbox_option {
     margin-top: 20px;
     .option {
       margin-top: 15px;
@@ -34,6 +34,34 @@ hr {
       }
       span {
         margin-left: 5px;
+      }
+
+      .input_with_button {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+
+        input {
+          position: absolute;
+          display: none;
+        }
+        span {
+          width: 190px;
+          height: 25px;
+          padding: 0px 5px;
+          border: 1px solid gray;
+          font-size: 15px;
+          line-height: 1.5;
+          white-space: nowrap;
+        }
+        button {
+          position: absolute;
+          width: 25px;
+          height: 27px;
+          top: 0;
+          right: 0;
+        }
       }
     }
   }

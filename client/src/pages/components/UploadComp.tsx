@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
-import { Status } from "../../util/Constants";
+import { Status } from "../../util/TypeDef";
 import "./Component.scss";
 
 const UploadComp = (props: any) => {
-  const token = window.sessionStorage.getItem("accessToken");
-  const status = Number(window.sessionStorage.getItem("projectStatus"));
+  const token = window.localStorage.getItem("accessToken");
+  const status = Number(window.localStorage.getItem("projectStatus"));
   const isTesting: boolean = status === Status.Testing;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileList, setFileList] = useState<Array<File>>();

@@ -11,11 +11,11 @@ export default {
   },
   // whitebox test 진행
   runWhiteboxTest: async function (data, token) {
-    return await APIHelper.POST_DATA_TOKEN("/api/v1/crichton/test/unit/run", data, token);
+    return await APIHelper.POST_DATA_RESOURCE("/api/v1/crichton/test/unit/run", data, token);
   },
   // 결함주입 test 진행
   runInjectionTest: async function (data, token) {
-    return await APIHelper.POST_DATA_TOKEN("/api/v1/crichton/test/injection/run", data, token);
+    return await APIHelper.POST_DATA_RESOURCE("/api/v1/crichton/test/injection/run", data, token);
   },
   // test progress(log) 가져오기
   getTestProgress: async function (token) {

@@ -5,6 +5,16 @@ export enum Status {
   Tested,
 }
 
+interface TestTypeInfo {
+  selected: boolean;
+  isTesting: boolean;
+  result: boolean | undefined;
+}
+
+export interface TestTypes {
+  [key: string]: TestTypeInfo;
+}
+
 export interface WhiteBoxProject {
   Date: string;
   PrebuildTime: string;

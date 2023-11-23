@@ -51,7 +51,7 @@ export default {
     let response = undefined;
     let result = undefined;
 
-    while (response === undefined) {
+    for (let index = 0; index < 5 && response === undefined; index++) {
       try {
         switch (httpMethod) {
           case "POST":
@@ -66,11 +66,12 @@ export default {
         }
       } catch (error) {
         console.log(error.response);
-        if (url.includes("token") || error.response.data.code.startsWith("F")) response = error.response;
+        console.log(url);
+        if (error.response.status < 500 || url.includes("token")) response = error.response;
         else
           switch (error.response.data.code) {
             case "T001":
-              const refreshToken = window.sessionStorage.getItem("refreshToken");
+              const refreshToken = window.localStorage.getItem("refreshToken");
               config.headers.RefreshToken = this.decryptToken(refreshToken);
               break;
             case "T002":

@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { Status } from "../../util/Constants";
+import { Status } from "../../util/TypeDef";
 import "./Component.scss";
 
 const LogComp = (props: any) => {
-  const token = window.sessionStorage.getItem("accessToken");
+  const token = window.localStorage.getItem("accessToken");
   const logDivArea = useRef<HTMLDivElement>(null);
   const [logInterval, setLogInterval] = useState<NodeJS.Timer>();
   const [logData, setLogData] = useState<Array<string>>([]);

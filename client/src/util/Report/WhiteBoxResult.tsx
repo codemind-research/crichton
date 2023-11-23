@@ -1,4 +1,4 @@
-import { WhiteBoxProject, WhiteBoxFile, WhiteBoxFunc } from "../Constants";
+import { WhiteBoxProject, WhiteBoxFile, WhiteBoxFunc } from "../TypeDef";
 
 export default function WhiteBoxResult(data: any) {
   const project: WhiteBoxProject = data.project;

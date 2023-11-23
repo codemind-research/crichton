@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Upload from "./components/UploadComp";
 import Test from "./components/Test/TestComp";
 import Log from "./components/LogComp";
-import { Status } from "../util/Constants";
+import { Status } from "../util/TypeDef";
 import "./Page.scss";
 
 export default function MainPage() {
@@ -16,16 +16,16 @@ export default function MainPage() {
     getToken();
   }, []);
   useEffect(() => {
-    window.sessionStorage.setItem("projectPath", projectPath);
-    window.sessionStorage.setItem("projectStatus", projectStatus.valueOf().toString());
+    window.localStorage.setItem("projectPath", projectPath);
+    window.localStorage.setItem("projectStatus", projectStatus.valueOf().toString());
   }, [projectPath, projectStatus]);
 
   const getToken = async (): Promise<void> => {
     await aesUtil.generateCryptoKey();
     const response = await apiList.getToken();
     if (response.successful) {
-      window.sessionStorage.setItem("accessToken", response.result.accessToken);
-      window.sessionStorage.setItem("refreshToken", response.result.refreshToken);
+      window.localStorage.setItem("accessToken", response.result.accessToken);
+      window.localStorage.setItem("refreshToken", response.result.refreshToken);
     } else {
       alert("Server is not running");
     }
