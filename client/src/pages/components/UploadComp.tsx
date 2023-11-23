@@ -4,8 +4,7 @@ import "./Component.scss";
 
 const UploadComp = (props: any) => {
   const token = window.localStorage.getItem("accessToken");
-  const status = Number(window.localStorage.getItem("projectStatus"));
-  const isTesting: boolean = status === Status.Testing;
+  const isTesting: boolean = props.status === Status.Testing;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileList, setFileList] = useState<Array<File>>();
 

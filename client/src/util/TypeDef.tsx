@@ -5,14 +5,11 @@ export enum Status {
   Tested,
 }
 
-interface TestTypeInfo {
+export interface TestTypeInfo {
+  name: string;
   selected: boolean;
-  isTesting: boolean;
-  result: boolean | undefined;
-}
-
-export interface TestTypes {
-  [key: string]: TestTypeInfo;
+  isTesting: boolean | undefined;
+  isSuccess: boolean | undefined;
 }
 
 export interface WhiteBoxProject {

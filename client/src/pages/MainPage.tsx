@@ -47,7 +47,7 @@ export default function MainPage() {
         <h1>Crichton</h1>
       </header>
       <div className="main_content">
-        <Upload api={apiList} setProjectPath={handleProjectPathChange} />
+        <Upload api={apiList} status={projectStatus} setProjectPath={handleProjectPathChange} />
         <Test api={apiList} status={projectStatus} setStatus={handleStatusChange} />
         <Log api={apiList} status={projectStatus} />
       </div>

@@ -65,8 +65,6 @@ export default {
             break;
         }
       } catch (error) {
-        console.log(error.response);
-        console.log(url);
         if (error.response.status < 500 || url.includes("token")) response = error.response;
         else
           switch (error.response.data.code) {

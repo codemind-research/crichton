@@ -21,8 +21,8 @@ export default function ResultReport(props: any) {
   };
 
   const getBodyCode = (): string => {
-    const whiteBox = testType.whitebox ? getBodyData("whiteBox") : "";
-    const injection = testType.injection ? getBodyData("injection") : "";
+    const whiteBox = testType.whitebox.isSuccess ? getBodyData("whiteBox") : "";
+    const injection = testType.injection.isSuccess ? getBodyData("injection") : "";
 
     const dividingLine = testType.whitebox && testType.injection ? `<p style="page-break-before: always"></p>` : "";
     return `${getCover()}

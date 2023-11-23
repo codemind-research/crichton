@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Select from "./SelectComp";
-import { Status, TestTypes } from "../../../util/TypeDef";
+import { Status, TestTypeInfo } from "../../../util/TypeDef";
 import ResultReport from "../../../util/Report/ResultReport";
 import "./Test.scss";
 
@@ -9,27 +9,40 @@ const TestComp = (props: any) => {
   const status = props.status;
   const projectPath = window.localStorage.getItem("projectPath");
 
-  const [testType, setTestType] = useState<TestTypes>({
-    whitebox: { selected: false, isTesting: false, result: undefined },
-    injection: { selected: false, isTesting: false, result: undefined },
+  const [testTypes, setTestTypes] = useState<{ whitebox: TestTypeInfo; injection: TestTypeInfo }>({
+    whitebox: { name: "whitebox", selected: false, isTesting: undefined, isSuccess: undefined },
+    injection: { name: "injection", selected: false, isTesting: undefined, isSuccess: undefined },
   });
   const [whiteBoxSettingFile, setWhiteBoxSettingFile] = useState<Blob>();
   const [injectionDuration, setInjectionDuration] = useState<number>(60);
 
   const canRunning: boolean =
     (status === Status.Created || status === Status.Tested) &&
-    (testType.whitebox.selected || testType.injection.selected);
+    (testTypes.whitebox.selected || testTypes.injection.selected);
   const canReporting: boolean = status === Status.Tested;
+
   const uploadMarginStyle: Object = {
     marginLeft: "80px",
   };
-  const handleTestTypeChange = (type: string, checked: boolean): void => {
-    setTestType((prevTestTypes) => ({
-      ...prevTestTypes,
-      [type]: { ...prevTestTypes[type], selected: checked },
-    }));
-    console.log(testType);
+
+  const getTestType = (typeName: string): TestTypeInfo | undefined => {
+    switch (typeName) {
+      case testTypes.whitebox.name:
+        return testTypes.whitebox;
+      case testTypes.injection.name:
+        return testTypes.injection;
+      default:
+        return undefined;
+    }
   };
+
+  const handleTypeSelectedChange = (typeName: string, checked: boolean): void => {
+    setTestTypes((prevTypes) => ({
+      ...prevTypes,
+      [typeName]: { ...getTestType(typeName), selected: checked },
+    }));
+  };
+
   const handleSettingFileSelect = async (settingFile: File): Promise<void> => {
     const reader = new FileReader();
 
@@ -46,9 +59,28 @@ const TestComp = (props: any) => {
 
   const handleTestRunClick = async (): Promise<void> => {
     props.setStatus(Status.Testing);
-    if (testType.whitebox.selected) await runWhiteBoxTest();
-    if (testType.injection.selected) await runInjectionTest();
+    if (testTypes.whitebox.selected) await runWhiteBoxTest();
+    if (testTypes.injection.selected) await runInjectionTest();
     props.setStatus(Status.Tested);
+  };
+
+  const handleTypeStatusChange = (
+    testType: TestTypeInfo,
+    isTesting: boolean | undefined,
+    isSuccess: boolean | undefined
+  ): void => {
+    setTestTypes((prevTypes) => ({
+      ...prevTypes,
+      [testType.name]: { ...testType, isTesting: isTesting, isSuccess: isSuccess },
+    }));
+  };
+
+  const updateTestResultToType = (type: TestTypeInfo, result: string): void => {
+    console.log(result);
+    let isSuccess;
+    if (result === "SUCCESS") isSuccess = true;
+    else isSuccess = false;
+    handleTypeStatusChange(type, false, isSuccess);
   };
 
   const runWhiteBoxTest = async (): Promise<void> => {
@@ -60,9 +92,9 @@ const TestComp = (props: any) => {
 
     if (whiteBoxSettingFile != undefined) formdata.append("file", whiteBoxSettingFile);
 
-    props.setStatus(Status.Testing);
+    handleTypeStatusChange(testTypes.whitebox, true, undefined);
     const response = await props.api.runWhiteboxTest(formdata, token);
-    console.log(response);
+    updateTestResultToType(testTypes.whitebox, response.result.testResult);
   };
 
   const runInjectionTest = async (): Promise<void> => {
@@ -77,7 +109,7 @@ const TestComp = (props: any) => {
     formdata.append("data", jsonBlob);
 
     const response = await props.api.runInjectionTest(formdata, token);
-    console.log(response);
+    updateTestResultToType(testTypes.injection, response.result.testResult);
   };
 
   const handleDownloadClick = async (): Promise<void> => {
@@ -91,7 +123,7 @@ const TestComp = (props: any) => {
   const showCrichtonHtmlReport = (reportData: object): void => {
     const data = {
       reportData: reportData,
-      testType: testType,
+      testType: testTypes,
     };
     const htmlCode: string = ResultReport(data);
     const newTab: Window | null = window.open();
@@ -101,9 +133,9 @@ const TestComp = (props: any) => {
   return (
     <div className="running_test_component">
       <Select
-        testType={testType}
+        testType={testTypes}
         duration={injectionDuration}
-        testTypeChange={handleTestTypeChange}
+        testTypeChange={handleTypeSelectedChange}
         settingFileSelect={handleSettingFileSelect}
         durationChange={handleDurationChange}
       />
