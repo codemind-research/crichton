@@ -26,7 +26,6 @@ public class UnitInfo extends Information<List<HashMap<String,String>>> {
         List<List<String>> convertList =
                 lines.stream()
                      .filter(StringUtils::isNotBlank)
-                     .map(this::removeSpacingAndMCDC)
                      .map(pl -> Arrays.stream(pl.split(","))
                                       .toList())
                      .filter(pl->!pl.isEmpty())
@@ -45,7 +44,7 @@ public class UnitInfo extends Information<List<HashMap<String,String>>> {
             hashMap.put(column.get(0), filename);
             IntStream.range(1, currentList.size())
                      .forEach(index -> {
-                         hashMap.put(column.get(index), currentList.get(index));
+                         hashMap.put(removeSpacingAndMCDC(column.get(index)), currentList.get(index));
                      });
             addInfo(hashMap);
         }

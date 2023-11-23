@@ -21,6 +21,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
@@ -43,6 +46,7 @@ public class TestControllerTest {
     @Autowired
     private AccessTokenService accessTokenService;
 
+
     private String sourcePath;
     private static String accessToken;
     private static String refreshToken;
@@ -62,6 +66,12 @@ public class TestControllerTest {
 
         // MockMultipartFile 생성
         return new MockMultipartFile("file", resource.getFilename(), "application/json", content);
+    }
+
+    private static boolean checkCoyoteCli() throws IOException {
+        String symbolicLink = "/usr/bin/coyoteCli";
+        Path path = FileSystems.getDefault().getPath(symbolicLink);
+        return !Files.isSymbolicLink(path);
     }
 
 
@@ -111,6 +121,9 @@ public class TestControllerTest {
     @Test
     @Order(3)
     void doUnitTest() throws Exception {
+        if (checkCoyoteCli()){
+            return;
+        }
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath(sourcePath);
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
@@ -131,6 +144,9 @@ public class TestControllerTest {
     @Test
     @Order(4)
     void doUnitTestAndProjectSetting() throws Exception {
+        if (checkCoyoteCli()){
+            return;
+        }
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath(sourcePath);
         String jsonResourcePath = "projectSetting_default.json";
@@ -155,6 +171,9 @@ public class TestControllerTest {
     @Test
     @Order(5)
     void getProgress() throws Exception {
+        if (checkCoyoteCli()){
+            return;
+        }
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
                                               .header("Authorization", accessToken)
                                               .header("RefreshToken", refreshToken))
@@ -185,6 +204,9 @@ public class TestControllerTest {
     @Test
     @Order(7)
     void transformCsvData() throws Exception{
+        if (checkCoyoteCli()){
+            return;
+        }
         ReportDTO.DataRequest request = new ReportDTO.DataRequest(sourcePath);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/report/data")
                                               .contentType(MediaType.APPLICATION_JSON)

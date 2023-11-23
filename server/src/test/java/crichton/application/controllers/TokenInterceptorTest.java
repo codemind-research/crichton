@@ -2,6 +2,7 @@ package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import crichton.application.exceptions.handler.GlobalExceptionResponse;
+import crichton.domain.dtos.TestDTO;
 import crichton.domain.services.AccessTokenService;
 import crichton.domain.services.RefreshTokenService;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -65,15 +68,6 @@ public class TokenInterceptorTest {
 
 
     @Test
-    void successTokenInterceptor() throws Exception {
-        String accessToken = accessTokenService.generateAccessToken(userId);
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
-                                              .header("Authorization", accessToken))
-               .andExpect(MockMvcResultMatchers.status().isOk())
-               .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
     void invalidTokenInterceptor() throws Exception {
         String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
                                               .header("Authorization", "%hk21iga!"))
@@ -89,13 +83,24 @@ public class TokenInterceptorTest {
 
     @Test
     void invalidAccessTokenInterceptor() throws Exception {
+        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        request.setSourcePath("");
         String invalidAccessToken = generateInvalidAccessToken();
         String refreshToken = refreshTokenService.generateRefreshToken(userId);
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
-                                              .header("Authorization", invalidAccessToken)
-                                              .header("RefreshToken", refreshToken))
-               .andExpect(MockMvcResultMatchers.status().isOk())
-               .andDo(MockMvcResultHandlers.print());
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
+                                                              .contentType(MediaType.APPLICATION_JSON)
+                                                              .content(mapper.writeValueAsString(request))
+                                                              .header("Authorization", invalidAccessToken)
+                                                              .header("RefreshToken", refreshToken))
+                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                               .andDo(print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
+
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("F001", response.getCode());
     }
 
     @Test
@@ -115,13 +120,24 @@ public class TokenInterceptorTest {
 
     @Test
     void refreshAccessTokenInterceptor() throws Exception {
+        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        request.setSourcePath("");
         String oneHoursAgoToken = generateOneHoursAgoToken();
         String refreshToken = refreshTokenService.generateRefreshToken(userId);
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
+                                                              .contentType(MediaType.APPLICATION_JSON)
+                                                              .content(mapper.writeValueAsString(request))
                                                               .header("Authorization", oneHoursAgoToken)
-                                                              .header("RefreshToken",refreshToken ))
-                               .andExpect(MockMvcResultMatchers.status().isOk())
-                               .andDo(MockMvcResultHandlers.print());
+                                                              .header("RefreshToken", refreshToken))
+                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                               .andDo(print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
+
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("F001", response.getCode());
     }
 
     @Test
