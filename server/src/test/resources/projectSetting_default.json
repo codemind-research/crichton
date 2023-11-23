@@ -1,0 +1,31 @@
+{
+  "includePaths": [
+    "${src_root}"
+  ],
+  "globalIncludes": [],
+  "macros": [],
+  "compileOptions": {
+    "all": [],
+    "prebuild": [],
+    "build": [],
+    "link": []
+  },
+  "autounitpattern": "preset:all-select",
+  "keepList": [],
+  "stubList": [],
+  "converterSettings": [],
+  "converterParam": "{\n  \"pre\": {},\n  \"post\": {}\n}",
+  "customHeader": "//Click here to write text.",
+  "unpackPath": null,
+  "upload": false,
+  "arrayLength": 2,
+  "maxArrayLength": 10,
+  "objLimitLength": 100,
+  "objLimitArrayLength": 2,
+  "alwaysEmitNullflag": false,
+  "calcPairCoverageFlag": true,
+  "emitConst": 0,
+  "testSettings": 1,
+  "parallelSetting": 1,
+  "assertSpec": []
+}
