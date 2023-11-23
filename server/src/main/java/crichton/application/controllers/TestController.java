@@ -19,16 +19,16 @@ public class TestController {
 
     @PostMapping("/unit/run")
     @ApiOperation(value = "단위 테스트 시작", notes = "자동 단위 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doUnitTest(@RequestBody TestDTO.UnitTestRequest request,
-                                                       @RequestPart(value = "file", required = false) MultipartFile settings) throws CustomException {
+    public ResponseEntity<TestDTO.TestResponse> doUnitTest(@RequestPart(value="data") TestDTO.UnitTestRequest request,
+                                                           @RequestPart(value="file", required = false) MultipartFile settings)  throws CustomException {
         TestDTO.TestResponse response = testService.doUnitTest(request.getSourcePath(), settings);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/injection/run")
     @ApiOperation(value = "결함 주입 테스트 시작", notes = "결함 주입 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doInjectionTest(@RequestBody TestDTO.InjectionTestRequest request,
-                                                           @RequestPart(value = "file", required = false) MultipartFile binaryFile){
+    public ResponseEntity<TestDTO.TestResponse> doInjectionTest(@RequestPart(value="data") TestDTO.InjectionTestRequest request,
+                                                                @RequestPart(value="file", required = false) MultipartFile binaryFile){
         TestDTO.TestResponse response = testService.doInjectionTest(binaryFile, request.getTestDuration());
         return ResponseEntity.ok(response);
     }

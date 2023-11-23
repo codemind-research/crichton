@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -85,11 +85,11 @@ public class TokenInterceptorTest {
     void invalidAccessTokenInterceptor() throws Exception {
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath("");
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
         String invalidAccessToken = generateInvalidAccessToken();
         String refreshToken = refreshTokenService.generateRefreshToken(userId);
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
-                                                              .contentType(MediaType.APPLICATION_JSON)
-                                                              .content(mapper.writeValueAsString(request))
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+                                                              .file(data)
                                                               .header("Authorization", invalidAccessToken)
                                                               .header("RefreshToken", refreshToken))
                                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
@@ -122,11 +122,11 @@ public class TokenInterceptorTest {
     void refreshAccessTokenInterceptor() throws Exception {
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath("");
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
         String oneHoursAgoToken = generateOneHoursAgoToken();
         String refreshToken = refreshTokenService.generateRefreshToken(userId);
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/unit/run")
-                                                              .contentType(MediaType.APPLICATION_JSON)
-                                                              .content(mapper.writeValueAsString(request))
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+                                                              .file(data)
                                                               .header("Authorization", oneHoursAgoToken)
                                                               .header("RefreshToken", refreshToken))
                                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
