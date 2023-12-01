@@ -25,7 +25,12 @@ const UploadComp = (props: any) => {
     form.append("file", zipFile, "crichton_project_temp.zip");
 
     const response = await props.api.uploadFile(form, token);
-    props.setProjectPath(response.result.unzipPath);
+    if (response.successful) {
+      alert("Directory upload successful");
+      props.setProjectPath(response.result.unzipPath);
+    } else {
+      alert("Directory upload failed");
+    }
   };
 
   const makeZipFile = async (): Promise<void> => {

@@ -76,7 +76,6 @@ const TestComp = (props: any) => {
   };
 
   const updateTestResultToType = (type: TestTypeInfo, result: string): void => {
-    console.log(result);
     let isSuccess;
     if (result === "SUCCESS") isSuccess = true;
     else isSuccess = false;
