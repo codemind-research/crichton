@@ -1,0 +1,5 @@
+rootProject.name = 'plugins'
+include ':coyote'
+project(':coyote').projectDir = "$rootDir/coyote" as File
+include 'runner'
+
