@@ -1,0 +1,3 @@
+[submodule "engines/injector/trampoline"]
+	path = engines/injector/trampoline
+	url = https://github.com/codemind-research/trampoline

@@ -4,7 +4,6 @@ buildscript {
     }
     repositories {
         mavenCentral() // 플러그인을 받을 레포지토리 지장
-        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") // 이 스크립트의 경우 플러그인으로 3.0.0 를 사용한다는 의미임
@@ -12,7 +11,6 @@ buildscript {
 }
 
 plugins {
-    id 'scala'
     id 'java-library'
 }
 apply plugin: 'java'
@@ -20,17 +18,18 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management' // 스프링 의존성 관리 플러그인
 
-
-
-group 'crichton.server'
-version '1.0-SNAPSHOT'
-
-sourceSets.main.scala.srcDir "src/main/java"
 sourceSets.main.java.srcDirs = []
+sourceSets{
+    main{
+        java{
+            srcDir "src/main/java"
+        }
+    }
+}
 
 jar {
     manifest {
-        attributes 'Main-Class': 'crichton.server.ServerApplication'
+        attributes 'Main-Class': 'crichton.ServerApplication'
         attributes 'GIT_HASH': 'git describe --long --abbrev=8'.execute().text.trim()
     }
     jar.enabled = true
@@ -42,16 +41,29 @@ repositories {
 
 dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation "io.springfox:springfox-swagger-ui:3.0.0"
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'org.junit.jupiter:junit-jupiter-api'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
     implementation group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final', ext: 'pom'
+    implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.5'
+    implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14'
 }
 
+//JUnitTest
 test {
     useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed" // 테스트 결과 출력 설정
+    }
+
 }
