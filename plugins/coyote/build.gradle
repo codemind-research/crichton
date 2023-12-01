@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+group 'com.codemind.crichton.plugins'
+version '1.0'
+
+configurations.implementation.setCanBeResolved(true)
+jar {
+    manifest {
+        attributes 'Main-Class': 'coyote.CoyotePlugin'
+        attributes 'GIT_HASH': 'git describe --long --abbrev=8'.execute().text.trim()
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+dependencies {
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
