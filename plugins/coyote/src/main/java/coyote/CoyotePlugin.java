@@ -21,7 +21,7 @@ public class CoyotePlugin implements Plugin {
 
     private String targetSource;
     private File reportFile;
-    private String projectSetting;
+    private File projectSetting;
 
 
     @Override
@@ -36,7 +36,7 @@ public class CoyotePlugin implements Plugin {
         this.targetSource = targetSource;
         CoyoteSetting setting = new CoyoteSetting(coyoteSetting);
         this.reportFile = new File(setting.getReport());
-        this.projectSetting = setting.getProjectSetting();
+        this.projectSetting =  new File(setting.getProjectSetting());
     }
 
     @Override
@@ -73,7 +73,8 @@ public class CoyotePlugin implements Plugin {
         command.addOption("coyoteCli");
         command.addOption("-n", targetSource);
         command.addOption("-o", reportFile.getAbsolutePath());
-        command.checkAndAddOption("-p", projectSetting, () -> new File(projectSetting).exists());
+        command.checkAndAddOption("-p", projectSetting.getAbsolutePath(),
+                () -> projectSetting.exists() && projectSetting.isFile());
         return command;
     }
 

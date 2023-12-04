@@ -1,13 +1,26 @@
 package crichton.domain.dtos;
 
-import crichton.enumeration.TestResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import runner.dto.ProcessedReportDTO;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class TestDTO {
+
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PluginRequest {
+        @Schema(description = "플러그인", required = true)
+        private String plugin;
+        @Schema(description = "테스트할 소스코드 경로", required = true)
+        private String sourcePath;
+        @Schema(description = "플러그인 설정 정보")
+        private HashMap<String,String> pluginSettings;
+    }
 
     @Data
     @AllArgsConstructor
@@ -32,7 +45,9 @@ public class TestDTO {
     @NoArgsConstructor
     public static class TestResponse {
         @Schema(description = "테스트 결과", required = true)
-        private TestResult testResult;
+        private Boolean testResult;
+        @Schema(description = "레포트 데이터", required = true)
+        private ProcessedReportDTO reportData;
     }
 
     @Getter

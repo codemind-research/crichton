@@ -5,10 +5,10 @@ import lombok.NonNull;
 
 @Data
 public class RunResult {
-    private boolean isSuccess;
+    private Boolean isSuccess;
     private ProcessedReportDTO data;
 
-    public RunResult(boolean isSuccess, @NonNull ProcessedReportDTO data) {
+    public RunResult(Boolean isSuccess, @NonNull ProcessedReportDTO data) {
         this.isSuccess = isSuccess;
         this.data = data;
     }

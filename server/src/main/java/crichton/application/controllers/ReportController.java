@@ -16,10 +16,10 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @PostMapping("/data")
-    @ApiOperation(value = "csv 레포트 데이터 가공", notes = "Cli 에서 떨군 csv 레포트를 클라이언트에서 사용할 수 있게 데이터를 가공한다.")
-    public ResponseEntity<ReportDTO.DataResponse> transformCsvData(@RequestBody ReportDTO.DataRequest request) throws CustomException {
-        ReportDTO.DataResponse data = reportService.transformCsvData(request.getSourcePath());
+    @GetMapping("/data")
+    @ApiOperation(value = "Client html 레포트 데이터 가공", notes = "Plugins 에서 떨군 csv 레포트를 클라이언트에서 사용할 수 있게 데이터를 가공한다.")
+    public ResponseEntity<ReportDTO.DataResponse> getData() throws CustomException {
+        ReportDTO.DataResponse data = reportService.getData();
         return ResponseEntity.ok().body(data);
     }
 

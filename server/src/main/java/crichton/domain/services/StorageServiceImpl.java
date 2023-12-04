@@ -18,6 +18,10 @@ public class StorageServiceImpl implements StorageService{
     @Override
     public File uploadFile(MultipartFile source) throws CustomException {
         try {
+            File crichtonLogPath = DirectoryPaths.CRICHTON_LOG_PATH.toFile();
+            if (crichtonLogPath.exists()){
+                crichtonLogPath.delete();
+            }
             File downloadPath = DirectoryPaths.UPLOAD_PATH.toFile();
             if (!downloadPath.exists()) {
                 downloadPath.mkdir();
@@ -30,10 +34,6 @@ public class StorageServiceImpl implements StorageService{
             }
             unzipPath.mkdir();
             ZipUtil.unpack(downloadSourcePath, unzipPath);
-            File settingFile = DirectoryPaths.generateSettingsPath(FilenameUtils.getBaseName(source.getOriginalFilename())).toFile();
-            if (settingFile.exists()){
-                settingFile.delete();
-            }
             return unzipPath;
         }catch (Exception e) {
             throw new CustomException(FailedErrorCode.UPLOAD_FAILED);

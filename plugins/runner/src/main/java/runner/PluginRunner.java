@@ -43,8 +43,8 @@ public class PluginRunner implements Runner  {
                 return new RunResult(false, new ProcessedReportDTO());
             }
             boolean runResult = plugin.execute();
-            ProcessedReportDTO data = plugin.transformReportData();
-            return new RunResult(runResult , data);
+//            ProcessedReportDTO data = plugin.transformReportData();
+            return new RunResult(runResult , new ProcessedReportDTO());
         }catch (Exception e) {
             logger.error("Test Failed Plugin Run: " +pluginName);
             return new RunResult(false, new ProcessedReportDTO());

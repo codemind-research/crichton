@@ -3,53 +3,66 @@ package crichton.domain.services;
 import crichton.application.exceptions.CustomException;
 import crichton.application.exceptions.code.FailedErrorCode;
 import crichton.domain.dtos.TestDTO;
-import crichton.enumeration.TestResult;
 import crichton.paths.DirectoryPaths;
-import crichton.runner.ProgressRunner;
-import crichton.runner.RunResult;
-import crichton.runner.UnitTestRunner;
 import crichton.util.FileUtils;
 import crichton.util.PropertyFileReader;
+import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.zeroturnaround.zip.ZipUtil;
 import runner.PluginRunner;
+import runner.dto.ProcessedReportDTO;
+import runner.dto.RunResult;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 
 @Service("TestService")
 public class TestServiceImpl implements TestService{
 
     @Override
-    public TestDTO.TestResponse doUnitTest(String sourcePath, MultipartFile settings) throws CustomException {
-        if (!isCheckSourcePath(sourcePath))
-            throw new CustomException(FailedErrorCode.NOT_EXIST_DIRECTORY);
-        TestResult isUnitTestDone = runUnitTest(sourcePath, settings);
+    public TestDTO.TestResponse doPluginTest(TestDTO.PluginRequest request, MultipartFile settings) throws CustomException {
+        String plugin = request.getPlugin();
+        String targetSource = request.getSourcePath();
+        if (!isCheckSourcePath(targetSource))
+            throw new CustomException(FailedErrorCode.NOT_EXIST_TARGET_DIRECTORY);
+        makeSettings(plugin, settings);
+        RunResult pluginTestDone = runPluginTest(plugin, targetSource, request.getPluginSettings());
         return TestDTO.TestResponse.builder()
-                                   .testResult(isUnitTestDone)
+                                   .testResult(pluginTestDone.getIsSuccess())
+                                   .reportData(pluginTestDone.getData())
                                    .build();
     }
 
-    @Override
-    public TestDTO.TestResponse doInjectionTest(MultipartFile binaryFile, int testDuration){
-        TestResult isInjectionTestDone = runInjectionTest(binaryFile, testDuration);
-        return TestDTO.TestResponse.builder()
-                                   .testResult(isInjectionTestDone)
-                                   .build();
-    }
 
-    @Override
-    public String getProgress() throws CustomException {
+    private void makeSettings(String plugin, MultipartFile settings) throws CustomException{
         try {
-            ProgressRunner progressRunner = new ProgressRunner();
-            Optional<RunResult> result = progressRunner.run();
-            return result.orElseGet(result::orElseThrow).getData();
-        }catch (Exception e){
-            throw new CustomException(FailedErrorCode.LOG_READ_FAILED);
+            if (settings == null)
+                return;
+            File zipPath = DirectoryPaths.generatePluginZipPath(plugin, settings.getOriginalFilename()).toFile();
+            FileUtils.readMultipartFile(settings, zipPath);
+            File unzipPath = DirectoryPaths.generatePluginUnZipPath(plugin, FilenameUtils.getBaseName(settings.getOriginalFilename())).toFile();
+            if (unzipPath.exists()) {
+                FileDeleteStrategy.FORCE.delete(unzipPath);
+            }
+            unzipPath.mkdir();
+            ZipUtil.unpack(zipPath, unzipPath);
+            zipPath.delete();
+        }catch (Exception e) {
+            throw new CustomException(FailedErrorCode.UPLOAD_FAILED);
         }
     }
+
+    private RunResult runPluginTest(String pluginName, String sourcePath, HashMap<String,String> pluginSettings){
+        try {
+            PluginRunner runner = new PluginRunner(pluginName, sourcePath, pluginSettings);
+            return runner.run();
+        } catch (Exception e) {
+            return new RunResult(false, new ProcessedReportDTO());
+        }
+    }
+
 
     @Override
     public TestDTO.PluginResponse getPlugin() throws CustomException {
@@ -79,22 +92,6 @@ public class TestServiceImpl implements TestService{
         }
         return propertyMap;
     }
-
-
-    private TestResult runUnitTest(String sourcePath, MultipartFile settings){
-        try {
-            UnitTestRunner runner = new UnitTestRunner(sourcePath, Optional.ofNullable(settings));
-            runner.run().map(RunResult::isSuccess).orElseThrow(NoSuchFieldException::new);
-            return runner.isSuccessUnitTest() ? TestResult.SUCCESS : TestResult.FAILURE;
-        } catch (Exception e) {
-            return TestResult.FAILURE;
-        }
-    }
-
-    private TestResult runInjectionTest(MultipartFile binaryFile, int testDuration) {
-        return TestResult.FAILURE;
-    }
-
 
     private boolean isCheckSourcePath(String sourcePath) {
         return !sourcePath.isBlank() && new File(sourcePath).exists();

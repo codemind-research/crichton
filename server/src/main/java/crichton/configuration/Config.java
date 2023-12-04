@@ -1,5 +1,9 @@
 package crichton.configuration;
 
+import crichton.paths.DirectoryPaths;
+
+import java.io.File;
+
 public class Config {
     private int port;
 
@@ -10,5 +14,6 @@ public class Config {
     public int getPort() {
         return port;
     }
+
 }
 

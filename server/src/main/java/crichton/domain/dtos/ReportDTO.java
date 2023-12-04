@@ -21,13 +21,5 @@ public class ReportDTO {
         private List<HashMap<String,String>> unit;
     }
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class DataRequest {
-        @Schema(description = "테스트할 소스코드 경로", required = true)
-        private String sourcePath;
-    }
-
 
 }

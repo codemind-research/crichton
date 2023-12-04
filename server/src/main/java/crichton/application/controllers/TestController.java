@@ -26,30 +26,12 @@ public class TestController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/unit/run")
-    @ApiOperation(value = "단위 테스트 시작", notes = "자동 단위 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doUnitTest(@RequestPart(value="data") TestDTO.UnitTestRequest request,
-                                                           @RequestPart(value="file", required = false) MultipartFile settings)  throws CustomException {
-        TestDTO.TestResponse response = testService.doUnitTest(request.getSourcePath(), settings);
+    @PostMapping("/plugin/run")
+    @ApiOperation(value = "플러그인 테스트 시작", notes = "플러그인 테스트를 시작하는 Api")
+    public ResponseEntity<TestDTO.TestResponse> doPluginTest(@RequestPart(value="data") TestDTO.PluginRequest request,
+                                                           @RequestPart(value="file", required = false) MultipartFile pluginSettings)  throws CustomException {
+        TestDTO.TestResponse response = testService.doPluginTest(request, pluginSettings);
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/injection/run")
-    @ApiOperation(value = "결함 주입 테스트 시작", notes = "결함 주입 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doInjectionTest(@RequestPart(value="data") TestDTO.InjectionTestRequest request,
-                                                                @RequestPart(value="file", required = false) MultipartFile binaryFile){
-        TestDTO.TestResponse response = testService.doInjectionTest(binaryFile, request.getTestDuration());
-        return ResponseEntity.ok(response);
-    }
-
-
-    @GetMapping("/progress")
-    @ApiOperation(value = "단위 테스트 프로그레스 정보 가져오기")
-    public ResponseEntity<TestDTO.ProgressResponse> getProgress() throws CustomException {
-        String progress = testService.getProgress();
-        return ResponseEntity.ok(TestDTO.ProgressResponse.builder()
-                                                    .progress(progress)
-                                                    .build());
     }
 
 }

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum FailedErrorCode implements ErrorCode {
-    NOT_EXIST_DIRECTORY("F001", "Not Exist Directory"),
+    NOT_EXIST_TARGET_DIRECTORY("F001", "Not Exist Target Directory"),
     UPLOAD_FAILED("F002", "Upload Failed"),
     LOG_READ_FAILED("F003", "Log Read Failed"),
     REPORT_NOT_EXIST("F004", "Report Not Exist"),

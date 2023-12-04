@@ -1,5 +1,7 @@
 package coyote.setting;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class CoyoteSetting {
@@ -13,10 +15,10 @@ public class CoyoteSetting {
     }
 
     public String getReport() {
-        return report;
+        return Paths.get(System.getProperty("user.home"),"coyoteCli","report",report).toFile().getAbsolutePath();
     }
 
     public String getProjectSetting() {
-        return projectSetting;
+        return Paths.get(System.getProperty("user.home"),".crichton","plugins","coyote","setting",projectSetting).toFile().getAbsolutePath();
     }
 }

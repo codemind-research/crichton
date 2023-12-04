@@ -6,7 +6,6 @@ import crichton.domain.dtos.ReportDTO;
 import crichton.domain.dtos.TestDTO;
 import crichton.domain.services.AccessTokenService;
 import crichton.domain.services.RefreshTokenService;
-import crichton.enumeration.TestResult;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,15 +18,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.util.HashMap;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
@@ -59,31 +60,38 @@ public class TestControllerTest {
         sourcePath = Paths.get(System.getProperty("user.home"),"git","crichton","tests","c++-samples").toString();
     }
 
-    private static MockMultipartFile convert(String jsonFilePath) throws IOException {
-        ClassPathResource resource = new ClassPathResource(jsonFilePath);
-        InputStream inputStream = resource.getInputStream();
-        byte[] content = inputStream.readAllBytes();
-
-        // MockMultipartFile 생성
-        return new MockMultipartFile("file", resource.getFilename(), "application/json", content);
-    }
-
     private static boolean checkCoyoteCli() throws IOException {
         String symbolicLink = "/usr/bin/coyoteCli";
         Path path = FileSystems.getDefault().getPath(symbolicLink);
         return !Files.isSymbolicLink(path);
     }
 
+    private static byte[] readProjectSettingFile(String jsonFilePath) throws IOException {
+        ClassPathResource resource = new ClassPathResource(jsonFilePath);
+        InputStream inputStream = resource.getInputStream();
+        return inputStream.readAllBytes();
+    }
+
+    private Path createZipFile(String zipFileName, byte[] content) throws IOException {
+        Path zipFilePath = Files.createTempFile(zipFileName, "");
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zipFilePath, StandardOpenOption.WRITE))) {
+            ZipEntry entry = new ZipEntry("projectSetting_default.json");
+            zipOutputStream.putNextEntry(entry);
+            zipOutputStream.write(content);
+            zipOutputStream.closeEntry();
+        }
+        return zipFilePath;
+    }
 
 
     @Test
     @Order(1)
-    void doUnitTestBlankException() throws Exception {
+    void doPluginTestBlankException() throws Exception {
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath("");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
                                               .file(data)
                                               .header("Authorization", accessToken)
                                               .header("RefreshToken", refreshToken))
@@ -100,12 +108,12 @@ public class TestControllerTest {
 
     @Test
     @Order(2)
-    void doUnitTestNotFileExistException() throws Exception {
+    void doPluginTestNotFileExistException() throws Exception {
         TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
         request.setSourcePath("%2ka1oll");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
                                                               .file(data)
                                                               .header("Authorization", accessToken)
                                                               .header("RefreshToken", refreshToken))
@@ -122,14 +130,18 @@ public class TestControllerTest {
 
     @Test
     @Order(3)
-    void doUnitTest() throws Exception {
+    void doCoyoteCliPluginTest() throws Exception {
         if (checkCoyoteCli()){
             return;
         }
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
+        HashMap<String,String> settings = new HashMap<>();
+        settings.put("report","crichton_unitTest.csv");
         request.setSourcePath(sourcePath);
+        request.setPlugin("coyote");
+        request.setPluginSettings(settings);
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
                                               .file(data)
                                               .header("Authorization", accessToken)
                                               .header("RefreshToken", refreshToken))
@@ -140,23 +152,34 @@ public class TestControllerTest {
                .getContentAsString()
                .replaceAll("^\"|\"$", "");
         TestDTO.TestResponse response = mapper.readValue(result ,TestDTO.TestResponse.class);
-        assertEquals(TestResult.SUCCESS,response.getTestResult());
+        assertTrue(response.getTestResult());
     }
 
     @Test
     @Order(4)
-    void doUnitTestAndProjectSetting() throws Exception {
+    void doCoyoteCliAndProjectSetting() throws Exception {
         if (checkCoyoteCli()){
             return;
         }
         String jsonResourcePath = "projectSetting_default.json";
-        MockMultipartFile multipartFile = convert(jsonResourcePath);
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        Path zipFilePath = createZipFile("setting", readProjectSettingFile(jsonResourcePath));
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "setting.zip",
+                MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                Files.newInputStream(zipFilePath)
+        );
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
+        HashMap<String,String> settings = new HashMap<>();
+        settings.put("report","crichton_unitTest.csv");
+        settings.put("projectSetting", "projectSetting_default.json");
         request.setSourcePath(sourcePath);
+        request.setPlugin("coyote");
+        request.setPluginSettings(settings);
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
                                                               .file(data)
-                                                              .file(multipartFile)
+                                                              .file(file)
                                                               .contentType(MediaType.APPLICATION_JSON)
                                                               .content(mapper.writeValueAsString(request))
                                                               .header("Authorization", accessToken)
@@ -168,62 +191,12 @@ public class TestControllerTest {
                                .getContentAsString()
                                .replaceAll("^\"|\"$", "");
         TestDTO.TestResponse response = mapper.readValue(result ,TestDTO.TestResponse.class);
-        assertEquals(TestResult.SUCCESS,response.getTestResult());
+        assertTrue(response.getTestResult());
     }
-    
+
+
     @Test
     @Order(5)
-    void getProgress() throws Exception {
-        if (checkCoyoteCli()){
-            return;
-        }
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
-                                              .header("Authorization", accessToken)
-                                              .header("RefreshToken", refreshToken))
-                               .andExpect(MockMvcResultMatchers.status().isOk())
-                               .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
-    @Order(6)
-    void notExistReport() throws Exception{
-        ReportDTO.DataRequest request = new ReportDTO.DataRequest("");
-        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/report/data")
-                                                              .contentType(MediaType.APPLICATION_JSON)
-                                                              .content(mapper.writeValueAsString(request))
-                                                              .header("Authorization", accessToken)
-                                                              .header("RefreshToken", refreshToken))
-                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
-                               .andDo(print())
-                               .andReturn()
-                               .getResponse()
-                               .getContentAsString()
-                               .replaceAll("^\"|\"$", "");
-
-        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
-        assertEquals("F004", response.getCode());
-    }
-
-    @Test
-    @Order(7)
-    void transformCsvData() throws Exception{
-        if (checkCoyoteCli()){
-            return;
-        }
-        ReportDTO.DataRequest request = new ReportDTO.DataRequest(sourcePath);
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/report/data")
-                                              .contentType(MediaType.APPLICATION_JSON)
-                                              .content(mapper.writeValueAsString(request))
-                                              .header("Authorization", accessToken)
-                                              .header("RefreshToken", refreshToken))
-               .andExpect(MockMvcResultMatchers.status().isOk())
-               .andDo(print());
-
-    }
-
-
-    @Test
-    @Order(8)
     void getPlugin() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/plugin")
                                               .header("Authorization", accessToken)
