@@ -2,10 +2,11 @@ package crichton.util;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
+import java.io.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileUtils {
 
@@ -63,6 +64,20 @@ public class FileUtils {
             return ""; // 확장자가 없는 경우
         }
         return name.substring(lastIndexOfDot + 1);
+    }
+
+    public static Optional<List<File>> getSubDirectories(File directory) {
+        if (directory.isDirectory()) {
+            File[] subdirectories = directory.listFiles(File::isDirectory);
+            return Optional.ofNullable(subdirectories)
+                           .map(arr ->
+                                   Stream.of(arr)
+                                         .filter(File::isDirectory)
+                                         .collect(Collectors.toList())
+                           );
+        } else {
+            return Optional.empty();
+        }
     }
 
 }

@@ -222,4 +222,14 @@ public class TestControllerTest {
     }
 
 
+    @Test
+    @Order(8)
+    void getPlugin() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/plugin")
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken))
+               .andExpect(MockMvcResultMatchers.status().isOk())
+               .andDo(MockMvcResultHandlers.print());
+    }
+
 }

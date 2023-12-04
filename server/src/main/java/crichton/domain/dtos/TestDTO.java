@@ -4,6 +4,9 @@ import crichton.enumeration.TestResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class TestDTO {
 
     @Data
@@ -39,5 +42,25 @@ public class TestDTO {
     public static class ProgressResponse {
         @Schema(description = "테스트 진행 상태", required = true)
         private String progress;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PluginResponse {
+        @Schema(description = "플러그인 리스트")
+        private List<PluginSetting> pluginList;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PluginSetting {
+        @Schema(description = "플러그인")
+        private String plugin;
+        @Schema(description = "설정")
+        private HashMap<String,String> setting;
     }
 }

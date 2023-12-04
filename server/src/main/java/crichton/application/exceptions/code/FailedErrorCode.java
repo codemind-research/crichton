@@ -11,7 +11,8 @@ public enum FailedErrorCode implements ErrorCode {
     UPLOAD_FAILED("F002", "Upload Failed"),
     LOG_READ_FAILED("F003", "Log Read Failed"),
     REPORT_NOT_EXIST("F004", "Report Not Exist"),
-    REPORT_DATA_PROCESSING_FAILED("F005", "Report Data Processing Failed");
+    REPORT_DATA_PROCESSING_FAILED("F005", "Report Data Processing Failed"),
+    NOT_EXIST_PLUGINS("F006", "Not Exist Plugins");
 
     private final String code;
     private final String message;

@@ -12,4 +12,6 @@ public interface TestService {
 
     String getProgress() throws CustomException;
 
+    TestDTO.PluginResponse getPlugin() throws CustomException;
+
 }

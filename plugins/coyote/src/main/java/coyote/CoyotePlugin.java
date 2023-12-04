@@ -32,7 +32,7 @@ public class CoyotePlugin implements Plugin {
     }
 
     @Override
-    public void initialize(@NonNull String targetSource, Map<String, String> coyoteSetting) throws IOException {
+    public void initialize(@NonNull String targetSource, Map<String, String> coyoteSetting) {
         this.targetSource = targetSource;
         CoyoteSetting setting = new CoyoteSetting(coyoteSetting);
         this.reportFile = new File(setting.getReport());
