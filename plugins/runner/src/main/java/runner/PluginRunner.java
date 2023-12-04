@@ -8,6 +8,7 @@ import runner.dto.RunResult;
 import runner.loader.BasicPluginLoader;
 import runner.loader.PluginLoader;
 import runner.paths.PluginPaths;
+import runner.util.FileUtils;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -42,8 +43,12 @@ public class PluginRunner implements Runner  {
                 logger.error("Check Failed Plugin: " +pluginName);
                 return new RunResult(false, new ProcessedReportDTO());
             }
+            String start = String.format("\n***************** Start of Plugin : %s ***************** \n", pluginName);
+            FileUtils.overWriteDump(PluginPaths.CRICHTON_LOG_PATH.toFile(),start,"\n");
             boolean runResult = plugin.execute();
 //            ProcessedReportDTO data = plugin.transformReportData();
+            String end = String.format("\n***************** End of Plugin : %s ***************** \n", pluginName);
+            FileUtils.overWriteDump(PluginPaths.CRICHTON_LOG_PATH.toFile(),end,"\n");
             return new RunResult(runResult , new ProcessedReportDTO());
         }catch (Exception e) {
             logger.error("Test Failed Plugin Run: " +pluginName);

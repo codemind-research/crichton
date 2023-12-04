@@ -1,8 +1,6 @@
 package runner.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 
 public class FileUtils {
 
@@ -21,6 +19,20 @@ public class FileUtils {
             bi.close();
             return lines;
         }
+    }
+
+    public static boolean overWriteDump(File filename, String fileContents, String delim) {
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(filename, true);
+            for (String line : fileContents.split(delim))
+                fw.write(line + delim);
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 }

@@ -1,15 +1,14 @@
 package crichton.application.controllers;
 
 import crichton.application.exceptions.CustomException;
+import crichton.domain.dtos.LogDTO;
 import crichton.domain.dtos.TestDTO;
 import crichton.domain.services.TestService;
 import io.swagger.annotations.ApiOperation;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import runner.PluginRunner;
 
 @CrossOrigin
 @RestController("TestController")
@@ -33,5 +32,13 @@ public class TestController {
         TestDTO.TestResponse response = testService.doPluginTest(request, pluginSettings);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/log")
+    @ApiOperation(value = "플러그인 로그", notes = "플러그인 로그 정보를 가져오는 Api")
+    public ResponseEntity<LogDTO.LogResponse> getCrichtonLog(@RequestBody LogDTO.LogRequest request){
+        LogDTO.LogResponse response = testService.getCrichtonLog(request);
+        return ResponseEntity.ok(response);
+    }
+
 
 }

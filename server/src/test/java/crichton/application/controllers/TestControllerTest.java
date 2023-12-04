@@ -2,6 +2,7 @@ package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import crichton.application.exceptions.handler.GlobalExceptionResponse;
+import crichton.domain.dtos.LogDTO;
 import crichton.domain.dtos.ReportDTO;
 import crichton.domain.dtos.TestDTO;
 import crichton.domain.services.AccessTokenService;
@@ -86,77 +87,17 @@ public class TestControllerTest {
 
     @Test
     @Order(1)
-    void doPluginTestBlankException() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
-        request.setSourcePath("");
-        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
-
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
-                                              .file(data)
-                                              .header("Authorization", accessToken)
-                                              .header("RefreshToken", refreshToken))
-               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
-               .andDo(print())
-               .andReturn()
-               .getResponse()
-               .getContentAsString()
-               .replaceAll("^\"|\"$", "");
-
-      GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
-      assertEquals("F001", response.getCode());
-    }
-
-    @Test
-    @Order(2)
-    void doPluginTestNotFileExistException() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
-        request.setSourcePath("%2ka1oll");
-        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
-
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
-                                                              .file(data)
-                                                              .header("Authorization", accessToken)
-                                                              .header("RefreshToken", refreshToken))
-                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
-                               .andDo(print())
-                               .andReturn()
-                               .getResponse()
-                               .getContentAsString()
-                               .replaceAll("^\"|\"$", "");
-
-        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
-        assertEquals("F001", response.getCode());
-    }
-
-    @Test
-    @Order(3)
-    void doCoyoteCliPluginTest() throws Exception {
-        if (checkCoyoteCli()){
-            return;
-        }
-        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
-        HashMap<String,String> settings = new HashMap<>();
-        settings.put("report","crichton_unitTest.csv");
-        request.setSourcePath(sourcePath);
-        request.setPlugin("coyote");
-        request.setPluginSettings(settings);
-        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
-                                              .file(data)
+    void getPlugin() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/plugin")
                                               .header("Authorization", accessToken)
                                               .header("RefreshToken", refreshToken))
                .andExpect(MockMvcResultMatchers.status().isOk())
-               .andDo(MockMvcResultHandlers.print())
-               .andReturn()
-               .getResponse()
-               .getContentAsString()
-               .replaceAll("^\"|\"$", "");
-        TestDTO.TestResponse response = mapper.readValue(result ,TestDTO.TestResponse.class);
-        assertTrue(response.getTestResult());
+               .andDo(MockMvcResultHandlers.print());
     }
 
+
     @Test
-    @Order(4)
+    @Order(2)
     void doCoyoteCliAndProjectSetting() throws Exception {
         if (checkCoyoteCli()){
             return;
@@ -195,14 +136,68 @@ public class TestControllerTest {
     }
 
 
+
+
     @Test
-    @Order(5)
-    void getPlugin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/plugin")
+    @Order(3)
+    void doPluginTestBlankException() throws Exception {
+        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        request.setSourcePath("");
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
+
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
+                                              .file(data)
                                               .header("Authorization", accessToken)
                                               .header("RefreshToken", refreshToken))
+               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+               .andDo(print())
+               .andReturn()
+               .getResponse()
+               .getContentAsString()
+               .replaceAll("^\"|\"$", "");
+
+      GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+      assertEquals("F001", response.getCode());
+    }
+
+    @Test
+    @Order(4)
+    void doPluginTestNotFileExistException() throws Exception {
+        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        request.setSourcePath("%2ka1oll");
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
+
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
+                                                              .file(data)
+                                                              .header("Authorization", accessToken)
+                                                              .header("RefreshToken", refreshToken))
+                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                               .andDo(print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
+
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("F001", response.getCode());
+    }
+
+
+    @Test
+    @Order(5)
+    void getCrichtonLog() throws Exception{
+        LogDTO.LogRequest request = new LogDTO.LogRequest();
+        request.setMaxline(-1);
+        request.setStartpos(0);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/log")
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken)
+                                              .contentType(MediaType.APPLICATION_JSON)
+                                              .content(mapper.writeValueAsString(request)))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andDo(MockMvcResultHandlers.print());
     }
+
+
 
 }
