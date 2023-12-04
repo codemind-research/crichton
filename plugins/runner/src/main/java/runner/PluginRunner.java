@@ -21,6 +21,7 @@ public class PluginRunner implements Runner  {
     private final PluginLoader pluginLoader;
     private final String targetSource;
     private final Map<String, String> pluginSetting;
+    private Plugin plugin;
 
     public PluginRunner(@NonNull String pluginName, @NonNull String targetSource, Map<String, String> pluginSetting) throws Exception {
         this.pluginName = pluginName;
@@ -31,18 +32,29 @@ public class PluginRunner implements Runner  {
     }
 
     @Override
-    public RunResult run() {
+    public boolean check(){
         try {
             if (!pluginLoader.isApplicable(pluginJar)) {
-                return new RunResult(false, new ProcessedReportDTO());
+                return false;
             }
-            Plugin plugin = pluginLoader.loadPlugin(pluginName)
-                                        .orElseThrow(IllegalArgumentException::new);
+            plugin = pluginLoader.loadPlugin(pluginName)
+                                 .orElseThrow(IllegalArgumentException::new);
             plugin.initialize(targetSource, pluginSetting);
             if (plugin.check()){
                 logger.error("Check Failed Plugin: " +pluginName);
-                return new RunResult(false, new ProcessedReportDTO());
+                return false;
+            }else{
+                return true;
             }
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public RunResult run() {
+        try {
             String start = String.format("\n***************** Start of Plugin : %s ***************** \n", pluginName);
             FileUtils.overWriteDump(PluginPaths.CRICHTON_LOG_PATH.toFile(),start,"\n");
             boolean runResult = plugin.execute();

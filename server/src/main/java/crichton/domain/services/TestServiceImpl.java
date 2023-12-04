@@ -59,11 +59,18 @@ public class TestServiceImpl implements TestService{
         }
     }
 
-    private RunResult runPluginTest(String pluginName, String sourcePath, HashMap<String,String> pluginSettings){
+    private RunResult runPluginTest(String pluginName, String sourcePath, HashMap<String,String> pluginSettings) throws CustomException{
         try {
             PluginRunner runner = new PluginRunner(pluginName, sourcePath, pluginSettings);
-            return runner.run();
-        } catch (Exception e) {
+            if (runner.check())
+                return runner.run();
+            else {
+                throw new IllegalAccessException();
+            }
+        }catch (IllegalAccessException e){
+            throw new CustomException(FailedErrorCode.NOT_EXIST_PLUGINS);
+        }
+        catch (Exception e) {
             return new RunResult(false, new ProcessedReportDTO());
         }
     }
