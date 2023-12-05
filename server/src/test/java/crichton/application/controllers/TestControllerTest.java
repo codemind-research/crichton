@@ -121,7 +121,6 @@ public class TestControllerTest {
         String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
                                                               .file(data)
                                                               .file(file)
-                                                              .contentType(MediaType.APPLICATION_JSON)
                                                               .content(mapper.writeValueAsString(request))
                                                               .header("Authorization", accessToken)
                                                               .header("RefreshToken", refreshToken))
