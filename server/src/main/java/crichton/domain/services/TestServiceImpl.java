@@ -61,9 +61,9 @@ public class TestServiceImpl implements TestService{
 
     private RunResult runPluginTest(String pluginName, String sourcePath, HashMap<String,String> pluginSettings) throws CustomException{
         try {
-            PluginRunner runner = new PluginRunner(pluginName, sourcePath, pluginSettings);
+            PluginRunner runner = new PluginRunner(pluginName);
             if (runner.check())
-                return runner.run();
+                return runner.run(sourcePath, pluginSettings);
             else {
                 throw new IllegalAccessException();
             }
@@ -79,12 +79,24 @@ public class TestServiceImpl implements TestService{
     @Override
     public TestDTO.PluginResponse getPlugin() throws CustomException {
         List<File> pluginList = FileUtils.getSubDirectories(PluginPaths.PLUGIN_DIR_PATH.toFile())
-                                         .orElseThrow( () -> new CustomException(FailedErrorCode.NOT_EXIST_PLUGINS));
+                                         .orElseThrow( () -> new CustomException(FailedErrorCode.NOT_EXIST_PLUGINS))
+                                         .stream()
+                                         .filter(plugin -> isCheckPlugin(plugin.getName())).toList();
         return TestDTO.PluginResponse.builder()
                                      .pluginList(pluginList.stream().map(this::getPluginSetting).toList())
                                      .build();
 
     }
+
+    private boolean isCheckPlugin(String pluginName){
+        try {
+            PluginRunner runner = new PluginRunner(pluginName);
+            return runner.check();
+        }catch (Exception e){
+            return false;
+        }
+    }
+
 
     @Override
     public LogDTO.LogResponse getCrichtonLog(LogDTO.LogRequest request){
