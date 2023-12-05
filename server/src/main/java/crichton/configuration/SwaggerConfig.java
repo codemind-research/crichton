@@ -31,7 +31,9 @@ import java.util.List;
  */
 @OpenAPIDefinition(
         info = @Info(title = "Crichton API Documentation",
-                description = "Fault Injection Testing API Documentation",
+                description = "To understand the Swagger documentation and test the API, " +
+                        "you need to first execute the GET METHOD /token API in the Auth Controller to obtain token information.<br>" +
+                        " Then, click the Authorize button of the desired API, and enter the information of the obtained AccessToken.",
                 version = "v1"))
 @Configuration("Swagger")
 public class SwaggerConfig {
@@ -39,7 +41,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI(){
         SecurityScheme securityScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                .type(SecurityScheme.Type.HTTP).description("AccessToken").scheme("bearer").bearerFormat("JWT")
                 .in(SecurityScheme.In.HEADER).name("Authorization");
         SecurityRequirement securityRequirement = new SecurityRequirement().addList("Authorization");
 
