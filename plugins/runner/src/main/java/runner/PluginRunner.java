@@ -41,10 +41,10 @@ public class PluginRunner implements Runner  {
                                  .orElseThrow(IllegalArgumentException::new);
             plugin.initialize(targetSource, pluginSetting);
             if (plugin.check()){
+                return true;
+            }else{
                 logger.error("Check Failed Plugin: " +pluginName);
                 return false;
-            }else{
-                return true;
             }
         }catch (Exception e){
             e.printStackTrace();

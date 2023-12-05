@@ -28,7 +28,7 @@ public class CoyotePlugin implements Plugin {
     public boolean check() {
         String symbolicLink = "/usr/bin/coyoteCli";
         Path path = FileSystems.getDefault().getPath(symbolicLink);
-        return !Files.isSymbolicLink(path) || targetSource.isBlank();
+        return Files.isSymbolicLink(path) && !targetSource.isBlank();
     }
 
     @Override
