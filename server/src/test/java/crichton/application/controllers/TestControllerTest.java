@@ -141,7 +141,7 @@ public class TestControllerTest {
     @Test
     @Order(3)
     void doPluginTestBlankException() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
         request.setSourcePath("");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
 
@@ -163,7 +163,7 @@ public class TestControllerTest {
     @Test
     @Order(4)
     void doPluginTestNotFileExistException() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
         request.setSourcePath("%2ka1oll");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
 
@@ -182,9 +182,33 @@ public class TestControllerTest {
         assertEquals("F001", response.getCode());
     }
 
-
     @Test
     @Order(5)
+    void doPluginTestNotPluginExistException() throws Exception {
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
+        request.setSourcePath(sourcePath);
+        request.setPlugin("NotPluginExceptionTest");
+
+        MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
+
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
+                                                              .file(data)
+                                                              .header("Authorization", accessToken)
+                                                              .header("RefreshToken", refreshToken))
+                               .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                               .andDo(print())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString()
+                               .replaceAll("^\"|\"$", "");
+
+        GlobalExceptionResponse response = mapper.readValue(result ,GlobalExceptionResponse.class);
+        assertEquals("F004", response.getCode());
+    }
+
+
+    @Test
+    @Order(6)
     void getCrichtonLog() throws Exception{
         LogDTO.LogRequest request = new LogDTO.LogRequest();
         request.setMaxline(-1);

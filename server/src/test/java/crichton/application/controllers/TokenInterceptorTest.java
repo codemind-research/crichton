@@ -83,7 +83,7 @@ public class TokenInterceptorTest {
 
     @Test
     void invalidAccessTokenInterceptor() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
         request.setSourcePath("");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
         String invalidAccessToken = generateInvalidAccessToken();
@@ -120,7 +120,7 @@ public class TokenInterceptorTest {
 
     @Test
     void refreshAccessTokenInterceptor() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
         request.setSourcePath("");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
         String oneHoursAgoToken = generateOneHoursAgoToken();

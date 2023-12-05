@@ -28,8 +28,11 @@ subprojects {
         annotationProcessor 'org.projectlombok:lombok:1.18.20'
     }
 
+    task buildAllPlugin(dependsOn: project.collect { it.tasks.named('build') })
 
     task copyPlugin(type: Copy) {
+        if (project.name == 'runner')
+            return
         def destinationDir = file(System.getProperty("user.home") + "/.crichton" + "/plugins")
         from "$buildDir/libs"
         into "$destinationDir/${project.name}"
@@ -42,7 +45,7 @@ subprojects {
         include '*.properties'
     }
 
-    // 빌드가 실행된 후에 복사 작업을 실행하도록 설정
+    //
     build.finalizedBy(copyPlugin)
 }
 

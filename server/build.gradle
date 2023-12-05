@@ -39,7 +39,7 @@ jar {
     jar.enabled = true
 }
 
-task crichtonBuild(type: Copy, dependsOn: build) {
+task buildServer(type: Copy, dependsOn: build) {
     def destinationDir = file(System.getProperty("user.home") + "/.crichton")
     from "$buildDir/libs/server-${version}.jar"
     into destinationDir

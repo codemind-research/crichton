@@ -17,7 +17,7 @@ public class ServerApplication {
     private static Config config;
     private static ConfigurableApplicationContext APP_CTX;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
         if(args.length == 0){
             System.err.println("Usage : crichton server [port]");
             return;
