@@ -1,12 +1,12 @@
 buildscript {
     ext {
-        springBootVersion = '3.0.0' // build.gradle에 전역변수로 springBootVersion을 추가함
+        springBootVersion = '3.0.0'
     }
     repositories {
-        mavenCentral() // 플러그인을 받을 레포지토리 지장
+        mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") // 이 스크립트의 경우 플러그인으로 3.0.0 를 사용한다는 의미임
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
 
@@ -16,7 +16,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management' // 스프링 의존성 관리 플러그인
+apply plugin: 'io.spring.dependency-management'
 
 sourceSets.main.java.srcDirs = []
 sourceSets{
@@ -51,10 +51,13 @@ dependencies {
     implementation project(':plugins:runner')
     implementation 'org.springframework.boot:spring-boot-starter'
 //    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
-    implementation "io.springfox:springfox-swagger-ui:3.0.0"
+    implementation ('io.springfox:springfox-boot-starter:3.0.0') {
+        exclude group: 'io.swagger.core.v3'
+    }
+    implementation ('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -73,7 +76,7 @@ dependencies {
 test {
     useJUnitPlatform()
     testLogging {
-        events "passed", "skipped", "failed" // 테스트 결과 출력 설정
+        events "passed", "skipped", "failed" // Test Result
     }
 
 }

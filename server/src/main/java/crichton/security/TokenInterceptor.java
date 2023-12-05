@@ -41,26 +41,26 @@ public class TokenInterceptor implements HandlerInterceptor {
             String[] tokenParts = accessToken.split("\\.");
             String payload = decodeBase64(tokenParts[1]);
             PayloadDTO payloadDTO = ObjectMapperUtils.convertJsonStringToObject(payload, PayloadDTO.class);
-            // 1. accessToken 무결성 검사 및 만료날짜 검사
+            // 1. Verify the integrity and expiration date of the accessToken.
             if (accessTokenService.validateAccessToken(accessToken, payloadDTO) && !accessTokenService.isAccessTokenExpired(payloadDTO)){
                 return true;
             }
-            //2. refreshToken 값이 header에 포함되서 날라오고 refreshToken 기간이 만료되지않았을때
+            //2. Include the refreshToken value in the header when it is sent, and check if the refreshToken period has not expired.
             if (refreshToken != null && refreshTokenService.validateRefreshToken(payloadDTO.getSub(),refreshToken)) {
                 String newAccessToken = accessTokenService.refreshAccessToken(accessToken, payloadDTO);
-                //3. 새로운 accessToken 이 성공적으로 발급되었을 때 헤더에 포함해서 전달
+                //3. Include the newly issued accessToken in the header upon successful generation.
                 response.setHeader("Authorization", newAccessToken);
                 return true;
             }
-            //4. refreshToken 값이 header에 포함되지않거나 refreshToken 기간이 만료되었을때
+            //4. Check if the refreshToken value is not included in the header or if the refreshToken period has expired.
             else {
-                // 5. refreshToken 값이 header에 포함되지않았는지 확인
+                // 5. Verify whether the refreshToken value is not included in the header.
                 if (refreshToken != null){
-                    // 해당 분기는 refreshToken 기간이 만료되었을 때
+                    // This branch corresponds to when the refreshToken period has expired.
                     throw new CustomException(TokenErrorCode.INVALID_REFRESH_TOKEN);
                 }
                 else {
-                    // 해당 분기는 accessToken 기간이 만료되었을때
+                    // This branch corresponds to when the accessToken period has expired.
                     throw new CustomException(TokenErrorCode.INVALID_ACCESS_TOKEN);
                 }
             }

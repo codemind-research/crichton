@@ -1,43 +1,51 @@
 package crichton.configuration;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
- * Swagger API 문서를 생성하는 클래스
- * 추후 https 프로토콜을 사용할 경우 사용
- * 기본 URL 주소 : https://localhost:[port]/swagger-ui/index.html#/
- * 포트 번호나 IP 경우에 따라 알맞게 변경
+ Class responsible for generating Swagger API documentation.
+ Intended for future use with the HTTPS protocol.
+ Default URL: https://localhost:[port]/swagger-ui/index.html#/
+ Adjust the port number or IP address accordingly.
  */
+@OpenAPIDefinition(
+        info = @Info(title = "Crichton API Documentation",
+                description = "Fault Injection Testing API Documentation",
+                version = "v1"))
 @Configuration("Swagger")
 public class SwaggerConfig {
 
     @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.OAS_30)
-//                .securityContexts(List.of(securityContext()))
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/api/v1/crichton/**"))
-                .build()
-                .apiInfo(apiInfo());
-    }
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("Crichton interface Document")
-                .description("Rest API")
-                .version("1.0")
-                .build();
+    public OpenAPI openAPI(){
+        SecurityScheme securityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER).name("Authorization");
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("Authorization");
+
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("Authorization", securityScheme))
+                .security(Arrays.asList(securityRequirement));
     }
 
-//    private SecurityContext securityContext() {
-//        return SecurityContext.builder().build();
-//    }
 }
