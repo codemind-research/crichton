@@ -13,28 +13,55 @@ import java.util.Map;
 
 public interface Plugin {
 
+    // Path for storing test logs
     Path OUTPUT_PATH = PluginPaths.CRICHTON_LOG_PATH;
 
-    //Plugin 실행하기전 check
+    /**
+     * Checks the preconditions before executing the plugin.
+     *
+     * @return true if the preconditions are met, false otherwise.
+     */
     boolean check();
 
-    //Plugin 설정 초기화 함수
+    /**
+     * Initializes the plugin settings.
+     * @param targetSource   The target source for the plugin.
+     * @param pluginSetting  A map containing plugin-specific settings.
+     * @throws IOException   If an I/O error occurs during initialization.
+     */
     void initialize(@NonNull String targetSource, Map<String,String> pluginSetting) throws IOException;
 
-    //Plugin 실행함수
+    /**
+     * Executes the plugin.
+     *
+     * @return true if the plugin execution is successful, false otherwise.
+     */
     boolean execute() throws IOException;
 
-    //Plugin 관련 Command 생성
+    /**
+     * Creates a CommandBuilder for plugin-related commands.
+     * @return A CommandBuilder instance for building plugin commands.
+     */
     default CommandBuilder buildCommand() {
         return new CommandBuilder();
     }
 
-    //Plugin 관련 Process 생성
+    /**
+     * Creates a ProcessBuilder for plugin-related processes.
+     *
+     * @param command The command to be executed.
+     * @return A ProcessBuilder instance for building and executing plugin processes.
+     */
     default ProcessBuilder buildProcess(@NonNull List<String> command){
         return new ProcessBuilder();
     }
 
-    //Plugin 관련 레포트 데이터 가공 생성
+    /**
+     * Transforms plugin-related report data for further processing.
+     *
+     * @return A ProcessedReportDTO containing the transformed report data.
+     * @throws Exception If an error occurs during the transformation process.
+     */
     ProcessedReportDTO transformReportData() throws Exception;
 
 
