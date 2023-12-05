@@ -1,6 +1,7 @@
 package crichton.domain.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 public class StorageDTO {
@@ -8,7 +9,8 @@ public class StorageDTO {
     @Getter
     @Builder
     public static class StorageResponse {
-        @Schema(description = "소스코드 압축해제 경로", required = true)
+        @NotNull
+        @Schema(description = "Source Code Extraction Path")
         private String unzipPath;
     }
 

@@ -1,6 +1,7 @@
 package crichton.domain.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import runner.dto.ProcessedReportDTO;
 
@@ -14,11 +15,13 @@ public class TestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PluginRequest {
-        @Schema(description = "플러그인", required = true)
+        @NotNull
+        @Schema(description = "Plugin")
         private String plugin;
-        @Schema(description = "테스트할 소스코드 경로", required = true)
+        @NotNull
+        @Schema(description = "Path to Test Source Code")
         private String sourcePath;
-        @Schema(description = "플러그인 설정 정보")
+        @Schema(description = "Plugin Configuration Information")
         private HashMap<String,String> pluginSettings;
     }
 
@@ -27,9 +30,11 @@ public class TestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TestResponse {
-        @Schema(description = "테스트 결과", required = true)
+        @NotNull
+        @Schema(description = "Test Result")
         private Boolean testResult;
-        @Schema(description = "레포트 데이터", required = true)
+        @NotNull
+        @Schema(description = "Report Data")
         private ProcessedReportDTO reportData;
     }
 
@@ -37,17 +42,8 @@ public class TestDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ProgressResponse {
-        @Schema(description = "테스트 진행 상태", required = true)
-        private String progress;
-    }
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class PluginResponse {
-        @Schema(description = "플러그인 리스트")
+        @Schema(description = "Plugin List")
         private List<PluginSetting> pluginList;
     }
 
@@ -56,9 +52,9 @@ public class TestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PluginSetting {
-        @Schema(description = "플러그인")
+        @Schema(description = "Plugin")
         private String plugin;
-        @Schema(description = "설정")
+        @Schema(description = "Setting")
         private HashMap<String,String> setting;
     }
 }

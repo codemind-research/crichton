@@ -1,6 +1,7 @@
 package crichton.domain.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,9 +14,11 @@ public class AuthDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TokenResponse {
-        @Schema(description = "Access Token ", required = true)
+        @NotNull
+        @Schema(description = "Access Token ")
         private String accessToken;
-        @Schema(description = "Refresh Token ", required = true)
+        @NotNull
+        @Schema(description = "Refresh Token ")
         private String refreshToken;
     }
 
@@ -23,7 +26,8 @@ public class AuthDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TokenRequest {
-        @Schema(description = "사용자 고유 ID", required = true)
+        @NotNull
+        @Schema(description = "User Unique ID")
         private String userId;
     }
 }

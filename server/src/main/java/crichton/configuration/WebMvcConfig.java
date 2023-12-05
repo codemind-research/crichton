@@ -21,6 +21,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new TokenInterceptor(refreshTokenService,accessTokenService))
-                .addPathPatterns("/api/**"); // 적용할 URL 패턴을 지정
+                .addPathPatterns("/api/**"); // Specify the URL pattern to apply.
     }
 }

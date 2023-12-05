@@ -6,11 +6,14 @@ import crichton.domain.dtos.TestDTO;
 import crichton.domain.services.TestService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Test Controller", description = "This is an API for testing plugin-related functionalities.")
 @CrossOrigin
 @RestController("TestController")
 @RequestMapping("/api/v1/crichton/test")
@@ -20,14 +23,19 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping("/plugin")
-    @Operation(summary = "플러그인 설정", description = "클라이언트에서 필요한 플러그인 설정 정보를 보내주는 Api")
+    @Operation(summary = "Installed Plugin List",
+            description = "Retrieves the list of installed plugins on the server. This API is essential for obtaining " +
+                    "comprehensive information about the currently installed plugins, including their configurations " +
+                    "and functionalities. It plays a crucial role in enabling communication between the client and " +
+                    "server, facilitating seamless integration and interaction with various plugins.")
     public ResponseEntity<TestDTO.PluginResponse> getPlugin() throws CustomException {
         TestDTO.PluginResponse response = testService.getPlugin();
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/plugin/run")
-    @Operation(summary = "플러그인 테스트 시작", description = "플러그인 테스트를 시작하는 Api")
+    @PostMapping(value = "/plugin/run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Start Plugin Testing", description = "Initiates plugin testing, confirming functionality and results " +
+            "by conveying detailed test information and configurations.")
     public ResponseEntity<TestDTO.TestResponse> doPluginTest(@RequestPart(value="data") TestDTO.PluginRequest request,
                                                            @RequestPart(value="file", required = false) MultipartFile pluginSettings)  throws CustomException {
         TestDTO.TestResponse response = testService.doPluginTest(request, pluginSettings);
@@ -35,7 +43,7 @@ public class TestController {
     }
 
     @PostMapping("/log")
-    @Operation(summary = "플러그인 로그", description = "플러그인 로그 정보를 가져오는 Api")
+    @Operation(summary = "Plugin Logs", description = "Retrieves plugin log information through the 'Plugin Log Retrieval API.'")
     public ResponseEntity<LogDTO.LogResponse> getCrichtonLog(@RequestBody LogDTO.LogRequest request){
         LogDTO.LogResponse response = testService.getCrichtonLog(request);
         return ResponseEntity.ok(response);

@@ -1,6 +1,7 @@
 package crichton.domain.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PayloadDTO {
-    @Schema(description = "사용자 고유 ID", required = true)
+    @NotNull
+    @Schema(description = "User Unique ID")
     private String sub;
-    @Schema(description = "토큰 만료 시간 ", required = true)
+    @NotNull
+    @Schema(description = "Token Expiration Time ")
     private long exp;
 }

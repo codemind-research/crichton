@@ -9,9 +9,9 @@ public class LogDTO {
     @Setter
     @NoArgsConstructor
     public static class LogRequest{
-        @Schema(description = "최대 길이")
+        @Schema(description = "Maximum Length")
         private long maxline;
-        @Schema(description = "시작 위치")
+        @Schema(description = "Start Position")
         private int startpos;
     }
 
@@ -21,11 +21,11 @@ public class LogDTO {
     @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class LogResponse{
-        @Schema(description = "범위 이탈을 체크하는 기능")
+        @Schema(description = "Checking for Range Overflow")
         private Boolean overflow;
-        @Schema(description = "끝나는 위치")
+        @Schema(description = "End Position")
         private long endpos;
-        @Schema(description = "로그")
+        @Schema(description = "log")
         private StringBuilder text;
     }
 
