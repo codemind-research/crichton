@@ -1,149 +1,138 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Upload from "./UploadComp";
 import Select from "./SelectComp";
-import { Status, TestTypeInfo } from "../../../util/TypeDef";
 import ResultReport from "../../../util/Report/ResultReport";
+import { Status, PluginTestInfo } from "../../../util/TypeDef";
 import "./Test.scss";
 
 const TestComp = (props: any) => {
-  const token = window.localStorage.getItem("accessToken");
-  const status = props.status;
-  const projectPath = window.localStorage.getItem("projectPath");
+  const token: string | null = window.localStorage.getItem("accessToken");
+  const pluginList: Array<PluginTestInfo> = props.pluginList || [];
+  const status: Status = props.status;
 
-  const [testTypes, setTestTypes] = useState<{ whitebox: TestTypeInfo; injection: TestTypeInfo }>({
-    whitebox: { name: "whitebox", selected: false, isTesting: undefined, isSuccess: undefined },
-    injection: { name: "injection", selected: false, isTesting: undefined, isSuccess: undefined },
-  });
-  const [whiteBoxSettingFile, setWhiteBoxSettingFile] = useState<Blob>();
-  const [injectionDuration, setInjectionDuration] = useState<number>(60);
+  const [isUploadDone, setIsUploadDone] = useState<boolean>(false);
+  const [fileList, setFileList] = useState<Array<File>>([]);
+  const [projectPath, setProjectPath] = useState<string>("");
 
-  const canRunning: boolean =
-    (status === Status.Created || status === Status.Tested) &&
-    (testTypes.whitebox.selected || testTypes.injection.selected);
+  const canRunning: boolean = (status > Status.Created && status !== Status.Testing) || fileList.length > 0;
   const canReporting: boolean = status === Status.Tested;
 
   const uploadMarginStyle: Object = {
     marginLeft: "80px",
   };
 
-  const getTestType = (typeName: string): TestTypeInfo | undefined => {
-    switch (typeName) {
-      case testTypes.whitebox.name:
-        return testTypes.whitebox;
-      case testTypes.injection.name:
-        return testTypes.injection;
-      default:
-        return undefined;
+  useEffect(() => {
+    runTest();
+  }, [isUploadDone]);
+
+  const handleTargetDirSelect = (list: Array<File>) => {
+    setFileList(list);
+    setIsUploadDone(false);
+  };
+
+  const makeZipFile = async (fileList: File[]): Promise<any> => {
+    const zip = require("jszip")();
+
+    for (let file = 0; file < fileList.length; file++) {
+      zip.file(fileList[file].name, fileList[file]);
     }
-  };
 
-  const handleTypeSelectedChange = (typeName: string, checked: boolean): void => {
-    setTestTypes((prevTypes) => ({
-      ...prevTypes,
-      [typeName]: { ...getTestType(typeName), selected: checked },
-    }));
-  };
-
-  const handleSettingFileSelect = async (settingFile: File): Promise<void> => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const blobData = new Blob([reader.result as ArrayBuffer]);
-      setWhiteBoxSettingFile(blobData);
-    };
-
-    await reader.readAsArrayBuffer(settingFile);
-  };
-  const handleDurationChange = (duration: number) => {
-    setInjectionDuration(duration);
+    const zipped = await zip.generateAsync({
+      type: "blob",
+    });
+    return zipped;
   };
 
   const handleTestRunClick = async (): Promise<void> => {
+    if (!isUploadDone) {
+      const zipFile = await makeZipFile(fileList);
+      const formdata = new FormData();
+      formdata.append("file", zipFile, "crichton_project_temp.zip");
+
+      const response = await props.api.uploadFile(formdata, token);
+      if (response.successful) {
+        setProjectPath(response.result.unzipPath);
+        props.setStatus(Status.Created);
+        setIsUploadDone(true);
+      } else {
+        alert("Directory upload failed");
+      }
+    } else if (projectPath !== "") {
+      runTest();
+    }
+  };
+
+  const runTest = async (): Promise<void> => {
+    const testPluginList = pluginList.filter((plugin) => plugin.selected);
+    if (testPluginList.length === 0) return;
+
     props.setStatus(Status.Testing);
-    if (testTypes.whitebox.selected) await runWhiteBoxTest();
-    if (testTypes.injection.selected) await runInjectionTest();
+    await runPluginTest(testPluginList);
     props.setStatus(Status.Tested);
   };
 
-  const handleTypeStatusChange = (
-    testType: TestTypeInfo,
-    isTesting: boolean | undefined,
-    isSuccess: boolean | undefined
-  ): void => {
-    setTestTypes((prevTypes) => ({
-      ...prevTypes,
-      [testType.name]: { ...testType, isTesting: isTesting, isSuccess: isSuccess },
-    }));
-  };
+  const runPluginTest = async (testPluginList: Array<PluginTestInfo>): Promise<void> => {
+    for (const plugin of testPluginList) {
+      const formdata = new FormData();
 
-  const updateTestResultToType = (type: TestTypeInfo, result: string): void => {
-    let isSuccess;
-    if (result === "SUCCESS") isSuccess = true;
-    else isSuccess = false;
-    handleTypeStatusChange(type, false, isSuccess);
-  };
+      const settingFiles: Array<File> = [];
+      const pluginSettings: { [key: string]: string } = {};
+      plugin.settings.forEach((setting) => {
+        if (setting.type.toLowerCase() === "file" && setting.data) settingFiles.push(setting.data);
 
-  const runWhiteBoxTest = async (): Promise<void> => {
-    const formdata = new FormData();
+        const value =
+          setting.type.toLowerCase() === "file"
+            ? setting.data === undefined
+              ? ""
+              : setting.name
+            : setting.data.toString();
+        pluginSettings[setting.name] = value;
+      });
 
-    const jsonData = JSON.stringify({ sourcePath: projectPath });
-    const jsonBlob = new Blob([jsonData], { type: "application/json" });
-    formdata.append("data", jsonBlob);
+      if (settingFiles.length > 0) {
+        const zipFile = await makeZipFile(settingFiles);
+        formdata.append("file", zipFile, "setting.zip");
+      }
 
-    if (whiteBoxSettingFile != undefined) formdata.append("file", whiteBoxSettingFile);
+      const jsonData = JSON.stringify({
+        plugin: plugin.name,
+        sourcePath: projectPath,
+        pluginSettings: pluginSettings,
+      });
+      const jsonBlob = new Blob([jsonData], { type: "application/json" });
+      formdata.append("data", jsonBlob);
 
-    handleTypeStatusChange(testTypes.whitebox, true, undefined);
-    const response = await props.api.runWhiteboxTest(formdata, token);
-    updateTestResultToType(testTypes.whitebox, response.result.testResult);
-  };
-
-  const runInjectionTest = async (): Promise<void> => {
-    const formdata = new FormData();
-    const data = {
-      sourcePath: projectPath,
-      testDuration: injectionDuration,
-    };
-
-    const jsonData = JSON.stringify(data);
-    const jsonBlob = new Blob([jsonData], { type: "application/json" });
-    formdata.append("data", jsonBlob);
-
-    const response = await props.api.runInjectionTest(formdata, token);
-    updateTestResultToType(testTypes.injection, response.result.testResult);
+      plugin.isTesting = true;
+      const response = await props.api.runPluginTest(formdata, token);
+      plugin.isTesting = false;
+      plugin.isSuccess = response.successful && response.result.testResult;
+    }
   };
 
   const handleDownloadClick = async (): Promise<void> => {
-    const data = {
-      sourcePath: projectPath,
-    };
-    const response = await props.api.getReportData(data, token);
-    showCrichtonHtmlReport(response.result);
-  };
-
-  const showCrichtonHtmlReport = (reportData: object): void => {
-    const data = {
-      reportData: reportData,
-      testType: testTypes,
-    };
-    const htmlCode: string = ResultReport(data);
+    const response = await props.api.getReportData(token);
+    if (!response.successful) {
+      alert("Failed to generate the result report");
+      return;
+    }
+    const htmlCode: string = ResultReport({ reportData: response.result.data });
+    console.log(htmlCode);
     const newTab: Window | null = window.open();
     if (newTab != null) newTab.document.body.innerHTML = htmlCode;
   };
 
   return (
     <div className="running_test_component">
-      <Select
-        testType={testTypes}
-        duration={injectionDuration}
-        testTypeChange={handleTypeSelectedChange}
-        settingFileSelect={handleSettingFileSelect}
-        durationChange={handleDurationChange}
-      />
-      <hr />
+      <Upload fileList={fileList} setFileList={handleTargetDirSelect} isTesting={status === Status.Testing} />
+      <div className="test_plugin_component">
+        <Select pluginList={pluginList} />
+      </div>
       <div className="test_option_button">
+        <hr />
         <button onClick={handleTestRunClick} disabled={!canRunning}>
           Run
         </button>
-        <button onClick={handleDownloadClick} style={uploadMarginStyle} disabled={!canReporting}>
+        <button onClick={handleDownloadClick} style={uploadMarginStyle}>
           Download Report
         </button>
       </div>

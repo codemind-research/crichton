@@ -34,7 +34,7 @@ export default function Style() {
           font-size: 50px;
           margin-top: 10px;
         }
-        .proData {
+        .projectInfo {
           flex: 1;
           display: flex;
           justify-content: flex-end;
@@ -43,58 +43,40 @@ export default function Style() {
           font-weight: bold;
           padding: 20px;
         }
-        .testType {
+        .plguinSubTitle {
           font-size: 30px;
           font-weight: bold;
           margin-bottom: 20px;
         }
-        .table {
+        .info_table {
           font-size: 12px;
           border-collapse: collapse;
           margin-bottom: 50px;
         }
-        .table td,
-        .table th {
+        .info_table td,
+        .info_table th {
           border: 1px solid #ddd;
           padding: 8px;
         }
-        .table th {
+        .info_table th {
           padding-top: 12px;
           padding-bottom: 12px;
           text-align: left;
           background-color: #585858;
           color: white;
         }
+        .info_table th.success {
+          background: #317931;
+        }
+        .info_table th.failed {
+          background: #793131;
+        }
+
         .page.extend {
           height: fit-content;
         }
-        .fileinfo th.bulidError {
-          background: #793131;
-        }
-        .fileinfo {
-          border-collapse: collapse;
-          width: 100%;
-          margin-bottom: 20px;
-        }
         .dirpath {
           opacity: 0.7;
-        }
-
-        .fileinfo th {
-          padding: 10px 5px;
-          background-color: #585858;
-          color: white;
-        }
-        .fileinfo th,
-        .fileinfo td {
-          border: 1px solid #ddd;
-          padding: 5px;
-          text-align: center;
-          font-size: 12px;
-        }
-        .fileinfo th:first-of-type,
-        .fileinfo td:first-of-type {
-          text-align: left !important;
         }
       }
       </style>

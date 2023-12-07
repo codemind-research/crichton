@@ -10,36 +10,41 @@ const LogComp = (props: any) => {
 
   useEffect(() => {
     const status = props.status;
+    let logPos = 0;
     switch (status) {
-      case Status.Created:
+      case Status.Testing.valueOf():
         setLogData([]);
-        break;
-      case Status.Testing:
         setLogInterval(
           setInterval(async (): Promise<void> => {
-            await getLogFromServer();
-            setScrollLocation();
+            logPos = await getLogFromServer(logPos);
           }, 5000)
         );
         break;
-      case Status.Tested:
+      case Status.Tested.valueOf():
         if (logInterval !== undefined) {
           clearInterval(logInterval);
           setLogInterval(undefined);
-          getLogFromServer();
-          setScrollLocation();
+          getLogFromServer(logPos);
         }
         break;
       default:
     }
   }, [props.status]);
 
-  const getLogFromServer = async (): Promise<void> => {
-    const response = await props.api.getTestProgress(token);
-    const newLog: Array<string> = response.result.progress.split("\n");
+  useEffect(() => {
+    setScrollLocation();
+  }, [logData]);
+
+  const getLogFromServer = async (logPos: number): Promise<number> => {
+    const data = { maxline: 100000, startpos: logPos };
+    const response = await props.api.getTestProgress(data, token);
+    if (!response.successful) return logPos;
+    const result = response.result;
+    const newLog: Array<string> = result.text.split("\n");
     newLog.forEach((log: string) => {
       setLogData((prevLog) => [...prevLog, log]);
     });
+    return result.endpos;
   };
 
   const setScrollLocation = async (): Promise<void> => {
