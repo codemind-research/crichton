@@ -1,12 +1,15 @@
 package coyote.report;
 
-import java.util.HashMap;
-import java.util.List;
+import coyote.enumerations.Coverage;
+import coyote.enumerations.TestCase;
 
-public class ProjectInfo extends Information<HashMap<String,String>>{
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class ProjectInfo extends Information<LinkedHashMap<String,Object>>{
 
     protected ProjectInfo(List<String> projectLines) {
-        super(new HashMap<>());
+        super(new LinkedHashMap<>());
         parser(projectLines);
     }
 
@@ -32,6 +35,17 @@ public class ProjectInfo extends Information<HashMap<String,String>>{
                 }
             }
         }
+    }
+
+    public void generateTestCaseMap () {
+        LinkedHashMap<String, Object> testcaseMap = new LinkedHashMap<>();
+        Arrays.stream(TestCase.values()).toList().forEach( testCase -> {
+            String key = testCase.getType();
+            String value = getInfo().get(key).toString();
+            getInfo().remove(key);
+            testcaseMap.put(key,value);
+        });
+        getInfo().put("testcase", testcaseMap);
     }
 
 }

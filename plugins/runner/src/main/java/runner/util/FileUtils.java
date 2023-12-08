@@ -1,6 +1,10 @@
 package runner.util;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class FileUtils {
 
@@ -33,6 +37,20 @@ public class FileUtils {
             return false;
         }
         return true;
+    }
+
+    public static void moveFile(String current, String targetDirectory) {
+        Path currentPath = Paths.get(current);
+        Path targetPath = Paths.get(targetDirectory, currentPath.getFileName().toString());
+        moveFileByPath(currentPath, targetPath);
+    }
+
+    public static void moveFileByPath(Path currentPath, Path targetPath) {
+        try {
+            Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -37,5 +37,8 @@ public class PluginPaths {
         return PLUGIN_DIR_PATH.resolve(pluginName).resolve(PLUGIN_PROPERTY_FILE);
     }
 
+    public static Path generatePluginSettingsPath(String pluginName) {
+        return PLUGIN_DIR_PATH.resolve(pluginName).resolve("setting");
+    }
 
 }

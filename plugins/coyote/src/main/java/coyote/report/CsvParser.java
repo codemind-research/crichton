@@ -1,11 +1,12 @@
 package coyote.report;
 
+import coyote.enumerations.Coverage;
+import coyote.enumerations.RemoveType;
+import coyote.enumerations.Total;
 import coyote.util.RegexPatterns;
 import runner.dto.ProcessedReportDTO;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -24,25 +25,34 @@ public class CsvParser {
     public static ProcessedReportDTO parser(String csvData) {
         List<String> lines = Arrays.stream(csvData.split("\n"))
                                    .toList();
-        HashMap<String,String> projectInfo = new ProjectInfo(lines.
-                subList(findProjectIndex(lines),findFileIndex(lines)))
-                .getInfo();
+        ProjectInfo projectInfo = new ProjectInfo(lines.
+                subList(findProjectIndex(lines),findFileIndex(lines)));
+        FileInfo fileInfo = new FileInfo(lines
+                .subList(findFileIndex(lines), findFileTotalIndex(lines)));
+        UnitInfo unitInfo = new UnitInfo(lines
+                .subList(findUnitIndex(lines), findUnitTotalIndex(lines)));
 
-        List<HashMap<String,String>> fileInfo = new FileInfo(lines
-                .subList(findFileIndex(lines), findFileTotalIndex(lines))).
-                getInfo();
-
-        List<HashMap<String, String>> unitInfo = new UnitInfo(lines
-                .subList(findUnitIndex(lines), findUnitTotalIndex(lines))).
-                getInfo();
+        Coverage.convertCoverageOfList(fileInfo);
+        Coverage.convertCoverageOfList(unitInfo);
+        fileInfo.combineUnitInfo(unitInfo.getInfo());
 
         List<Integer> totalIndex = List.of(findFileIndex(lines),findFileTotalIndex(lines),findUnitIndex(lines), findUnitTotalIndex(lines));
         List<String> totalLines = IntStream.range(0, lines.size())
                                            .filter(totalIndex::contains)
                                            .mapToObj(lines::get)
                                            .toList();
-        new TotalInfo(totalLines).getInfo().forEach(projectInfo::putIfAbsent);
-        return ProcessedReportDTO.builder().plugin("coyote").build();
+        new TotalInfo(totalLines).getInfo().forEach(projectInfo.getInfo()::putIfAbsent);
+        Coverage.convertCoverage(projectInfo);
+        Total.convertTotal(projectInfo);
+        RemoveType.removeTypeInformation(projectInfo);
+        projectInfo.generateTestCaseMap();
+
+
+        LinkedHashMap<String,Object> info = new LinkedHashMap<>();
+        info.put("project",projectInfo.getInfo());
+        info.put("file",fileInfo.getInfo());
+
+        return ProcessedReportDTO.builder().pluginName("coyote").info(info).build();
     }
 
     private static int findProjectIndex(List<String> lines) {

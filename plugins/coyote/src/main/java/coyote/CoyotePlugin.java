@@ -1,5 +1,6 @@
 package coyote;
 
+import coyote.process.CoyoteRunner;
 import coyote.report.CsvParser;
 import coyote.setting.CoyoteSetting;
 import lombok.NonNull;
@@ -32,7 +33,7 @@ public class CoyotePlugin implements Plugin {
     }
 
     @Override
-    public void initialize(@NonNull String targetSource, Map<String, String> coyoteSetting) {
+    public void initialize(@NonNull String pluginName, @NonNull String targetSource, Map<String, String> coyoteSetting) {
         this.targetSource = targetSource;
         CoyoteSetting setting = new CoyoteSetting(coyoteSetting);
         this.reportFile = new File(setting.getReport());
@@ -41,42 +42,22 @@ public class CoyotePlugin implements Plugin {
 
     @Override
     public boolean execute() {
+        return new CoyoteRunner(targetSource,reportFile,projectSetting).run();
+    }
+
+    @Override
+    public ProcessedReportDTO transformReportData() {
         try {
-            Process process = buildProcess(buildCommand().getCommand()).start();
-            int exitCode = process.waitFor();
-            return exitCode == 0;
-        }catch (Exception e){
-            return false;
+            if (!reportFile.exists())
+                return new ProcessedReportDTO();
+            StringBuilder csvData = FileUtils.readFile(reportFile);
+            return CsvParser.parser(csvData.toString());
+        }catch (Exception e) {
+            return ProcessedReportDTO.builder()
+                                     .build();
         }
     }
 
-    @Override
-    public ProcessBuilder buildProcess(@NonNull List<String> command) {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command(command);
-        processBuilder.redirectErrorStream(true);
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(OUTPUT_PATH.toFile()));
-        return processBuilder;
-    }
-
-    @Override
-    public ProcessedReportDTO transformReportData() throws Exception {
-        if (!reportFile.exists())
-            return new ProcessedReportDTO();
-        StringBuilder csvData = FileUtils.readFile(reportFile);
-        return CsvParser.parser(csvData.toString());
-    }
-
-    @Override
-    public CommandBuilder buildCommand() {
-        CommandBuilder command = new CommandBuilder();
-        command.addOption("coyoteCli");
-        command.addOption("-n", targetSource);
-        command.addOption("-o", reportFile.getAbsolutePath());
-        command.checkAndAddOption("-p", projectSetting.getAbsolutePath(),
-                () -> projectSetting.exists() && projectSetting.isFile());
-        return command;
-    }
 
 
 }

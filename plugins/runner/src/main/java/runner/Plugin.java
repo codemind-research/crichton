@@ -29,32 +29,14 @@ public interface Plugin {
      * @param pluginSetting  A map containing plugin-specific settings.
      * @throws IOException   If an I/O error occurs during initialization.
      */
-    void initialize(@NonNull String targetSource, Map<String,String> pluginSetting) throws IOException;
+    void initialize(@NonNull String pluginName, @NonNull String targetSource, Map<String,String> pluginSetting) throws Exception;
 
     /**
      * Executes the plugin.
      *
      * @return true if the plugin execution is successful, false otherwise.
      */
-    boolean execute() throws IOException;
-
-    /**
-     * Creates a CommandBuilder for plugin-related commands.
-     * @return A CommandBuilder instance for building plugin commands.
-     */
-    default CommandBuilder buildCommand() {
-        return new CommandBuilder();
-    }
-
-    /**
-     * Creates a ProcessBuilder for plugin-related processes.
-     *
-     * @param command The command to be executed.
-     * @return A ProcessBuilder instance for building and executing plugin processes.
-     */
-    default ProcessBuilder buildProcess(@NonNull List<String> command){
-        return new ProcessBuilder();
-    }
+    boolean execute() throws Exception;
 
     /**
      * Transforms plugin-related report data for further processing.
@@ -62,7 +44,7 @@ public interface Plugin {
      * @return A ProcessedReportDTO containing the transformed report data.
      * @throws Exception If an error occurs during the transformation process.
      */
-    ProcessedReportDTO transformReportData() throws Exception;
+    ProcessedReportDTO transformReportData();
 
 
 }

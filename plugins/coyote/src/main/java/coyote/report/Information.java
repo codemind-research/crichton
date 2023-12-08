@@ -36,7 +36,10 @@ public abstract class Information<T> {
     }
 
     protected String removeSpacingAndMCDC(String value) {
-        return value.replaceAll("\\s+","").replaceAll("MC/DC","Pair");
+        return value.replaceAll("\\s+","")
+                .replaceAll("MC/DCCoverage","MC/DC_Coverage")
+                .replaceAll("BranchCoverage","Branch_Coverage")
+                .replaceAll("LineCoverage","Line_Coverage");
     }
 
 }

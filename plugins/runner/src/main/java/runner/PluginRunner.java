@@ -50,14 +50,14 @@ public class PluginRunner implements Runner  {
     @Override
     public RunResult run(@NonNull String targetSource, Map<String, String> pluginSetting) {
         try {
-            plugin.initialize(targetSource, pluginSetting);
-            String start = String.format("\n***************** Start of Plugin : %s ***************** \n", pluginName);
+            plugin.initialize(pluginName, targetSource, pluginSetting);
+            String start = String.format("\nStart of Plugin : %s  \n", pluginName);
             FileUtils.overWriteDump(PluginPaths.CRICHTON_LOG_PATH.toFile(),start,"\n");
             boolean runResult = plugin.execute();
-//            ProcessedReportDTO data = plugin.transformReportData();
-            String end = String.format("\n***************** End of Plugin : %s ***************** \n", pluginName);
+            ProcessedReportDTO data = plugin.transformReportData();
+            String end = String.format("\nPlugin completed : %s  \n", pluginName);
             FileUtils.overWriteDump(PluginPaths.CRICHTON_LOG_PATH.toFile(),end,"\n");
-            return new RunResult(runResult , new ProcessedReportDTO());
+            return new RunResult(runResult , data);
         }catch (Exception e) {
             logger.error("Test Failed Plugin Run: " +pluginName);
             return new RunResult(false, new ProcessedReportDTO());

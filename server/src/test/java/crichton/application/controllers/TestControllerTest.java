@@ -135,8 +135,6 @@ public class TestControllerTest {
     }
 
 
-
-
     @Test
     @Order(3)
     void doPluginTestBlankException() throws Exception {
@@ -221,6 +219,13 @@ public class TestControllerTest {
                .andDo(MockMvcResultHandlers.print());
     }
 
-
+    @Test
+    void getData() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/report/data")
+                                              .header("Authorization", accessToken)
+                                              .header("RefreshToken", refreshToken))
+               .andExpect(MockMvcResultMatchers.status().isOk())
+               .andDo(MockMvcResultHandlers.print());
+    }
 
 }

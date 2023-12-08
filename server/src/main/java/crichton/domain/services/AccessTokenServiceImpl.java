@@ -21,12 +21,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccessTokenServiceImpl implements AccessTokenService{
 
-    //TODO : SECRET_KEY DB 추가되면 DB 에저장
+    //TODO : If SECRET_KEY is added in the future, store it in the database.
     private final static byte[] SECRET_KEY = generateSecretKey();
 
     private final ObjectMapper objectMapper;
 
-    private Long expirationTimeMillis = 60 * 60 *1000L; //1시간 제한
+    private Long expirationTimeMillis = 60 * 60 *1000L; // one hour limit
 
     private static byte[] generateSecretKey() {
         byte[] keyBytes = new byte[32];
@@ -71,12 +71,11 @@ public class AccessTokenServiceImpl implements AccessTokenService{
         return token + "." +payload + "." + signature;
     }
 
-    // 토큰 무결성 검사 추가 및 서명 검사
     @Override
     public boolean validateAccessToken(String token, PayloadDTO payloadDTO) {
         String[] parts = token.split("\\.");
         if (parts.length != 3 || payloadDTO == null)
-            return false; // 토큰 형식이 잘못되었음
+            return false;
 
         String payload = parts[1];
         String signature = parts[2];

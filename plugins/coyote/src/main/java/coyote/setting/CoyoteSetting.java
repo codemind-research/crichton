@@ -1,5 +1,7 @@
 package coyote.setting;
 
+import runner.paths.PluginPaths;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -19,6 +21,6 @@ public class CoyoteSetting {
     }
 
     public String getProjectSetting() {
-        return Paths.get(System.getProperty("user.home"),".crichton","plugins","coyote","setting",projectSetting).toFile().getAbsolutePath();
+        return Paths.get(PluginPaths.generatePluginSettingsPath("coyote").toString() ,projectSetting).toFile().getAbsolutePath();
     }
 }

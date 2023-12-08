@@ -33,9 +33,6 @@ public class TestDTO {
         @NotNull
         @Schema(description = "Test Result")
         private Boolean testResult;
-        @NotNull
-        @Schema(description = "Report Data")
-        private ProcessedReportDTO reportData;
     }
 
     @Getter

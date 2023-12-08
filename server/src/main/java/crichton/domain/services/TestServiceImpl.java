@@ -1,5 +1,6 @@
 package crichton.domain.services;
 
+import crichton.Infrastructure.store.TestResultMemoryStorage;
 import crichton.application.exceptions.CustomException;
 import crichton.application.exceptions.code.FailedErrorCode;
 import crichton.domain.dtos.LogDTO;
@@ -7,6 +8,7 @@ import crichton.domain.dtos.TestDTO;
 import crichton.paths.DirectoryPaths;
 import crichton.util.FileUtils;
 import crichton.util.PropertyFileReader;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,10 @@ import java.io.IOException;
 import java.util.*;
 
 @Service("TestService")
+@RequiredArgsConstructor
 public class TestServiceImpl implements TestService{
+
+    private final TestResultMemoryStorage storage;
 
     @Override
     public TestDTO.TestResponse doPluginTest(TestDTO.PluginRequest request, MultipartFile settings) throws CustomException {
@@ -34,9 +39,9 @@ public class TestServiceImpl implements TestService{
             throw new CustomException(FailedErrorCode.NOT_EXIST_TARGET_DIRECTORY);
         makeSettings(plugin, settings);
         RunResult pluginTestDone = runPluginTest(plugin, targetSource, request.getPluginSettings());
+        storage.storeTestResult(pluginTestDone.getData());
         return TestDTO.TestResponse.builder()
                                    .testResult(pluginTestDone.getIsSuccess())
-                                   .reportData(pluginTestDone.getData())
                                    .build();
     }
 

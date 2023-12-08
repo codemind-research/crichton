@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group 'com.codemind.crichton.plugins'
+version '1.0'
+
+configurations.implementation.setCanBeResolved(true)
+jar {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    manifest {
+        attributes 'Main-Class': 'injector.DefectInjectorPlugin'
+        attributes 'GIT_HASH': 'git describe --long --abbrev=8'.execute().text.trim()
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'commons-io:commons-io:2.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}

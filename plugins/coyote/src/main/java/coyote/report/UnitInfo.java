@@ -2,13 +2,10 @@ package coyote.report;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
-public class UnitInfo extends Information<List<HashMap<String,String>>> {
+public class UnitInfo extends Information<List<LinkedHashMap<String,Object>>> {
 
     protected UnitInfo(List<String> unitLines) {
         super(new ArrayList<>());
@@ -17,7 +14,7 @@ public class UnitInfo extends Information<List<HashMap<String,String>>> {
 
     @Override
     protected void addInfo(Object... values) {
-        getInfo().add((HashMap<String,String>) values[0]);
+        getInfo().add((LinkedHashMap<String,Object>) values[0]);
     }
 
 
@@ -38,7 +35,7 @@ public class UnitInfo extends Information<List<HashMap<String,String>>> {
         List<String> column = lists.get(0);
         String filename = "";
         for (int i = 1; i < lists.size(); i++) {
-            HashMap<String, String> hashMap = new HashMap<>();
+            LinkedHashMap<String, String> hashMap = new LinkedHashMap<>();
             List<String> currentList = lists.get(i);
             filename = currentList.get(0).isEmpty() ? filename: (currentList.get(0));
             hashMap.put(column.get(0), filename);
