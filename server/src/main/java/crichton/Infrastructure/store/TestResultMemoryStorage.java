@@ -8,23 +8,28 @@ import java.util.LinkedList;
 
 @Component("TestResult")
 public class TestResultMemoryStorage {
-    private final LinkedList<ProcessedReportDTO> testResults;
+    private final LinkedHashMap<String, LinkedHashMap<String,Object>> testResults;
 
     public TestResultMemoryStorage() {
-        this.testResults = new LinkedList<>();
+        this.testResults = new LinkedHashMap<>();
     }
 
     public void storeTestResult(ProcessedReportDTO result) {
-        testResults.add(result);
+        testResults.put(result.getPluginName(), result.getInfo());
     }
 
-    public ProcessedReportDTO getTestResult(String pluginName) {
-        return testResults.stream()
-                          .filter(result -> result.getPluginName().equals(pluginName))
-                          .findAny().orElseGet(ProcessedReportDTO::new);
+    public LinkedHashMap<String,Object> getTestResult(String pluginName) {
+        return testResults.getOrDefault(pluginName, new LinkedHashMap<>());
     }
 
     public LinkedList<ProcessedReportDTO> getAllTestResults() {
-        return new LinkedList<>(testResults);
+        LinkedList<ProcessedReportDTO> allTestResults = new LinkedList<>();
+        testResults.forEach( (key, value) -> {
+            allTestResults.add(ProcessedReportDTO.builder()
+                                         .pluginName(key)
+                                         .info(value)
+                                         .build());
+        });
+        return allTestResults;
     }
 }
