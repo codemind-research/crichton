@@ -48,9 +48,9 @@ public class CoyotePlugin implements Plugin {
     @Override
     public ProcessedReportDTO transformReportData() {
         try {
-            if (!reportFile.exists())
+            if (!this.reportFile.exists())
                 return new ProcessedReportDTO();
-            StringBuilder csvData = FileUtils.readFile(reportFile);
+            StringBuilder csvData = FileUtils.readFile(this.reportFile);
             return CsvParser.parser(csvData.toString());
         }catch (Exception e) {
             return ProcessedReportDTO.builder()

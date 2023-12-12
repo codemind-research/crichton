@@ -12,15 +12,15 @@ public class CoyoteSetting {
     private String projectSetting;
 
     public CoyoteSetting(Map<String, String> coyoteSetting) {
-        this.report = coyoteSetting.getOrDefault("report","");
+        this.report = coyoteSetting.getOrDefault("report","crichton_unitTest.csv");
         this.projectSetting = coyoteSetting.getOrDefault("projectSetting","");
     }
 
     public String getReport() {
-        return Paths.get(System.getProperty("user.home"),"coyoteCli","report",report).toFile().getAbsolutePath();
+        return Paths.get(System.getProperty("user.home"),"coyoteCli","report", this.report).toFile().getAbsolutePath();
     }
 
     public String getProjectSetting() {
-        return Paths.get(PluginPaths.generatePluginSettingsPath("coyote").toString() ,projectSetting).toFile().getAbsolutePath();
+        return Paths.get(PluginPaths.generatePluginSettingsPath("coyote").toString() , this.projectSetting).toFile().getAbsolutePath();
     }
 }

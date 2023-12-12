@@ -43,28 +43,30 @@ public enum Coverage {
 
     public static void convertCoverage (Information<LinkedHashMap<String,Object>> information) {
         Arrays.stream(Coverage.values()).toList().forEach( coverage -> {
-            String executeValue = information.getInfo().get(coverage.getExecute()).toString();
-            String totalValue = information.getInfo().get(coverage.getTotal()).toString();
-            String coverageValue = information.getInfo().get(coverage.getCoverage()).toString();
+            String executeValue = information.getInfo().getOrDefault(coverage.getExecute(),"").toString();
+            String totalValue = information.getInfo().getOrDefault(coverage.getTotal(),"").toString();
+            String coverageValue = information.getInfo().getOrDefault(coverage.getCoverage(),"").toString();
             String concatenatedValue = coverageValue.equals(coverage.getNotExist()) ? coverageValue :
                     coverageFormat(executeValue,totalValue,coverageValue);
             information.getInfo().remove(coverage.getExecute());
             information.getInfo().remove(coverage.getTotal());
-            information.getInfo().put(coverage.getCoverage(),concatenatedValue);
+            if (!coverageValue.isBlank())
+                information.getInfo().put(coverage.getCoverage(),concatenatedValue);
         });
     }
 
     public static void convertCoverageOfList (Information<List<LinkedHashMap<String,Object>>> information) {
         Arrays.stream(Coverage.values()).toList().forEach(coverage -> {
             information.getInfo().forEach( info -> {
-                String executeValue = info.get(coverage.getExecute()).toString();
-                String totalValue = info.get(coverage.getTotal()).toString();
-                String coverageValue = info.get(coverage.getCoverage()).toString();
+                String executeValue = info.getOrDefault(coverage.getExecute(), "").toString();
+                String totalValue = info.getOrDefault(coverage.getTotal(),"").toString();
+                String coverageValue = info.getOrDefault(coverage.getCoverage(),"").toString();
                 String concatenatedValue = coverageValue.equals(coverage.getNotExist()) ? coverageValue :
                         coverageFormatAddPercent(executeValue,totalValue,coverageValue);
                 info.remove(coverage.getExecute());
                 info.remove(coverage.getTotal());
-                info.put(coverage.getCoverage(),concatenatedValue);
+                if (!coverageValue.isBlank())
+                    info.put(coverage.getCoverage(),concatenatedValue);
             });
         });
     }

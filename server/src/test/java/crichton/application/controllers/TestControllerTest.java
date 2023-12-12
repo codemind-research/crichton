@@ -112,7 +112,6 @@ public class TestControllerTest {
         );
         TestDTO.PluginRequest request = new TestDTO.PluginRequest();
         HashMap<String,String> settings = new HashMap<>();
-        settings.put("report","crichton_unitTest.csv");
         settings.put("projectSetting", "projectSetting_default.json");
         request.setSourcePath(sourcePath);
         request.setPlugin("coyote");
