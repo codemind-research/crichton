@@ -17,7 +17,7 @@ const LogComp = (props: any) => {
         setLogInterval(
           setInterval(async (): Promise<void> => {
             logPos = await getLogFromServer(logPos);
-          }, 5000)
+          }, 3000)
         );
         break;
       case Status.Tested.valueOf():

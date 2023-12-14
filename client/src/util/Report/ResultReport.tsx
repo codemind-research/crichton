@@ -2,9 +2,11 @@ import { PluginResult } from "../TypeDef";
 import Style from "./Style";
 
 export default function ResultReport(props: any) {
-  const reportData: Array<PluginResult> = props.data;
+  const reportData: Array<PluginResult> = props.reportData;
 
   const dividingLine = `<p style="page-break-before: always"></p>`;
+  const basicTableName = "info_table";
+  const childTablename = "child_table";
 
   const getCoverPage = (): string => {
     const currentDate = new Date();
@@ -25,104 +27,56 @@ export default function ResultReport(props: any) {
     </div>`;
   };
 
-  const getObjectArrayInfoTableRow = (infoItems: Array<{ [key: string]: any }>, nameArray: Array<string>): string => {
-    return infoItems
-      .map((items) => {
-        const itemNames = Object.keys(items);
-        const rowName = itemNames.find((itemName) => itemName.toLowerCase().includes("name"));
-        const rowPath = itemNames.find((itemName) => itemName.toLowerCase().includes("path"));
-        const rowTitle = rowName !== undefined ? rowName : rowPath !== undefined ? rowPath : "";
+  const getClassName = (infoItems: { [key: string]: any }): string => {
+    const statusName: string | undefined = Object.keys(infoItems).find((itemName) => {
+      const name = itemName.toLowerCase();
+      return name.includes("success") || name.includes("status");
+    });
 
-        const tableDatas = nameArray.map((name) => `<td id="${name}">${items[name]}</td>`).join("");
-        return `
-          <tr>
-            <td>${items[rowTitle]}</td>
-            ${tableDatas}
-          </tr>
-        `;
-      })
-      .join("");
+    if (statusName === undefined) return "";
+    else if (typeof infoItems[statusName] === "boolean") return infoItems[statusName] ? "success" : "failed";
+    else return infoItems[statusName].toLowerCase().includes("success") ? "success" : "failed";
   };
 
-  const getObjectArrayInfoTable = (infoItems: { [key: string]: any }, className: string): string => {
-    const innerObjName: Array<string> = [];
-    const outerObj = Object.keys(infoItems);
-    const outerObjName = outerObj.filter((itemName) => typeof infoItems[itemName] !== "object");
-
-    const arrayObj: Array<{ [key: string]: any }> =
-      infoItems[outerObj.filter((itemName) => Array.isArray(infoItems[itemName]))[0]];
-    Object.keys(arrayObj[0]).forEach((name) => innerObjName.push(name));
-
-    const outerTitle = outerObjName.find(
-      (name) => name.toLowerCase().includes("path") || name.toLowerCase().includes("name")
-    );
-    const tableTitle =
-      outerTitle !== undefined
-        ? outerTitle
-        : arrayObj
-            .map((item) => Object.values(item))
-            .reduce((preItem, currentItem) => preItem.filter((pre) => currentItem.includes(pre)))
-            .filter((item) => isNaN(parseInt(item, 10)) && !isFinite(parseFloat(item)))[0];
-
-    const commonNames: Array<string> = innerObjName.filter((inner) => outerObjName.includes(inner));
-
-    const tableHeads = commonNames
-      .map((name) => `<th class="${className}">${name.replace(/[_-]/g, " ").replace(/([A-Z])/g, " $1")}</th>`)
-      .join("");
-    const tableDatas = getObjectArrayInfoTableRow(arrayObj, commonNames);
-
+  const getObjectInfoTableRow = (value: any, key: string): string => {
     return `
-      <table class="info_table">
-        <tr>
-            <th colspan="${commonNames.length + 1}" class="${className}">${tableTitle}</th>
-        </tr>
-        <tr>
-        <th class="${className}"></th>
-        ${tableHeads}
-        </tr>
-        ${tableDatas}
-      </table>
+      <tr>
+        <td width="30%">${key}</td>
+        <td id="${key}">${value}</td>
+      </tr>
     `;
   };
 
-  const getObjectInfoTableRow = (infoItems: { [key: string]: any }): string => {
-    return Object.keys(infoItems)
-      .filter((itemName) => itemName !== "isSuccess" && itemName !== "Status")
-      .map((itemName) => {
-        return `
-        <tr>
-          <td width="30%">${itemName}</td>
-          <td id="${itemName}">${infoItems[itemName]}</td>
-        </tr>
-      `;
-      })
-      .join("");
-  };
+  const writeTableCode = (infoItems: { [key: string]: any }, tableClassName: string, tableTitle: string): string => {
+    const childTableCodes: Array<string> = [];
+    const tableRows: Array<string> = [];
 
-  const writeTableCode = (infoItems: { [key: string]: any }, className: string, tableTitle: string): string => {
-    const items = Object.keys(infoItems);
-    if (items.filter((itemName) => typeof infoItems[itemName] === "object").length > 0)
-      return getObjectArrayInfoTable(infoItems, className);
+    const className = getClassName(infoItems);
+    const items = new Map(Object.entries(infoItems));
+
+    items.forEach((value, key) => {
+      if (Array.isArray(value)) childTableCodes.push(getArrayInfoTable(value, childTablename, key));
+      else if (typeof value === "object") childTableCodes.push(writeTableCode(infoItems[key], childTablename, key));
+      else tableRows.push(getObjectInfoTableRow(value, key));
+    });
 
     return `
-      <table class="info_table">
+      <table class="${tableClassName}">
         <tr>
             <th colspan="2" class="${className}">${tableTitle}</th>
         </tr>
-        ${getObjectInfoTableRow(infoItems)}
+        ${tableRows.join("")}
       </table>
+      ${childTableCodes.join("")}
     `;
   };
 
-  const getArrayInfoTable = (infoItems: Array<{ [key: string]: any }>): string => {
-    return infoItems
-      .map((items) => {
-        const status: string | undefined = items["Status"];
-        const className = status === undefined ? "none" : status === "TEST_SUCCESS" ? "success" : "failed";
-        const tableTitle = items["name"] === undefined ? "" : items["name"];
-        return writeTableCode(items, className, tableTitle);
-      })
-      .join("");
+  const getArrayInfoTable = (
+    infoItems: Array<{ [key: string]: any }>,
+    tableClassName: string,
+    tableTitle: string
+  ): string => {
+    return infoItems.map((items) => writeTableCode(items, tableClassName, tableTitle)).join("");
   };
 
   const getInfoTableData = (info: {
@@ -133,12 +87,9 @@ export default function ResultReport(props: any) {
     return Object.keys(info)
       .map((tableTitle) => {
         const infoItems = info[tableTitle];
-        if (Array.isArray(infoItems)) return getArrayInfoTable(infoItems);
 
-        const isSuccess: boolean | undefined = infoItems["isSuccess"];
-        const className = isSuccess === undefined ? "none" : isSuccess ? "success" : "failed";
-
-        return writeTableCode(infoItems, className, tableTitle);
+        if (Array.isArray(infoItems)) return getArrayInfoTable(infoItems, basicTableName, tableTitle);
+        else return writeTableCode(infoItems, basicTableName, tableTitle);
       })
       .join("");
   };

@@ -14,7 +14,7 @@ const TestComp = (props: any) => {
   const [fileList, setFileList] = useState<Array<File>>([]);
   const [projectPath, setProjectPath] = useState<string>("");
 
-  const canRunning: boolean = (status > Status.Created && status !== Status.Testing) || fileList.length > 0;
+  const canRunning: boolean = (status > Status.Created || fileList.length > 0) && status !== Status.Testing;
   const canReporting: boolean = status === Status.Tested;
 
   const uploadMarginStyle: Object = {
@@ -116,7 +116,6 @@ const TestComp = (props: any) => {
       return;
     }
     const htmlCode: string = ResultReport({ reportData: response.result.data });
-    console.log(htmlCode);
     const newTab: Window | null = window.open();
     if (newTab != null) newTab.document.body.innerHTML = htmlCode;
   };
@@ -132,7 +131,7 @@ const TestComp = (props: any) => {
         <button onClick={handleTestRunClick} disabled={!canRunning}>
           Run
         </button>
-        <button onClick={handleDownloadClick} style={uploadMarginStyle}>
+        <button onClick={handleDownloadClick} style={uploadMarginStyle} disabled={!canReporting}>
           Download Report
         </button>
       </div>

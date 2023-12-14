@@ -48,30 +48,43 @@ export default function Style() {
           font-weight: bold;
           margin-bottom: 20px;
         }
-        .info_table {
+        
+        table {
           font-size: 12px;
           border-collapse: collapse;
-          margin-bottom: 50px;
         }
-        .info_table td,
-        .info_table th {
+        table td,
+        table th {
           border: 1px solid #ddd;
           padding: 8px;
         }
-        .info_table th {
+        table th {
           padding-top: 12px;
           padding-bottom: 12px;
           text-align: left;
-          background-color: #585858;
-          color: white;
         }
         .info_table th.success {
           background: #317931;
+          color: white;
         }
         .info_table th.failed {
           background: #793131;
+          color: white;
         }
-
+        .info_table {
+          margin-top: 30px;
+        }
+        .info_table th {
+          background-color: #585858;
+          color: white;
+        }
+        .child_table {
+          margin-top: 15px;
+        }
+        .child_table th {
+          background-color: #d8d8d8;
+          color: whit;
+        }
         .page.extend {
           height: fit-content;
         }

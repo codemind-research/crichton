@@ -56,7 +56,6 @@ export default {
         switch (httpMethod) {
           case "POST":
             response = await Axios.post(url, data, config);
-
             break;
           case "GET":
             response = await Axios.get(url, config);
@@ -82,6 +81,7 @@ export default {
           }
       }
     }
+
     result = {
       successful: response.status ? response.status === 200 : false,
       result: response.data ? response.data : undefined,
