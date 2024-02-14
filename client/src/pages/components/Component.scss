@@ -1,0 +1,11 @@
+.log_component {
+  margin-top: 55px;
+  .log_div_area {
+    width: 50vw;
+    height: 35vh;
+    padding: 20px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    overflow: auto;
+  }
+}

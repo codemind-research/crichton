@@ -1,0 +1,91 @@
+body {
+  margin: 50px auto;
+  font-family: "Roboto", Arial, sans-serif;
+  width: 50vw;
+}
+
+.upload-section {
+  display: flex;
+  margin: 40px 30px;
+  align-items: center;
+}
+
+.upload-section h5 {
+  margin: 15px;
+}
+
+.upload-section input {
+  margin: 5px;
+  height: 30px;
+}
+
+.upload-section button {
+  margin: 5px;
+  height: 30px;
+}
+
+.test-options-section {
+  height: 13vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px 0;
+}
+
+.test-options-section div {
+  margin-left: 30px;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  width: 13.5vw;
+  min-width: fit-content;
+  justify-content: space-between;
+}
+
+.test-options-section div input {
+  height: 2.5vh;
+  width: 5vw;
+  min-width: auto;
+}
+
+/* Apply the following style to number input elements */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+button {
+  background-color: beige;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.custom-divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 20px 0;
+  width: 50vw;
+}
+
+.action-buttons-section {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 0 0;
+}
+
+.action-buttons-section button {
+  margin-left: 50px;
+  width: 5vw;
+  height: 4vh;
+  font-size: 15px;
+  margin-bottom: 30px;
+  min-width: fit-content;
+}
+
+.log-messages-section {
+  padding: 20px;
+  height: 30vh;
+  width: 50vw;
+  border: 1px solid #b1afaf;
+  border-radius: 10px;
+}

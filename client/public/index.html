@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Crichton</title>
+    <link rel="stylesheet" type="text/css" />
+  </head>
+
+  <body id="crichton_body" style="width: 100%">
+    <h1>Crichton</h1>
+
+    <section class="upload-section">
+      <h3>Target source:</h3>
+      <input value="demo.zip" />
+      <button>Upload</button>
+    </section>
+
+    <section class="test-options-section">
+      <label>
+        <input type="checkbox" id="whitebox" />
+        Whitebox Unit Test
+      </label>
+      <label>
+        <input type="checkbox" id="injection" />
+        Injection Test
+      </label>
+      <div>
+        <li>Test duration:</li>
+        <input type="number" id="quantity" inputmode="numeric" name="quantity" min="1" value="60" />
+        <span>sec</span>
+      </div>
+    </section>
+
+    <hr class="custom-divider" />
+
+    <section class="action-buttons-section">
+      <button>Run</button>
+      <button disabled="true">Download Report</button>
+    </section>
+
+    <h5>Log</h5>
+    <section class="log-messages-section"></section>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+.upload_input_component {
+  display: flex;
+  align-items: center;
+
+  .input_with_button {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    margin-left: 10px;
+
+    input {
+      position: absolute;
+      display: none;
+    }
+    span {
+      width: 250px;
+      height: 33px;
+      padding: 0px 5px;
+      border: 1px solid gray;
+      font-size: 15px;
+      line-height: 2;
+      white-space: nowrap;
+    }
+    button {
+      position: absolute;
+      width: 25px;
+      height: 35px;
+      top: 0;
+      right: 0;
+    }
+  }
+}
+
+.test_plugin_component {
+  margin-top: 45px;
+}
+.test_option_button {
+  display: block;
+  text-align: center;
+  hr {
+    border: none;
+    border-top: 1px solid gray;
+    margin: 30px 0;
+    width: 50vw;
+  }
+  button {
+    min-width: 80px;
+    padding: 8px 10px;
+  }
+}
+
+.select_test_type_component {
+  label {
+    margin-left: 5px;
+  }
+  .checkbox_option {
+    margin-top: 20px;
+    .option {
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
+      label {
+        margin-left: 40px;
+      }
+      input {
+        width: 195px;
+        height: 20px;
+        font-size: 15px;
+        margin-left: 10px;
+      }
+
+      .input_with_button {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        margin-left: 10px;
+
+        input {
+          position: absolute;
+          display: none;
+        }
+        span {
+          width: 190px;
+          height: 25px;
+          padding: 0px 5px;
+          border: 1px solid gray;
+          font-size: 15px;
+          line-height: 1.5;
+          white-space: nowrap;
+        }
+        button {
+          position: absolute;
+          width: 25px;
+          height: 27px;
+          top: 0;
+          right: 0;
+        }
+      }
+    }
+  }
+}
