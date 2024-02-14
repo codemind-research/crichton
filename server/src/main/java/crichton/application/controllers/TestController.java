@@ -1,14 +1,19 @@
 package crichton.application.controllers;
 
 import crichton.application.exceptions.CustomException;
+import crichton.domain.dtos.LogDTO;
 import crichton.domain.dtos.TestDTO;
 import crichton.domain.services.TestService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Test Controller", description = "This is an API for testing plugin-related functionalities.")
 @CrossOrigin
 @RestController("TestController")
 @RequestMapping("/api/v1/crichton/test")
@@ -17,30 +22,32 @@ public class TestController {
 
     private final TestService testService;
 
-    @PostMapping("/unit/run")
-    @ApiOperation(value = "단위 테스트 시작", notes = "자동 단위 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doUnitTest(@RequestPart(value="data") TestDTO.UnitTestRequest request,
-                                                           @RequestPart(value="file", required = false) MultipartFile settings)  throws CustomException {
-        TestDTO.TestResponse response = testService.doUnitTest(request.getSourcePath(), settings);
+    @GetMapping("/plugin")
+    @Operation(summary = "Installed Plugin List",
+            description = "Retrieves the list of installed plugins on the server. This API is essential for obtaining " +
+                    "comprehensive information about the currently installed plugins, including their configurations " +
+                    "and functionalities. It plays a crucial role in enabling communication between the client and " +
+                    "server, facilitating seamless integration and interaction with various plugins.")
+    public ResponseEntity<TestDTO.PluginResponse> getPlugin() throws CustomException {
+        TestDTO.PluginResponse response = testService.getPlugin();
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/injection/run")
-    @ApiOperation(value = "결함 주입 테스트 시작", notes = "결함 주입 테스트를 시작하는 Api")
-    public ResponseEntity<TestDTO.TestResponse> doInjectionTest(@RequestPart(value="data") TestDTO.InjectionTestRequest request,
-                                                                @RequestPart(value="file", required = false) MultipartFile binaryFile){
-        TestDTO.TestResponse response = testService.doInjectionTest(binaryFile, request.getTestDuration());
+    @PostMapping(value = "/plugin/run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Start Plugin Testing", description = "Initiates plugin testing, confirming functionality and results " +
+            "by conveying detailed test information and configurations.")
+    public ResponseEntity<TestDTO.TestResponse> doPluginTest(@RequestPart(value="data") TestDTO.PluginRequest request,
+                                                           @RequestPart(value="file", required = false) MultipartFile pluginSettings)  throws CustomException {
+        TestDTO.TestResponse response = testService.doPluginTest(request, pluginSettings);
         return ResponseEntity.ok(response);
     }
 
-
-    @GetMapping("/progress")
-    @ApiOperation(value = "단위 테스트 프로그레스 정보 가져오기")
-    public ResponseEntity<TestDTO.ProgressResponse> getProgress() throws CustomException {
-        String progress = testService.getProgress();
-        return ResponseEntity.ok(TestDTO.ProgressResponse.builder()
-                                                    .progress(progress)
-                                                    .build());
+    @PostMapping("/log")
+    @Operation(summary = "Plugin Logs", description = "Retrieves plugin log information through the 'Plugin Log Retrieval API.'")
+    public ResponseEntity<LogDTO.LogResponse> getCrichtonLog(@RequestBody LogDTO.LogRequest request){
+        LogDTO.LogResponse response = testService.getCrichtonLog(request);
+        return ResponseEntity.ok(response);
     }
+
 
 }

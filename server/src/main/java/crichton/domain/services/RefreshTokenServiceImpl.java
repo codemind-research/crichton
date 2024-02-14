@@ -10,11 +10,11 @@ import java.util.UUID;
 @Service("RefreshTokenService")
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
-    //TODO: 추후 Map 데이터를 DB로 변경
+    //TODO: In the future, change Map data to a database.
     private Map<String, RefreshTokenDTO> tokenStoreMap = new HashMap<>();
-    private Long expirationTimeMillis = 15 * 24 * 60 * 60 * 1000L; //15일 제한
+    private Long expirationTimeMillis = 15 * 24 * 60 * 60 * 1000L; //15 days limit
 
-    //TODO: 추후 동일한 userId가 있는지 확인하기 db 추가할때 같이
+    //TODO: In the future, check whether there is a duplicate userId when adding to the database.
     @Override
     public String generateRefreshToken(String userId) {
         long expirationTime = System.currentTimeMillis() + expirationTimeMillis;
@@ -39,7 +39,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public boolean isRefreshTokenExpired(RefreshTokenDTO customTokenDTO) {
         if (System.currentTimeMillis() > customTokenDTO.getExpireDate()) {
-            // 토큰이 만료되었으면 삭제
             tokenStoreMap.remove(customTokenDTO.getToken());
             return true;
         }else {

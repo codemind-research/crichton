@@ -69,7 +69,7 @@ public class TokenInterceptorTest {
 
     @Test
     void invalidTokenInterceptor() throws Exception {
-        String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/log")
                                               .header("Authorization", "%hk21iga!"))
                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                                .andDo(MockMvcResultHandlers.print())
@@ -83,12 +83,12 @@ public class TokenInterceptorTest {
 
     @Test
     void invalidAccessTokenInterceptor() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
         request.setSourcePath("");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
         String invalidAccessToken = generateInvalidAccessToken();
         String refreshToken = refreshTokenService.generateRefreshToken(userId);
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
                                                               .file(data)
                                                               .header("Authorization", invalidAccessToken)
                                                               .header("RefreshToken", refreshToken))
@@ -106,7 +106,7 @@ public class TokenInterceptorTest {
     @Test
     void isExpiredAccessTokenInterceptor() throws Exception {
         String oneHoursAgoToken = generateOneHoursAgoToken();
-        String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/log")
                                                               .header("Authorization", oneHoursAgoToken))
                                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                                .andDo(MockMvcResultHandlers.print())
@@ -120,12 +120,12 @@ public class TokenInterceptorTest {
 
     @Test
     void refreshAccessTokenInterceptor() throws Exception {
-        TestDTO.UnitTestRequest request = new TestDTO.UnitTestRequest();
+        TestDTO.PluginRequest request = new TestDTO.PluginRequest();
         request.setSourcePath("");
         MockMultipartFile data = new MockMultipartFile("data", "data", "application/json", mapper.writeValueAsBytes(request));
         String oneHoursAgoToken = generateOneHoursAgoToken();
         String refreshToken = refreshTokenService.generateRefreshToken(userId);
-        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/unit/run")
+        String result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/test/plugin/run")
                                                               .file(data)
                                                               .header("Authorization", oneHoursAgoToken)
                                                               .header("RefreshToken", refreshToken))
@@ -144,7 +144,7 @@ public class TokenInterceptorTest {
     void isExpiredRefreshTokenInterceptor() throws Exception {
         String oneHoursAgoToken = generateOneHoursAgoToken();
         String fifthDaysAgoToken = generateFifthDaysAgoToken();
-        String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/crichton/test/progress")
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/crichton/test/log")
                                                               .header("Authorization", oneHoursAgoToken)
                                                               .header("RefreshToken", fifthDaysAgoToken))
                                .andExpect(MockMvcResultMatchers.status().is5xxServerError())

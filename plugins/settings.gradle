@@ -1,0 +1,5 @@
+rootProject.name = 'plugins'
+include ':coyote'
+include ':runner'
+include 'injector'
+

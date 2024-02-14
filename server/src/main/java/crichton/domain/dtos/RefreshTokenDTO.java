@@ -1,6 +1,7 @@
 package crichton.domain.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefreshTokenDTO {
-    @Schema(description = "토큰 만료 시간", required = true)
+    @NotNull
+    @Schema(description = "Token Expiration Time")
     private long expireDate;
-    @Schema(description = "발행된 토큰 정보 ", required = true)
+    @NotNull
+    @Schema(description = "Issued Token Information")
     private String token;
 }

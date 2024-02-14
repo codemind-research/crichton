@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import runner.dto.ProcessedReportDTO;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ReportDTO {
@@ -16,17 +19,7 @@ public class ReportDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DataResponse {
-        private HashMap<String,String> project;
-        private List<HashMap<String,String>> file;
-        private List<HashMap<String,String>> unit;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class DataRequest {
-        @Schema(description = "테스트할 소스코드 경로", required = true)
-        private String sourcePath;
+        private LinkedList<ProcessedReportDTO> data;
     }
 
 

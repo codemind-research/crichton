@@ -1,43 +1,57 @@
 package crichton.domain.dtos;
 
-import crichton.enumeration.TestResult;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import runner.dto.ProcessedReportDTO;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class TestDTO {
 
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class UnitTestRequest {
-        @Schema(description = "테스트할 소스코드 경로", required = true)
+    public static class PluginRequest {
+        @NotNull
+        @Schema(description = "Plugin")
+        private String plugin;
+        @NotNull
+        @Schema(description = "Path to Test Source Code")
         private String sourcePath;
+        @Schema(description = "Plugin Configuration Information")
+        private HashMap<String,String> pluginSettings;
     }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class InjectionTestRequest {
-        @Schema(description = "결함 주입 테스트에 들어가는 지속시간", required = true)
-        private int testDuration;
-    }
-
 
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TestResponse {
-        @Schema(description = "테스트 결과", required = true)
-        private TestResult testResult;
+        @NotNull
+        @Schema(description = "Test Result")
+        private Boolean testResult;
     }
 
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ProgressResponse {
-        @Schema(description = "테스트 진행 상태", required = true)
-        private String progress;
+    public static class PluginResponse {
+        @Schema(description = "Plugin List")
+        private List<PluginSetting> pluginList;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PluginSetting {
+        @Schema(description = "Plugin")
+        private String plugin;
+        @Schema(description = "Setting")
+        private HashMap<String,String> setting;
     }
 }

@@ -106,10 +106,10 @@ public class StorageControllerTest {
     void uploadFailed() throws Exception{
 
         MockMultipartFile file = new MockMultipartFile(
-                "file",                      // 파라미터 이름
-                "FailedTest",                  // 파일 이름
-                MediaType.TEXT_PLAIN_VALUE,  // 파일 타입
-                "Hello, World!".getBytes()   // 파일 내용
+                "file",                      // parameter
+                "FailedTest",                  // file name
+                MediaType.TEXT_PLAIN_VALUE,  // file type
+                "Hello, World!".getBytes()   // content
         );
 
         String result =  mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/crichton/storage/upload").file(file)
