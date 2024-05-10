@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "InjectionTester", "InjectionTester\InjectionTester.fsproj", "{63DC1F6B-247E-4BF8-A21C-138D20A080F8}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DefectInjector", "DefectInjector\DefectInjector.fsproj", "{14AE5521-77EB-47F2-9733-E3F2AA7AAB42}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SpecLib", "SpecLib\SpecLib.fsproj", "{6AF4E123-B42C-422F-9839-F14E6148128F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63DC1F6B-247E-4BF8-A21C-138D20A080F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63DC1F6B-247E-4BF8-A21C-138D20A080F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63DC1F6B-247E-4BF8-A21C-138D20A080F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63DC1F6B-247E-4BF8-A21C-138D20A080F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14AE5521-77EB-47F2-9733-E3F2AA7AAB42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14AE5521-77EB-47F2-9733-E3F2AA7AAB42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14AE5521-77EB-47F2-9733-E3F2AA7AAB42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14AE5521-77EB-47F2-9733-E3F2AA7AAB42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AF4E123-B42C-422F-9839-F14E6148128F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AF4E123-B42C-422F-9839-F14E6148128F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AF4E123-B42C-422F-9839-F14E6148128F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AF4E123-B42C-422F-9839-F14E6148128F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
