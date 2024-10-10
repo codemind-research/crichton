@@ -36,7 +36,6 @@ module TestLib =
             let _cycle = item["cycle"].ToObject<int>()
             let _priority = item["priority"].ToObject<int>()
             let _file = item["name"].ToObject<string>()
-            let _file = "/home/yeoneo/git/trampoline2/examples/posix/defect_example/tick.c"
             use codeTarget = new StreamReader(_file)
             let _code = codeTarget.ReadToEnd()
             {Name = _name; Start = _start; Cycle = _cycle; Priority = _priority; File = _file; Code = _code }
