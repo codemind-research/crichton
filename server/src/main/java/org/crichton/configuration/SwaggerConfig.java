@@ -46,7 +46,7 @@ public class SwaggerConfig {
         SecurityRequirement securityRequirement = new SecurityRequirement().addList("Authorization");
 
         return new OpenAPI()
-                .components(new Components().addSecuritySchemes("Authorization", securityScheme))
+                .components(new Components())
                 .security(Arrays.asList(securityRequirement));
     }
 

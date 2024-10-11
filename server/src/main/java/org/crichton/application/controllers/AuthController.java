@@ -1,9 +1,8 @@
-package crichton.application.controllers;
+package org.crichton.application.controllers;
 
-import crichton.domain.dtos.AuthDTO;
-import crichton.domain.services.AccessTokenService;
-import crichton.domain.services.RefreshTokenService;
-import io.swagger.annotations.ApiOperation;
+import org.crichton.domain.dtos.AuthDTO;
+import org.crichton.domain.services.AccessTokenService;
+import org.crichton.domain.services.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

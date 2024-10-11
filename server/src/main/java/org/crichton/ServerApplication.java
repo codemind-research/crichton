@@ -1,15 +1,13 @@
-package crichton;
+package org.crichton;
 
-import crichton.configuration.Config;
-import crichton.util.ManifestUtil;
+import org.crichton.configuration.Config;
+import org.crichton.util.ManifestUtil;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.IOException;
 
 @Configuration
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})

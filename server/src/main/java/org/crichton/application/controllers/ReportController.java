@@ -1,18 +1,13 @@
-package crichton.application.controllers;
+package org.crichton.application.controllers;
 
-import crichton.Infrastructure.store.TestResultMemoryStorage;
-import crichton.application.exceptions.CustomException;
-import crichton.domain.dtos.ReportDTO;
-import crichton.domain.services.ReportService;
-import io.swagger.annotations.ApiOperation;
+import org.crichton.application.exceptions.CustomException;
+import org.crichton.domain.dtos.ReportDTO;
+import org.crichton.domain.services.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import runner.dto.ProcessedReportDTO;
-
-import java.util.LinkedHashMap;
 
 @Tag(name = "Report Controller", description = "This API is a controller responsible for processing Report Data to be used by the client.")
 @CrossOrigin

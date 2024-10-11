@@ -1,11 +1,10 @@
-package crichton.configuration;
+package org.crichton.configuration;
 
-import crichton.domain.services.AccessTokenService;
-import crichton.domain.services.RefreshTokenService;
-import crichton.security.TokenInterceptor;
+import org.crichton.domain.services.AccessTokenService;
+import org.crichton.domain.services.RefreshTokenService;
+import org.crichton.security.TokenInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
