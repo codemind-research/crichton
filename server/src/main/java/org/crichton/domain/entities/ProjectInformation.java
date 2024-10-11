@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.crichton.domain.utils.converters.ProjectStatusEnumToStringConverter;
+import org.crichton.domain.utils.converters.TestResultEnumToStringConverter;
 import org.crichton.domain.utils.converters.UUIDToStringConverter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
@@ -22,8 +24,10 @@ public class ProjectInformation {
     @Convert(converter = UUIDToStringConverter.class)
     private UUID uuid;
 
+    @Convert(converter = ProjectStatusEnumToStringConverter.class)
     private ProjectStatus status;
 
+    @Convert(converter = TestResultEnumToStringConverter.class)
     private TestResult testResult;
 
     @Column(columnDefinition = "TEXT", nullable = false)
