@@ -24,9 +24,16 @@ public class ProjectInformation {
 
     private ProjectStatus status;
 
+    private TestResult testResult;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String failReason;
+
     @Builder
-    public ProjectInformation(UUID uuid, ProjectStatus status) {
+    public ProjectInformation(UUID uuid, ProjectStatus status, TestResult testResult, String failReason) {
         this.uuid = (uuid != null) ? uuid : UUID.randomUUID(); // UUID가 null이면 자동 생성
         this.status = (status != null) ? status : ProjectStatus.None;
+        this.testResult = (testResult != null) ? testResult : TestResult.None;
+        this.failReason = (failReason != null) ? failReason : "";
     }
 }
