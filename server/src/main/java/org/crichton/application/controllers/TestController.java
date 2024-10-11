@@ -1,8 +1,8 @@
 package org.crichton.application.controllers;
 
 import org.crichton.application.exceptions.CustomException;
-import org.crichton.models.dtos.LogDTO;
-import org.crichton.models.dtos.TestDTO;
+import org.crichton.domain.dtos.LogDTO;
+import org.crichton.domain.dtos.TestDTO;
 import org.crichton.domain.services.TestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

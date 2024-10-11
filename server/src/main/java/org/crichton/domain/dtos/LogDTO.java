@@ -1,4 +1,4 @@
-package org.crichton.models.dtos;
+package org.crichton.domain.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;

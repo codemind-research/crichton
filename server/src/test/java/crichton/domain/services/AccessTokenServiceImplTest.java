@@ -1,6 +1,6 @@
 package crichton.domain.services;
 
-import org.crichton.models.dtos.PayloadDTO;
+import org.crichton.domain.dtos.PayloadDTO;
 import org.crichton.domain.services.AccessTokenService;
 import org.crichton.security.TokenInterceptor;
 import org.crichton.util.ObjectMapperUtils;

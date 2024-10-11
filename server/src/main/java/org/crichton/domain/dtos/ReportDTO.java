@@ -1,4 +1,4 @@
-package org.crichton.models.dtos;
+package org.crichton.domain.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

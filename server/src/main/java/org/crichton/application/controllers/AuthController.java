@@ -1,6 +1,6 @@
 package org.crichton.application.controllers;
 
-import org.crichton.models.dtos.AuthDTO;
+import org.crichton.domain.dtos.AuthDTO;
 import org.crichton.domain.services.AccessTokenService;
 import org.crichton.domain.services.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;

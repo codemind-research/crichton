@@ -2,7 +2,7 @@ package org.crichton.domain.services;
 
 import org.crichton.Infrastructure.store.TestResultMemoryStorage;
 import org.crichton.application.exceptions.CustomException;
-import org.crichton.models.dtos.ReportDTO;
+import org.crichton.domain.dtos.ReportDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import runner.dto.ProcessedReportDTO;

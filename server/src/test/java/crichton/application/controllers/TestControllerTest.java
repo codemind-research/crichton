@@ -2,8 +2,8 @@ package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.crichton.application.exceptions.handler.GlobalExceptionResponse;
-import org.crichton.models.dtos.LogDTO;
-import org.crichton.models.dtos.TestDTO;
+import org.crichton.domain.dtos.LogDTO;
+import org.crichton.domain.dtos.TestDTO;
 import org.crichton.domain.services.AccessTokenService;
 import org.crichton.domain.services.RefreshTokenService;
 import org.junit.jupiter.api.*;

@@ -1,8 +1,8 @@
 package org.crichton.domain.services;
 
 import org.crichton.application.exceptions.CustomException;
-import org.crichton.models.dtos.LogDTO;
-import org.crichton.models.dtos.TestDTO;
+import org.crichton.domain.dtos.LogDTO;
+import org.crichton.domain.dtos.TestDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface TestService {

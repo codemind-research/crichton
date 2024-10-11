@@ -2,7 +2,7 @@ package org.crichton.security;
 
 import org.crichton.application.exceptions.CustomException;
 import org.crichton.application.exceptions.code.TokenErrorCode;
-import org.crichton.models.dtos.PayloadDTO;
+import org.crichton.domain.dtos.PayloadDTO;
 import org.crichton.domain.services.AccessTokenService;
 import org.crichton.domain.services.RefreshTokenService;
 import org.crichton.util.ObjectMapperUtils;

@@ -1,7 +1,7 @@
 package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.crichton.models.dtos.AuthDTO;
+import org.crichton.domain.dtos.AuthDTO;
 import org.crichton.domain.services.RefreshTokenService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
