@@ -50,7 +50,8 @@ task buildServer(type: Copy, dependsOn: build) {
 dependencies {
     implementation project(':plugins:runner')
     implementation 'org.springframework.boot:spring-boot-starter'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA 추가
+    implementation 'org.postgresql:postgresql:42.5.1' // PostgreSQL 드라이버
     implementation ('io.springfox:springfox-boot-starter:3.0.0') {
         exclude group: 'io.swagger.core.v3'
     }
@@ -65,12 +66,12 @@ dependencies {
     implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation 'org.junit.jupiter:junit-jupiter-api'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
     implementation group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final', ext: 'pom'
     implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12'
     implementation group: 'commons-io', name: 'commons-io', version: '2.5'
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14'
 }
+
 
 //JUnitTest
 test {
