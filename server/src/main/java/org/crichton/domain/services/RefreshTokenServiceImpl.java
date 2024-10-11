@@ -1,6 +1,6 @@
-package crichton.domain.services;
+package org.crichton.domain.services;
 
-import crichton.domain.dtos.RefreshTokenDTO;
+import org.crichton.models.dtos.RefreshTokenDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

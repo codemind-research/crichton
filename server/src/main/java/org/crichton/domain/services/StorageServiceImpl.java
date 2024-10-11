@@ -1,9 +1,9 @@
-package crichton.domain.services;
+package org.crichton.domain.services;
 
-import crichton.application.exceptions.CustomException;
-import crichton.application.exceptions.code.FailedErrorCode;
-import crichton.paths.DirectoryPaths;
-import crichton.util.FileUtils;
+import org.crichton.application.exceptions.CustomException;
+import org.crichton.application.exceptions.code.FailedErrorCode;
+import org.crichton.paths.DirectoryPaths;
+import org.crichton.util.FileUtils;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;

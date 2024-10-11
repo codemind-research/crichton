@@ -1,4 +1,4 @@
-package crichton.Infrastructure.store;
+package org.crichton.Infrastructure.store;
 
 import org.springframework.stereotype.Component;
 import runner.dto.ProcessedReportDTO;

@@ -1,4 +1,4 @@
-package crichton.util;
+package org.crichton.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;

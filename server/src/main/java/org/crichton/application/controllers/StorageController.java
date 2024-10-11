@@ -1,9 +1,8 @@
-package crichton.application.controllers;
+package org.crichton.application.controllers;
 
-import crichton.application.exceptions.CustomException;
-import crichton.domain.dtos.StorageDTO;
-import crichton.domain.services.StorageService;
-import io.swagger.annotations.ApiOperation;
+import org.crichton.application.exceptions.CustomException;
+import org.crichton.models.dtos.StorageDTO;
+import org.crichton.domain.services.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

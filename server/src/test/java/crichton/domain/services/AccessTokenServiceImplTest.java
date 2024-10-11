@@ -1,8 +1,9 @@
 package crichton.domain.services;
 
-import crichton.domain.dtos.PayloadDTO;
-import crichton.security.TokenInterceptor;
-import crichton.util.ObjectMapperUtils;
+import org.crichton.models.dtos.PayloadDTO;
+import org.crichton.domain.services.AccessTokenService;
+import org.crichton.security.TokenInterceptor;
+import org.crichton.util.ObjectMapperUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

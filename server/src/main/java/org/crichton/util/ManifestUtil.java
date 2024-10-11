@@ -1,6 +1,6 @@
-package crichton.util;
+package org.crichton.util;
 
-import crichton.ServerApplication;
+import org.crichton.ServerApplication;
 
 import java.net.URL;
 import java.util.jar.Manifest;

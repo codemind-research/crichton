@@ -1,6 +1,6 @@
-package crichton.domain.services;
+package org.crichton.domain.services;
 
-import crichton.application.exceptions.CustomException;
+import org.crichton.application.exceptions.CustomException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package crichton.domain.dtos;
+package org.crichton.models.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;

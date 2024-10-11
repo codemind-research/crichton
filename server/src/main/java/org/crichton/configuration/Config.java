@@ -1,4 +1,4 @@
-package crichton.configuration;
+package org.crichton.configuration;
 
 public class Config {
     private int port;

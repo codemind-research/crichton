@@ -1,6 +1,6 @@
-package crichton.application.exceptions;
+package org.crichton.application.exceptions;
 
-import crichton.application.exceptions.code.ErrorCode;
+import org.crichton.application.exceptions.code.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

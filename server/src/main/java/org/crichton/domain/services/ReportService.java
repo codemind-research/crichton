@@ -1,7 +1,7 @@
-package crichton.domain.services;
+package org.crichton.domain.services;
 
-import crichton.application.exceptions.CustomException;
-import crichton.domain.dtos.ReportDTO;
+import org.crichton.application.exceptions.CustomException;
+import org.crichton.models.dtos.ReportDTO;
 
 public interface ReportService {
     ReportDTO.DataResponse getData() throws CustomException;

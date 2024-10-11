@@ -1,4 +1,4 @@
-package crichton.util;
+package org.crichton.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

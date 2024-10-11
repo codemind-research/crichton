@@ -1,6 +1,6 @@
-package crichton.domain.services;
+package org.crichton.domain.services;
 
-import crichton.domain.dtos.PayloadDTO;
+import org.crichton.models.dtos.PayloadDTO;
 
 public interface AccessTokenService {
 

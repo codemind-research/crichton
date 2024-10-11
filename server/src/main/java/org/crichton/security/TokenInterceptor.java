@@ -1,11 +1,11 @@
-package crichton.security;
+package org.crichton.security;
 
-import crichton.application.exceptions.CustomException;
-import crichton.application.exceptions.code.TokenErrorCode;
-import crichton.domain.dtos.PayloadDTO;
-import crichton.domain.services.AccessTokenService;
-import crichton.domain.services.RefreshTokenService;
-import crichton.util.ObjectMapperUtils;
+import org.crichton.application.exceptions.CustomException;
+import org.crichton.application.exceptions.code.TokenErrorCode;
+import org.crichton.models.dtos.PayloadDTO;
+import org.crichton.domain.services.AccessTokenService;
+import org.crichton.domain.services.RefreshTokenService;
+import org.crichton.util.ObjectMapperUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

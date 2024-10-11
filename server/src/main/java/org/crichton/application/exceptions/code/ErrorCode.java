@@ -1,4 +1,4 @@
-package crichton.application.exceptions.code;
+package org.crichton.application.exceptions.code;
 
 public interface ErrorCode {
     String getCode();

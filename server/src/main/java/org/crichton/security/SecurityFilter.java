@@ -1,4 +1,4 @@
-package crichton.security;
+package org.crichton.security;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletResponse;

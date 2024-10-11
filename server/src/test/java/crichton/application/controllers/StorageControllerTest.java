@@ -1,11 +1,11 @@
 package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import crichton.application.exceptions.handler.GlobalExceptionResponse;
-import crichton.domain.services.AccessTokenService;
-import crichton.domain.services.RefreshTokenService;
-import crichton.paths.DirectoryPaths;
-import crichton.util.FileUtils;
+import org.crichton.application.exceptions.handler.GlobalExceptionResponse;
+import org.crichton.domain.services.AccessTokenService;
+import org.crichton.domain.services.RefreshTokenService;
+import org.crichton.paths.DirectoryPaths;
+import org.crichton.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

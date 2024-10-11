@@ -1,6 +1,6 @@
 package org.crichton.domain.services;
 
-import org.crichton.domain.dtos.RefreshTokenDTO;
+import org.crichton.models.dtos.RefreshTokenDTO;
 
 public interface RefreshTokenService {
 

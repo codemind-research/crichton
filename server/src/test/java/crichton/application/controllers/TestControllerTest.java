@@ -1,12 +1,11 @@
 package crichton.application.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import crichton.application.exceptions.handler.GlobalExceptionResponse;
-import crichton.domain.dtos.LogDTO;
-import crichton.domain.dtos.ReportDTO;
-import crichton.domain.dtos.TestDTO;
-import crichton.domain.services.AccessTokenService;
-import crichton.domain.services.RefreshTokenService;
+import org.crichton.application.exceptions.handler.GlobalExceptionResponse;
+import org.crichton.models.dtos.LogDTO;
+import org.crichton.models.dtos.TestDTO;
+import org.crichton.domain.services.AccessTokenService;
+import org.crichton.domain.services.RefreshTokenService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,7 +18,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;

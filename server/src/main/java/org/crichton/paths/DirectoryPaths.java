@@ -1,4 +1,4 @@
-package crichton.paths;
+package org.crichton.paths;
 
 import java.io.File;
 import java.nio.file.Path;

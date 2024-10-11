@@ -1,13 +1,12 @@
-package crichton.domain.services;
+package org.crichton.domain.services;
 
-import crichton.Infrastructure.store.TestResultMemoryStorage;
-import crichton.application.exceptions.CustomException;
-import crichton.application.exceptions.code.FailedErrorCode;
-import crichton.domain.dtos.LogDTO;
-import crichton.domain.dtos.TestDTO;
-import crichton.paths.DirectoryPaths;
-import crichton.util.FileUtils;
-import crichton.util.PropertyFileReader;
+import org.crichton.Infrastructure.store.TestResultMemoryStorage;
+import org.crichton.application.exceptions.CustomException;
+import org.crichton.application.exceptions.code.FailedErrorCode;
+import org.crichton.models.dtos.LogDTO;
+import org.crichton.models.dtos.TestDTO;
+import org.crichton.util.FileUtils;
+import org.crichton.util.PropertyFileReader;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FilenameUtils;

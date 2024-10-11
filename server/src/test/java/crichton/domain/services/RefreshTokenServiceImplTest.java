@@ -1,7 +1,8 @@
 package crichton.domain.services;
 
-import crichton.domain.dtos.RefreshTokenDTO;
-import crichton.security.TokenInterceptor;
+import org.crichton.models.dtos.RefreshTokenDTO;
+import org.crichton.domain.services.RefreshTokenService;
+import org.crichton.security.TokenInterceptor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package crichton.util;
+package org.crichton.util;
 
 import org.springframework.web.multipart.MultipartFile;
 

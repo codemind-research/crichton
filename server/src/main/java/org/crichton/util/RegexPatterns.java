@@ -1,4 +1,4 @@
-package crichton.util;
+package org.crichton.util;
 
 import java.util.regex.Pattern;
 

@@ -1,9 +1,9 @@
-package crichton.application.exceptions.handler;
+package org.crichton.application.exceptions.handler;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import crichton.application.exceptions.CustomException;
+import org.crichton.application.exceptions.CustomException;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
