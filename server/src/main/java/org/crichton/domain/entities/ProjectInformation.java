@@ -9,12 +9,14 @@ import org.crichton.domain.utils.converters.TestResultEnumToStringConverter;
 import org.crichton.domain.utils.converters.UUIDToStringConverter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
 @Entity
+@DynamicUpdate
 public class ProjectInformation {
 
     @Id
@@ -39,5 +41,17 @@ public class ProjectInformation {
         this.status = (status != null) ? status : ProjectStatus.None;
         this.testResult = (testResult != null) ? testResult : TestResult.None;
         this.failReason = (failReason != null) ? failReason : "";
+    }
+
+    public void updateStatus(ProjectStatus status) {
+        this.status = status;
+    }
+
+    public void updateTestResult(TestResult testResult) {
+        this.testResult = testResult;
+    }
+
+    public void updateFailReason(String failReason) {
+        this.failReason = failReason;
     }
 }
