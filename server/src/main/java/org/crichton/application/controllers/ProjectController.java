@@ -56,6 +56,16 @@ public class ProjectController {
         }
     }
 
-
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<String> deleteProject(@PathVariable Long id) {
+        try {
+            projectInformationService.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }
