@@ -43,5 +43,19 @@ public class ProjectController {
         }
 
     }
-    
+
+    @GetMapping(value = "/status/{id}")
+    public ResponseEntity<String> getProjectStatus(@PathVariable Long id) {
+        try {
+            var projectStatus = projectInformationService.getProjectStatus(id);
+            return ResponseEntity.ok(projectStatus);
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
 }
