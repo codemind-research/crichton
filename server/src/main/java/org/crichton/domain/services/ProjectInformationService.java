@@ -1,6 +1,6 @@
 package org.crichton.domain.services;
 
-import org.crichton.domain.dtos.project.CreatedProjectInformationDto;
+import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.ProjectInformationRepository;
@@ -18,7 +18,7 @@ public class ProjectInformationService implements IProjectInformationService {
     private ProjectInformationRepository repository;
 
     @Override
-    public ProjectInformation create(CreatedProjectInformationDto createdProjectInformationDto) {
+    public ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) {
         return repository.save(projectInfo);
     }
 
