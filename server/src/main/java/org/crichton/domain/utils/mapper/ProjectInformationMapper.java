@@ -1,4 +1,4 @@
-package org.crichton.util.mapper;
+package org.crichton.domain.utils.mapper;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -6,10 +6,7 @@ import org.crichton.configuration.CrichtonConfig;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.util.constants.FileName;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,9 +29,9 @@ public abstract class ProjectInformationMapper {
     @Mapping(target = "failReason", defaultValue = "")
     public abstract ProjectInformation toEntry(CreationProjectInformationDto createdDto);
 
-    @AfterMapping
-    protected void toEntry(@MappingTarget ProjectInformation project, CreationProjectInformationDto dto) throws IOException {
-        var uuid = project.getUuid();
+    @BeforeMapping
+    protected void createFiles(CreationProjectInformationDto dto) throws IOException {
+        var uuid = UUID.randomUUID();
         String baseDirPath = crichtonConfig.getDataStorageBasePath() + File.separator + uuid.toString();
 
         File baseDir = new File(baseDirPath);
