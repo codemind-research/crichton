@@ -15,6 +15,8 @@ public interface IProjectInformationService {
 
     Optional<ProjectInformation> findById(Long id);
 
+    String getProjectStatus(Long id);
+
     ProjectInformation update(Long id, UpdatedProjectInformationDto updatedProjectInformationDto);
 
     void deleteById(Long id);

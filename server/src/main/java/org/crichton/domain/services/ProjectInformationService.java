@@ -4,6 +4,7 @@ import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.ProjectInformationRepository;
+import org.crichton.util.mapper.ProjectInformationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +18,13 @@ public class ProjectInformationService implements IProjectInformationService {
     @Autowired
     private ProjectInformationRepository repository;
 
+    @Autowired
+    private ProjectInformationMapper mapper;
+
     @Override
     public ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) {
-        return repository.save(projectInfo);
+        var entity = mapper.toEntry(creationProjectInformationDto);
+        return repository.save(entity);
     }
 
     @Override
@@ -30,6 +35,24 @@ public class ProjectInformationService implements IProjectInformationService {
     @Override
     public Optional<ProjectInformation> findById(Long id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public String getProjectStatus(Long id) {
+        var entity = repository.findById(id).orElse(null);
+        if(entity != null) {
+            return switch (entity.getStatus()) {
+                case None, Running -> "testing";
+                case Complete -> switch(entity.getTestResult()) {
+                    case None -> "testing";
+                    case Success -> "pass";
+                    case Fail -> "fail";
+                };
+            };
+        }
+        else {
+            return "none";
+        }
     }
 
     @Override
