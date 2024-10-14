@@ -1,4 +1,4 @@
-package org.crichton.domain.services;
+package org.crichton.domain.services.old;
 
 import org.crichton.Infrastructure.store.TestResultMemoryStorage;
 import org.crichton.application.exceptions.CustomException;
