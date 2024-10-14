@@ -4,7 +4,7 @@ import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.ProjectInformationRepository;
-import org.crichton.util.mapper.ProjectInformationMapper;
+import org.crichton.domain.utils.mapper.ProjectInformationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
