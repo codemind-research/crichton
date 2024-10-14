@@ -23,8 +23,12 @@ public class ProjectController {
 
     private final Logger logger = LoggerFactory.getLogger(ProjectController.class);
 
-    @Autowired
     private IProjectInformationService projectInformationService;
+
+    @Autowired
+    public ProjectController(IProjectInformationService projectInformationService) {
+        this.projectInformationService = projectInformationService;
+    }
 
     @PostMapping(value = "/run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> createProject(CreationProjectInformationDto creationProjectInformationDto) {
