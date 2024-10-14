@@ -30,6 +30,12 @@ public class ProjectController {
         this.projectInformationService = projectInformationService;
     }
 
+    @GetMapping()
+    public ResponseEntity<String> foo() {
+        return ResponseEntity.ok("Hello World");
+    }
+
+
     @PostMapping(value = "/run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> createProject(CreationProjectInformationDto creationProjectInformationDto) {
         try {
