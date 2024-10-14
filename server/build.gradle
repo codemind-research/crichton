@@ -33,7 +33,7 @@ repositories {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'crichton.ServerApplication'
+        attributes 'Main-Class': 'org.crichton.ServerApplication'
         attributes 'GIT_HASH': 'git describe --long --abbrev=8'.execute().text.trim()
     }
     jar.enabled = true
