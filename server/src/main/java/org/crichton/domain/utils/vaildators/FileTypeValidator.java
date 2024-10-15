@@ -29,11 +29,11 @@ public class FileTypeValidator implements ConstraintValidator<ValidFile, Multipa
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
 
-        if(!annotation.required() && file.isEmpty()) {
+        if(!annotation.required() && (file == null)) {
             return true;
         }
 
-        if(file.isEmpty()) {
+        if(file.isEmpty() || file == null) {
             context.buildConstraintViolationWithTemplate("업로드 대상 파일이 없습니다. 정확히 선택 업로드해주세요.").addConstraintViolation();
             return false;
         }

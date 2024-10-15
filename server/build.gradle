@@ -58,6 +58,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // Bean Validation API와 Hibernate Validator
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
+    implementation 'org.glassfish:jakarta.el:4.0.2' // Jakarta EL 추가
+
     // Lombok (코드 생성을 위한 어노테이션 라이브러리)
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -91,7 +96,6 @@ dependencies {
     implementation 'org.junit.jupiter:junit-jupiter-api' // JUnit for Testing
     implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12' // zt-exec for process handling
     implementation group: 'commons-io', name: 'commons-io', version: '2.5' // Apache Commons IO
-    implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final' //
 
     // https://mvnrepository.com/artifact/org.apache.tika/tika-core
     implementation 'org.apache.tika:tika-core:2.9.2'    // Apache Tika
