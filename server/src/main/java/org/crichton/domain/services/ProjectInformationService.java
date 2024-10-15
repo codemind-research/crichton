@@ -6,6 +6,7 @@ import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.IRepository;
+import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.mapper.ProjectInformationMapper;
 import org.crichton.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,12 +99,25 @@ public class ProjectInformationService implements IProjectInformationService<UUI
     @Override
     public void deleteById(UUID id) throws IOException {
 
-        var directory = new File(crichtonDataStorageProperties.getBasePath() + File.separator + id);
+        var entity = repository.findById(id);
 
-        if(directory.exists()) {
-            FileUtils.deleteDirectoryRecursively(directory.toPath());
+        if(entity.isPresent()) {
+            switch(entity.get().getStatus()) {
+                case None, Complete -> {
+                    var directory = new File(crichtonDataStorageProperties.getBasePath() + File.separator + id);
+
+                    if(directory.exists()) {
+                        try {
+                            FileUtils.deleteDirectoryRecursively(directory.toPath());
+                        } catch (IOException e) {
+                            throw e;
+                        }
+                    }
+
+                    repository.deleteById(id);
+                }
+                default -> throw new RuntimeException("현재 분석 중인 프로젝트는 삭제 할 수 없습니다.");
+            }
         }
-
-        repository.deleteById(id);
     }
 }
