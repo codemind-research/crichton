@@ -22,18 +22,24 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", imports = {UUID.class})
 public abstract class ProjectInformationMapper {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProjectInformationMapper.class);
-
     @Autowired
     private CrichtonDataStorageProperties crichtonDataStorageProperties;
 
+
+    public ProjectInformation toEntry(CreationProjectInformationDto createdDto) throws IOException {
+        createFiles(createdDto);
+        return toEntryInternal(createdDto);
+    };
+
+    // 매핑 메서드를 별도로 정의하여 `createFiles` 후에 실제 매핑 수행
+    @Mapping(target = "id", source = "uuid")
     @Mapping(target = "status", constant = "None")
     @Mapping(target = "testResult", constant = "None")
     @Mapping(target = "failReason", ignore = true)
-    public abstract ProjectInformation toEntry(CreationProjectInformationDto createdDto);
+    protected abstract ProjectInformation toEntryInternal(CreationProjectInformationDto createdDto);
 
-    @BeforeMapping
-    protected void createFiles(CreationProjectInformationDto dto) {
+
+    protected void createFiles(CreationProjectInformationDto dto) throws IOException {
         try {
             var uuid = UUID.randomUUID();
 
@@ -67,7 +73,7 @@ public abstract class ProjectInformationMapper {
             dto.setUuid(uuid);
         }
         catch(IOException e) {
-            logger.warn(e.getMessage(), e);
+            throw e;
         }
 
     }
