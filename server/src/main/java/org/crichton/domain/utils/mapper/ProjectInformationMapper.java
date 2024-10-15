@@ -2,7 +2,7 @@ package org.crichton.domain.utils.mapper;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
-import org.crichton.configuration.CrichtonConfig;
+import org.crichton.configuration.CrichtonDataStorageProperties;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.util.constants.FileName;
@@ -22,10 +22,10 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", imports = {UUID.class})
 public abstract class ProjectInformationMapper {
 
-    private final Logger logger = LoggerFactory.getLogger(ProjectInformationMapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProjectInformationMapper.class);
 
     @Autowired
-    private CrichtonConfig crichtonConfig;
+    private CrichtonDataStorageProperties crichtonDataStorageProperties;
 
     @Mapping(target = "status", constant = "None")
     @Mapping(target = "testResult", constant = "None")
@@ -37,7 +37,7 @@ public abstract class ProjectInformationMapper {
         try {
             var uuid = UUID.randomUUID();
 
-            String baseDirPath = crichtonConfig.getDataStorageBasePath() + File.separator + uuid;
+            String baseDirPath = crichtonDataStorageProperties.getBasePath() + File.separator + uuid;
 
             File baseDir = new File(baseDirPath);
 

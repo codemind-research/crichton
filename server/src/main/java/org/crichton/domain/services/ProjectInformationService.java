@@ -5,6 +5,8 @@ import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.IRepository;
 import org.crichton.domain.utils.mapper.ProjectInformationMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import java.util.Optional;
 @Service
 public class ProjectInformationService implements IProjectInformationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProjectInformationService.class);
+
     @Autowired
     private IRepository<ProjectInformation, Long> repository;
 
@@ -23,6 +27,9 @@ public class ProjectInformationService implements IProjectInformationService {
 
     @Override
     public ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) {
+
+        logger.info("creating project information");
+
         var entity = mapper.toEntry(creationProjectInformationDto);
         return repository.save(entity);
     }

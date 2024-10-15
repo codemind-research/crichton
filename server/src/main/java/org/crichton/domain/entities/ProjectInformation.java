@@ -1,17 +1,12 @@
 package org.crichton.domain.entities;
 
-import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.crichton.domain.utils.converters.ProjectStatusEnumToStringConverter;
-import org.crichton.domain.utils.converters.TestResultEnumToStringConverter;
-import org.crichton.domain.utils.converters.UUIDToStringConverter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
 import org.crichton.util.constants.EntityCode;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 

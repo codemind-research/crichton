@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CrichtonDataStorageProperties {
 
-    private final Logger logger = LoggerFactory.getLogger(CrichtonDataStorageProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(CrichtonDataStorageProperties.class);
 
     private final Optional<String> basePath;
 
