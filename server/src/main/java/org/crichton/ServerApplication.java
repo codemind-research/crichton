@@ -12,21 +12,18 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
-@EnableConfigurationProperties(CrichtonDataStorageProperties.class)
+@EnableConfigurationProperties({
+        CrichtonDataStorageProperties.class,
+        CrichtonDataStorageProperties.class,
+})
 public class ServerApplication {
-    private static Config config;
-    private static ConfigurableApplicationContext APP_CTX;
 
     public static void main(String[] args)  {
 
 
         ServerApplication.Version.set();
         System.out.println("Crichton Server Version: " + Version.getBuildInfo());
-        application(args, true);
-    }
-
-    private static void application(String[] args, boolean b) {
-        APP_CTX = new SpringApplicationBuilder(ServerApplication.class)
+        new SpringApplicationBuilder(ServerApplication.class)
 //                .bannerMode(Banner.Mode.OFF)
                 .profiles("https")
                 .run(args);
