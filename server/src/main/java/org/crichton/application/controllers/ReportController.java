@@ -2,10 +2,13 @@ package org.crichton.application.controllers;
 
 import org.crichton.application.exceptions.CustomException;
 import org.crichton.domain.dtos.ReportDTO;
-import org.crichton.domain.services.ReportService;
+import org.crichton.domain.dtos.report.ResponseReportDto;
+import org.crichton.domain.services.IProjectInformationService;
+import org.crichton.domain.services.old.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +21,28 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    @Autowired
+    private IProjectInformationService projectInformationService;
+
     @GetMapping("/data")
     @Operation(summary = "Process Client HTML Report Data", description = "Processes CSV reports sent by plugins to make the data available for the client." +
             " This API is responsible for transforming the provided CSV reports into a format usable by the client for generating HTML reports.")
     public ResponseEntity<ReportDTO.DataResponse> getData() throws CustomException {
         ReportDTO.DataResponse response = reportService.getData();
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseReportDto> getReportById(@PathVariable("id") long id) throws CustomException {
+        var entity = projectInformationService.findById(id);
+
+        if(entity.isPresent()) {
+
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
 

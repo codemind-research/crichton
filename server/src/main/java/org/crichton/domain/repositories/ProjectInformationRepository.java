@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component("projectInformationRepository")
-public class ProjectInformationRepository implements IRepository<ProjectInformation, Long> {
+public class ProjectInformationRepository implements IRepository<ProjectInformation, UUID> {
 
-    private static final Map<Long, ProjectInformation> store = new HashMap<>();
+    private static final Map<UUID, ProjectInformation> store = new HashMap<>();
 
 
     @Override
-    public Optional<ProjectInformation> findById(Long id) {
+    public Optional<ProjectInformation> findById(UUID id) {
         return Optional.ofNullable(store.getOrDefault(id, null));
     }
 
@@ -25,18 +25,13 @@ public class ProjectInformationRepository implements IRepository<ProjectInformat
     @Override
     public ProjectInformation save(ProjectInformation projectInformation) {
         var id = projectInformation.getId();
-
-        if(id == EntityCode.UNDEFINED) {
-            var newId = store.size() + 1L;
-            projectInformation.setId(newId);
-        }
         store.put(id, projectInformation);
 
         return projectInformation;
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(UUID id) {
         if(store.containsKey(id)) {
             store.remove(id);
             return true;

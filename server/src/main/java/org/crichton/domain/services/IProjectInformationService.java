@@ -7,18 +7,18 @@ import org.crichton.domain.entities.ProjectInformation;
 import java.util.List;
 import java.util.Optional;
 
-public interface IProjectInformationService {
+public interface IProjectInformationService<ID> {
 
     ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto);
 
     List<ProjectInformation> findAll();
 
-    Optional<ProjectInformation> findById(Long id);
+    Optional<ProjectInformation> findById(ID id);
 
-    String getProjectStatus(Long id);
+    String getProjectStatus(ID id);
 
-    ProjectInformation update(Long id, UpdatedProjectInformationDto updatedProjectInformationDto);
+    ProjectInformation update(ID id, UpdatedProjectInformationDto updatedProjectInformationDto);
 
-    void deleteById(Long id);
+    void deleteById(ID id);
 
 }

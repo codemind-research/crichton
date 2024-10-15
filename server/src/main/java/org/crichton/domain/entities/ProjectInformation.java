@@ -3,10 +3,8 @@ package org.crichton.domain.entities;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
-import org.crichton.util.constants.EntityCode;
 
 import java.util.UUID;
 
@@ -14,10 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProjectInformation {
 
-    @Setter
-    private Long id = EntityCode.UNDEFINED;
-
-    private UUID uuid;
+    private UUID id;
 
     private ProjectStatus status;
 
@@ -26,8 +21,8 @@ public class ProjectInformation {
     private String failReason;
 
     @Builder
-    public ProjectInformation(UUID uuid, ProjectStatus status, TestResult testResult, String failReason) {
-        this.uuid = (uuid != null) ? uuid : UUID.randomUUID(); // UUID가 null이면 자동 생성
+    public ProjectInformation(UUID id, ProjectStatus status, TestResult testResult, String failReason) {
+        this.id = (id != null) ? id : UUID.randomUUID(); // UUID가 null이면 자동 생성
         this.status = (status != null) ? status : ProjectStatus.None;
         this.testResult = (testResult != null) ? testResult : TestResult.None;
         this.failReason = (failReason != null) ? failReason : "";

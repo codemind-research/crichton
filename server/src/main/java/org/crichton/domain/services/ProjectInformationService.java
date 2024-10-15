@@ -1,5 +1,6 @@
 package org.crichton.domain.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
@@ -13,22 +14,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
-public class ProjectInformationService implements IProjectInformationService {
+@Slf4j
+public class ProjectInformationService implements IProjectInformationService<UUID> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProjectInformationService.class);
+    private final IRepository<ProjectInformation, UUID> repository;
+
+    private final ProjectInformationMapper mapper;
 
     @Autowired
-    private IRepository<ProjectInformation, Long> repository;
-
-    @Autowired
-    private ProjectInformationMapper mapper;
+    public ProjectInformationService(IRepository<ProjectInformation, UUID> repository, ProjectInformationMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
     @Override
     public ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) {
 
-        logger.info("creating project information");
+        log.info("creating project information");
 
         var entity = mapper.toEntry(creationProjectInformationDto);
         return repository.save(entity);
@@ -40,12 +45,12 @@ public class ProjectInformationService implements IProjectInformationService {
     }
 
     @Override
-    public Optional<ProjectInformation> findById(Long id) {
+    public Optional<ProjectInformation> findById(UUID id) {
         return repository.findById(id);
     }
 
     @Override
-    public String getProjectStatus(Long id) {
+    public String getProjectStatus(UUID id) {
         var entity = repository.findById(id).orElse(null);
         if(entity != null) {
             return switch (entity.getStatus()) {
@@ -64,7 +69,7 @@ public class ProjectInformationService implements IProjectInformationService {
 
     @Override
     @Transactional
-    public ProjectInformation update(Long id, UpdatedProjectInformationDto updatedProjectInformationDto) {
+    public ProjectInformation update(UUID id, UpdatedProjectInformationDto updatedProjectInformationDto) {
 
         ProjectInformation existingProject = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project with id " + id + " not found."));
@@ -85,7 +90,7 @@ public class ProjectInformationService implements IProjectInformationService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         repository.deleteById(id);
     }
 }
