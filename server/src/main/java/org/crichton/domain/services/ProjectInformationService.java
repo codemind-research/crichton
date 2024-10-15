@@ -3,7 +3,7 @@ package org.crichton.domain.services;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
-import org.crichton.domain.repositories.ProjectInformationRepository;
+import org.crichton.domain.repositories.IRepository;
 import org.crichton.domain.utils.mapper.ProjectInformationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class ProjectInformationService implements IProjectInformationService {
 
     @Autowired
-    private ProjectInformationRepository repository;
+    private IRepository<ProjectInformation, Long> repository;
 
     @Autowired
     private ProjectInformationMapper mapper;

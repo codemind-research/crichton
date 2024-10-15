@@ -4,35 +4,30 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.crichton.domain.utils.converters.ProjectStatusEnumToStringConverter;
 import org.crichton.domain.utils.converters.TestResultEnumToStringConverter;
 import org.crichton.domain.utils.converters.UUIDToStringConverter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
+import org.crichton.util.constants.EntityCode;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-@Entity
-@DynamicUpdate
 public class ProjectInformation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Setter
+    private Long id = EntityCode.UNDEFINED;
 
-    @Convert(converter = UUIDToStringConverter.class)
     private UUID uuid;
 
-    @Convert(converter = ProjectStatusEnumToStringConverter.class)
     private ProjectStatus status;
 
-    @Convert(converter = TestResultEnumToStringConverter.class)
     private TestResult testResult;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
     private String failReason;
 
     @Builder
