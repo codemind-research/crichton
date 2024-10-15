@@ -80,7 +80,7 @@ dependencies {
     implementation ('io.springfox:springfox-boot-starter:3.0.0') {
         exclude group: 'io.swagger.core.v3'
     }
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
     // 테스트 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -88,14 +88,14 @@ dependencies {
 
     // 파일 및 압축 관련 유틸리티
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14' // zt-zip for ZIP file handling
-    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.1' // Zip4j for advanced ZIP handling
+    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5' // Zip4j for advanced ZIP handling
 
     // 기타 유틸리티 라이브러리
     implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0' // Scala 라이브러리
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0' // Apache Commons Lang
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0' // Apache Commons Lang
     implementation 'org.junit.jupiter:junit-jupiter-api' // JUnit for Testing
     implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12' // zt-exec for process handling
-    implementation group: 'commons-io', name: 'commons-io', version: '2.5' // Apache Commons IO
+    implementation group: 'commons-io', name: 'commons-io', version: '2.13.0' // Apache Commons IO
 
     // https://mvnrepository.com/artifact/org.apache.tika/tika-core
     implementation 'org.apache.tika:tika-core:2.9.2'    // Apache Tika

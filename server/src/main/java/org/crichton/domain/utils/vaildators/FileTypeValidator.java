@@ -40,7 +40,7 @@ public class FileTypeValidator implements ConstraintValidator<ValidFile, Multipa
 
         final String fileName = file.getOriginalFilename();
 
-        if(!StringUtils.isBlank(fileName)) {
+        if(StringUtils.isBlank(fileName)) {
             context.buildConstraintViolationWithTemplate("업로드 요청한 파일명이 존재하지 않습니다.").addConstraintViolation();
             return false;
         }
@@ -105,10 +105,10 @@ public class FileTypeValidator implements ConstraintValidator<ValidFile, Multipa
      * @return
      */
     private String getMimeTypeByTika(MultipartFile multipartFile) {
-        try {
+        try(var inputStream = multipartFile.getInputStream()) {
 
             Tika tika = new Tika();
-            String mimeType = tika.detect(multipartFile.getInputStream());
+            String mimeType = tika.detect(inputStream);
             log.debug("업로드 요청된 파일 {}의 mimeType:{}", multipartFile.getOriginalFilename(), mimeType);
 
             return mimeType;
