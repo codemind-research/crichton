@@ -67,9 +67,9 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0' // Lombok과 MapStruct 호환을 위해 추가
 
-    // 데이터베이스 및 JPA
-    implementation 'org.postgresql:postgresql:42.5.1' // PostgreSQL 드라이버
-    implementation group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final', ext: 'pom'
+//    // 데이터베이스 및 JPA
+//    implementation 'org.postgresql:postgresql:42.5.1' // PostgreSQL 드라이버
+//    implementation group: 'org.hibernate', name: 'hibernate', version: '3.5.4-Final', ext: 'pom'
 
     // API 문서화 도구
     implementation ('io.springfox:springfox-boot-starter:3.0.0') {
