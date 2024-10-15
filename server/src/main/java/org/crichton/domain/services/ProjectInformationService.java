@@ -1,17 +1,18 @@
 package org.crichton.domain.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.crichton.configuration.CrichtonDataStorageProperties;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.IRepository;
 import org.crichton.domain.utils.mapper.ProjectInformationMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.crichton.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +26,13 @@ public class ProjectInformationService implements IProjectInformationService<UUI
 
     private final ProjectInformationMapper mapper;
 
+    private final CrichtonDataStorageProperties crichtonDataStorageProperties;
+
     @Autowired
-    public ProjectInformationService(IRepository<ProjectInformation, UUID> repository, ProjectInformationMapper mapper) {
+    public ProjectInformationService(IRepository<ProjectInformation, UUID> repository, ProjectInformationMapper mapper, CrichtonDataStorageProperties crichtonDataStorageProperties) {
         this.repository = repository;
         this.mapper = mapper;
+        this.crichtonDataStorageProperties = crichtonDataStorageProperties;
     }
 
     @Override
@@ -55,7 +59,8 @@ public class ProjectInformationService implements IProjectInformationService<UUI
         var entity = repository.findById(id).orElse(null);
         if(entity != null) {
             return switch (entity.getStatus()) {
-                case None, Running -> "testing";
+                case None -> "standBy";
+                case Running -> "testing";
                 case Complete -> switch(entity.getTestResult()) {
                     case None -> "testing";
                     case Success -> "pass";
@@ -91,7 +96,14 @@ public class ProjectInformationService implements IProjectInformationService<UUI
     }
 
     @Override
-    public void deleteById(UUID id) {
+    public void deleteById(UUID id) throws IOException {
+
+        var directory = new File(crichtonDataStorageProperties.getBasePath() + File.separator + id);
+
+        if(directory.exists()) {
+            FileUtils.deleteDirectoryRecursively(directory.toPath());
+        }
+
         repository.deleteById(id);
     }
 }

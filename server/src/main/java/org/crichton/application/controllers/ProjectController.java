@@ -26,7 +26,7 @@ public class ProjectController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
 
-    private IProjectInformationService projectInformationService;
+    private IProjectInformationService<UUID> projectInformationService;
 
     @Autowired
     public ProjectController(IProjectInformationService projectInformationService) {
@@ -53,7 +53,7 @@ public class ProjectController {
     }
 
     @GetMapping(value = "/status/{id}")
-    public ResponseEntity<String> getProjectStatus(@PathVariable Long id) {
+    public ResponseEntity<String> getProjectStatus(@PathVariable UUID id) {
         try {
             var projectStatus = projectInformationService.getProjectStatus(id);
             return ResponseEntity.ok(projectStatus);
@@ -65,7 +65,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/remove/{id}")
-    public ResponseEntity<String> deleteProject(@PathVariable Long id) {
+    public ResponseEntity<String> deleteProject(@PathVariable UUID id) {
         try {
             projectInformationService.deleteById(id);
             return ResponseEntity.ok().build();

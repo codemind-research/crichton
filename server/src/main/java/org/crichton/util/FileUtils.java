@@ -3,6 +3,11 @@ package org.crichton.util;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,6 +15,21 @@ import java.util.stream.Stream;
 
 public class FileUtils {
 
+    public static void deleteDirectoryRecursively(Path path) throws IOException {
+        Files.walkFileTree(path, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file); // 파일 삭제
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                Files.delete(dir); // 디렉터리 삭제
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
 
     public static boolean removeDirectory(File path) {
         if (!path.exists())

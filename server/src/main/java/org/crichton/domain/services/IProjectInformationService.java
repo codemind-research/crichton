@@ -20,6 +20,6 @@ public interface IProjectInformationService<ID> {
 
     ProjectInformation update(ID id, UpdatedProjectInformationDto updatedProjectInformationDto);
 
-    void deleteById(ID id);
+    void deleteById(ID id) throws IOException;
 
 }
