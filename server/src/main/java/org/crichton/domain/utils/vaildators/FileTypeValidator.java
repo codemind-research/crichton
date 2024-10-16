@@ -7,10 +7,17 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.crichton.domain.utils.anotations.ValidFile;
 import org.crichton.domain.utils.enums.UploadAllowFileDefine;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -108,8 +115,18 @@ public class FileTypeValidator implements ConstraintValidator<ValidFile, Multipa
         try(var inputStream = multipartFile.getInputStream()) {
 
             Tika tika = new Tika();
+
+            // MIME 타입 감지
             String mimeType = tika.detect(inputStream);
             log.debug("업로드 요청된 파일 {}의 mimeType:{}", multipartFile.getOriginalFilename(), mimeType);
+
+            // 확장자가 .json이면서 mimeType이 text/plain이거나 application/octet-stream인 경우,
+            // application/json으로 설정
+            String fileExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+            if ("json".equalsIgnoreCase(fileExtension) &&
+                    ("text/plain".equalsIgnoreCase(mimeType) || "application/octet-stream".equalsIgnoreCase(mimeType))) {
+                mimeType = "application/json";
+            }
 
             return mimeType;
 
