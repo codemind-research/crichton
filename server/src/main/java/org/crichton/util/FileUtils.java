@@ -3,10 +3,7 @@ package org.crichton.util;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +55,10 @@ public class FileUtils {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static Path getFilePath(String directory, String fileName) {
+        return Paths.get(directory, fileName).normalize();
     }
 
     public static StringBuilder readFile(File file) throws Exception {
