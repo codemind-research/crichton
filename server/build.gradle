@@ -96,9 +96,9 @@ dependencies {
     implementation 'org.junit.jupiter:junit-jupiter-api' // JUnit for Testing
     implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12' // zt-exec for process handling
     implementation group: 'commons-io', name: 'commons-io', version: '2.13.0' // Apache Commons IO
-
-    // https://mvnrepository.com/artifact/org.apache.tika/tika-core
     implementation 'org.apache.tika:tika-core:2.9.2'    // Apache Tika
+
+    implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.6.5'
 
 }
 
