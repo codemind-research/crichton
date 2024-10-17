@@ -1,5 +1,8 @@
 rootProject.name = 'crichton'
+
 include ':server'
 project(':server').projectDir = "$rootDir/server" as File
-include ':plugins:runner'
 
+include ':plugins:runner'
+include ':plugins:injector'
+include ':plugins:coyote'

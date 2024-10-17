@@ -22,7 +22,7 @@ subprojects {
 
     dependencies {
         if (project.name != 'runner') {
-            implementation project(':runner')
+            implementation project(':plugins:runner')
         }
         implementation 'org.projectlombok:lombok:1.18.20'
         annotationProcessor 'org.projectlombok:lombok:1.18.20'
