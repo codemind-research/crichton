@@ -28,10 +28,13 @@ public class CrichtonDataStorageProperties {
 
 
     private void createDirectoryIfNotExists(String path) {
-        log.info("Creating directory {}", path);
         File directory = new File(path);
         if (!directory.exists()) {
+            log.info("Creating data storage: {}", directory.getAbsolutePath());
             directory.mkdirs(); // 디렉토리가 없을 경우 생성
+        }
+        else {
+            log.info("'{}' already exists.", directory.getAbsolutePath());
         }
     }
 }
