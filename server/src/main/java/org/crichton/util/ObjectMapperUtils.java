@@ -2,6 +2,7 @@ package org.crichton.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ObjectMapperUtils {
 
@@ -20,6 +21,7 @@ public class ObjectMapperUtils {
 
     public static String convertObjectToJsonString(Object object) {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {

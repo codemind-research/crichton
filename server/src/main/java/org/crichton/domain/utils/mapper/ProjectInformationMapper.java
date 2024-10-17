@@ -47,7 +47,6 @@ public abstract class ProjectInformationMapper {
     @Mapping(target = "status", constant = "None")
     @Mapping(target = "testResult", constant = "None")
     @Mapping(target = "failReason", ignore = true)
-    @Mapping(source = "testSpec.tasks", target = "tasks")
     protected abstract ProjectInformation toEntryInternal(CreationProjectInformationDto createdDto);
 
 
@@ -72,6 +71,9 @@ public abstract class ProjectInformationMapper {
             if (dto.getTestSpecFile() != null) {
                 var testSpecFilePath = FileUtils.getFilePath(baseDirPath, FileName.TEST_SPEC);
                 saveFile(dto.getTestSpecFile(), testSpecFilePath);
+                var jsonString = Files.readString(testSpecFilePath);
+                var testSpecDto = ObjectMapperUtils.convertJsonStringToObject(jsonString, TestSpecDto.class);
+                dto.setTestSpec(testSpecDto);
             }
 
             if (dto.getDefectSpecFile() != null) {
@@ -153,7 +155,7 @@ public abstract class ProjectInformationMapper {
         Path clientPath = Paths.get(clientFilePath);
 
         // 압축 해제 위치를 기준으로 경로 생성
-        Path localPath = Paths.get(baseDirAbsolutePath.toString(), clientPath.subpath(0, clientPath.getNameCount()).toString());
+        Path localPath = Paths.get(baseDirAbsolutePath.toString(), clientPath.subpath(0, clientPath.getNameCount()).toString()).normalize();
 
         if(!operationSystemUtil.isWindows()) {
             return localPath.toString().replace("\\", "/"); // 윈도우 경로 구분자 제거

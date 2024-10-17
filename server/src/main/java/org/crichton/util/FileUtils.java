@@ -57,6 +57,14 @@ public class FileUtils {
         }
     }
 
+    public static String getAbsolutePath(String path) {
+        return getAbsolutePath(Paths.get(path));
+    }
+
+    private static String getAbsolutePath(Path path) {
+        return path.normalize().toAbsolutePath().toString();
+    }
+
     public static Path getFilePath(String directory, String fileName) {
         return Paths.get(directory, fileName).normalize();
     }

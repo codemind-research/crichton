@@ -2,13 +2,10 @@ package org.crichton.domain.entities;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.crichton.domain.dtos.spec.TestSpecDto;
+import lombok.Setter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -17,7 +14,8 @@ public class ProjectInformation {
 
     private UUID id;
 
-    private List<TestSpec.Task> tasks;
+    @Setter
+    private TestSpec testSpec;
 
     private ProjectStatus status;
 
