@@ -10,8 +10,10 @@ import runner.loader.PluginLoader;
 import runner.paths.PluginPaths;
 import runner.util.FileUtils;
 
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 public class PluginRunner implements Runner  {
 
@@ -27,23 +29,36 @@ public class PluginRunner implements Runner  {
         this.pluginLoader = new BasicPluginLoader(pluginJar);
     }
 
+    public PluginRunner(@NonNull String pluginDirectory, @NonNull String pluginName) throws Exception {
+        this.pluginName = pluginName;
+        this.pluginJar = PluginPaths.generatePluginJarPath(pluginDirectory, pluginName);
+        this.pluginLoader = new BasicPluginLoader(pluginJar);
+    }
+
     @Override
-    public boolean check(){
+    public boolean check() {
         try {
             if (!pluginLoader.isApplicable(pluginJar)) {
-                return false;
+                var message = String.format("Plugin '%s' not found in directory '%s'", pluginJar.getFileName(), pluginJar.getParent());
+                throw new NoSuchFileException(message);
             }
+
             plugin = pluginLoader.loadPlugin(pluginName)
                                  .orElseThrow(IllegalArgumentException::new);
-            if (plugin.check()){
+
+            if (plugin.check()) {
                 return true;
-            }else{
-                logger.error("Check Failed Plugin: " +pluginName);
-                return false;
             }
-        }catch (Exception e){
-            e.printStackTrace();
-            return false;
+            else {
+                throw new IllegalStateException("Plugin check returned false.");
+            }
+
+        }
+        catch (IllegalArgumentException e) {
+            throw e;
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
         }
     }
 

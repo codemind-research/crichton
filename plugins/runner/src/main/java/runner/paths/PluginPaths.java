@@ -17,8 +17,17 @@ public class PluginPaths {
         return PLUGIN_DIR_PATH.resolve(plugin);
     }
 
-    public static Path generatePluginJarPath(String plugin) {
-        return PLUGIN_DIR_PATH.resolve(plugin).resolve(plugin+".jar");
+    public static Path generatePluginJarPath(String directory, String pluginFileName) {
+        return generatePluginJarPath(Paths.get(directory), pluginFileName);
+    }
+
+    public static Path generatePluginJarPath(String pluginName) {
+        var pluginDirPath = PLUGIN_DIR_PATH.resolve(pluginName);
+        return generatePluginJarPath(pluginDirPath, pluginName + ".jar");
+    }
+
+    public static Path generatePluginJarPath(Path pluginDirectory, String pluginFileName) {
+        return pluginDirectory.resolve(pluginFileName);
     }
 
     public static Path generatePluginsPath(String pluginName) {
