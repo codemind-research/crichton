@@ -2,6 +2,7 @@ package org.crichton;
 
 import org.crichton.configuration.Config;
 import org.crichton.configuration.CrichtonDataStorageProperties;
+import org.crichton.configuration.CrichtonPluginProperties;
 import org.crichton.util.ManifestUtil;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @EnableConfigurationProperties({
         CrichtonDataStorageProperties.class,
-        CrichtonDataStorageProperties.class,
+        CrichtonPluginProperties.class,
 })
 public class ServerApplication {
 
