@@ -143,7 +143,7 @@ public abstract class ProjectInformationMapper {
     protected void replaceTestSpecTaskFilePath(ProjectInformation target) {
 
         var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), target.getId().toString()).toAbsolutePath();
-        Path testSpecFilePath = FileUtils.getFilePath(baseDirAbsolutePath.toString(), FileName.TEST_SPEC);
+        Path testSpecFilePath = FileUtils.getFilePath(baseDirAbsolutePath.toString(), PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_PATH, FileName.TEST_SPEC);
 
         try {
             var jsonString = Files.readString(testSpecFilePath);
