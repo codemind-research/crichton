@@ -1,5 +1,7 @@
 package org.crichton.util;
 
+import jakarta.annotation.Nullable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -13,6 +15,7 @@ import java.util.stream.Stream;
 /**
  * 파일 및 디렉터리 작업을 위한 유틸리티 클래스입니다.
  */
+@Slf4j
 public class FileUtils {
 
     /**
@@ -111,55 +114,6 @@ public class FileUtils {
         return Paths.get(directory, fileName).normalize();
     }
 
-    /**
-     * 디렉터리와 파일 이름을 조합하여 절대 경로를 반환합니다.
-     *
-     * @param directory 디렉터리 경로
-     * @param fileName 파일 이름
-     * @return 절대 경로 Path 객체
-     */
-    public static Path getAbsoluteFilePath(String directory, String fileName) {
-        return Paths.get(directory, fileName).toAbsolutePath().normalize();
-    }
-
-    /**
-     * 파일의 내용을 읽고 StringBuilder에 저장하여 반환합니다.
-     *
-     * @param file 읽을 파일
-     * @return 파일 내용이 저장된 StringBuilder 객체
-     * @throws Exception 파일이 null인 경우
-     */
-    public static StringBuilder readFile(File file) throws Exception {
-        if (file == null) {
-            throw new Exception();
-        } else {
-            BufferedReader bi = new BufferedReader(new FileReader(file));
-            String line;
-            StringBuilder lines = new StringBuilder();
-            while ((line = bi.readLine()) != null) {
-                lines.append(line);
-                lines.append(System.lineSeparator());
-            }
-
-            bi.close();
-            return lines;
-        }
-    }
-
-    /**
-     * 파일의 확장자를 반환합니다.
-     *
-     * @param file 파일 객체
-     * @return 파일 확장자 (없을 경우 빈 문자열 반환)
-     */
-    public static String getFileExtension(File file) {
-        String name = file.getName();
-        int lastIndexOfDot = name.lastIndexOf('.');
-        if (lastIndexOfDot == -1) {
-            return ""; // 확장자가 없는 경우
-        }
-        return name.substring(lastIndexOfDot + 1);
-    }
 
     /**
      * 지정된 디렉터리의 하위 디렉터리 목록을 반환합니다.
@@ -178,6 +132,25 @@ public class FileUtils {
                     );
         } else {
             return Optional.empty();
+        }
+    }
+
+    /**
+     * 특정 디렉터리 내의 파일이 반드시 존재해야 함을 확인하는 메서드
+     *
+     * @param directory 파일이 포함된 디렉터리 경로 (절대 또는 상대 경로)
+     * @param fileName  디렉터리 내에서 확인할 파일 이름 (파일 이름이 없으면 디렉터리만 확인)
+     * @throws IllegalArgumentException 파일이 존재하지 않거나 파일이 아닌 경우 예외 발생
+     */
+    public static void assertFileExists(String directory, @Nullable String fileName) {
+        var absoluteFilePath = getAbsolutePath(directory, fileName);
+        var file = new File(absoluteFilePath);
+
+        if (!file.exists() || !file.isFile()) {
+            var message = String.format("There is no file '%s' in path '%s'.", fileName, directory);
+            throw new IllegalArgumentException(message);
+        } else {
+            log.info("File '{}' already exists.", absoluteFilePath);
         }
     }
 
