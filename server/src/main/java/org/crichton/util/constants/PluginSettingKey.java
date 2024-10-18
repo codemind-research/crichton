@@ -2,7 +2,9 @@ package org.crichton.util.constants;
 
 public class PluginSettingKey {
 
+    public static final String PROJECT_ID = "project_id";
     public static final String PROJECT_DIR_PATH = "project";
+
 
     private PluginSettingKey() {
         throw new AssertionError();

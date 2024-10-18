@@ -2,6 +2,7 @@ package injector.setting;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import runner.paths.PluginPaths;
 import runner.util.FileUtils;
@@ -11,10 +12,12 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
 
+@Getter
 public class DefectInjectorSetting {
 
     private String pluginName;
     private String oilFile;
+    private String testSpecFile;
     private String defectSpecFile;
     private String safeSpecFile;
     private String trampoline;
@@ -27,6 +30,7 @@ public class DefectInjectorSetting {
         var projectDir = defectInjectorSetting.getOrDefault("project", PluginPaths.generatePluginSettingsPath(pluginName).toString());
         this.pluginSettingDir = new File(projectDir);
         this.oilFile = defectInjectorSetting.getOrDefault("oil","");
+        this.testSpecFile = defectInjectorSetting.getOrDefault("test","");
         this.defectSpecFile = defectInjectorSetting.getOrDefault("defect","");
         this.safeSpecFile = defectInjectorSetting.getOrDefault("safe","");
         this.trampoline = defectInjectorSetting.getOrDefault("trampoline","");
@@ -57,6 +61,20 @@ public class DefectInjectorSetting {
         FileUtils.moveFile(crcFile,pluginSettingDir.toString());
     }
 
+    public String getTestSpecFile() {
+        return Paths.get(defectDir.getAbsolutePath(), testSpecFile).normalize().toAbsolutePath().toString();
+    }
+
+    public String getDefectSpecFile() {
+        return Paths.get(defectDir.getAbsolutePath(), defectSpecFile).normalize().toAbsolutePath().toString();
+    }
+
+    public String getSafeSpecFile() {
+        return Paths.get(defectDir.getAbsolutePath(), safeSpecFile).normalize().toAbsolutePath().toString();
+    }
+
+
+
 
     public File getOilFile() {
         return Paths.get(pluginSettingDir.toString(), oilFile).toFile();
@@ -65,18 +83,6 @@ public class DefectInjectorSetting {
 
     public File getOilCrOilFile() {
         return Paths.get(getOilFile().toString()+".cr.oil").toFile();
-    }
-
-    public File getTestSpecFile() {
-        return Paths.get(pluginSettingDir.toString(), defectSpecFile).toFile();
-    }
-
-    public File getDefectSpecFile() {
-        return Paths.get(pluginSettingDir.toString(), defectSpecFile).toFile();
-    }
-
-    public File getSafeSpecFile() {
-        return Paths.get(pluginSettingDir.toString(), safeSpecFile).toFile();
     }
 
     public String getTrampoline() {
@@ -115,6 +121,10 @@ public class DefectInjectorSetting {
         return pluginSettingDir;
     }
 
+    public String getOutputFilePath() {
+        return this.defectDir.toPath().resolve("report.csv").normalize().toFile().getAbsolutePath().toString();
+    }
+
     public String getOutputName(int id) {
         String fileName = FilenameUtils.getBaseName(getTarget(id));
         return fileName + "_report_" + id + ".csv";
@@ -122,6 +132,10 @@ public class DefectInjectorSetting {
 
     public File getOutputFile(int id) {
         return Paths.get(pluginSettingDir.getAbsolutePath(), getOutputName(id)).toFile();
+    }
+
+    public String getExeBinaryFilePath() {
+        return this.defectDir.toPath().resolve("defectSim_exe").normalize().toFile().getAbsolutePath().toString();
     }
 
     public String getExeBinary(int id) {
