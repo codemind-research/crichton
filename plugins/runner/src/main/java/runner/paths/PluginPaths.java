@@ -17,8 +17,8 @@ public class PluginPaths {
         return PLUGIN_DIR_PATH.resolve(plugin);
     }
 
-    public static Path generatePluginJarPath(String directory, String pluginName) {
-        return generatePluginJarPath(Paths.get(directory), pluginName + ".jar");
+    public static Path generatePluginJarPath(String directory, String pluginFileName) {
+        return generatePluginJarPath(Paths.get(directory), pluginFileName);
     }
 
     public static Path generatePluginJarPath(String pluginName) {
@@ -36,6 +36,10 @@ public class PluginPaths {
 
     public static Path generatePluginZipPath(String pluginName, String zipPath) {
         return generatePluginsPath(pluginName).resolve(zipPath);
+    }
+
+    public static Path generatePluginLogPath(Path pluginLogDirectory) {
+        return pluginLogDirectory.resolve(CRICHTON_LOG_PATH);
     }
 
     public static Path generatePluginUnZipPath(String pluginName, String settings) {
