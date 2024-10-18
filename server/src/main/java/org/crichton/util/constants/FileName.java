@@ -12,6 +12,7 @@ public class FileName {
     //#region Plugin
     public static final String INJECTOR_PLUGIN = "injector.jar";
     public static final String UNIT_TESTER_PLUGIN = "coyote.jar";
+    public static final String PLUGIN_PROPERTY_FILE = "plugin.properties";
     //#endregion
 
     public static final String DEFECT_INJECTOR = "DefectInjector.dll";

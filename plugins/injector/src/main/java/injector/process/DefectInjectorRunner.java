@@ -20,11 +20,11 @@ public class DefectInjectorRunner extends ProcessRunner {
     protected CommandBuilder buildCommand() {
         CommandBuilder command = new CommandBuilder();
         command.addOption("dotnet");
-        command.addOption(InjectorBinaries.getFileInResources(InjectorBinaries.DEFECT));
+        command.addOption(InjectorBinaries.getFileInResources(setting.getLibraries(),InjectorBinaries.DEFECT));
         command.addOption(targetSource);
-        command.addOption(setting.getTestSpecFile().getAbsolutePath());
-        command.addOption(setting.getDefectSpecFile().getAbsolutePath());
-        command.addOption(setting.getSafeSpecFile().getAbsolutePath());
+        command.addOption(setting.getTestSpecFile());
+        command.addOption(setting.getDefectSpecFile());
+        command.addOption(setting.getSafeSpecFile());
         command.addOption(setting.getTrampoline());
         return command;
     }

@@ -6,35 +6,66 @@ import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import runner.paths.PluginPaths;
 import runner.util.FileUtils;
+import runner.util.PropertiesFileReader;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 
 @Getter
 public class DefectInjectorSetting {
 
-    private String pluginName;
-    private String oilFile;
-    private String testSpecFile;
-    private String defectSpecFile;
-    private String safeSpecFile;
-    private String trampoline;
-    private int defectLength;
-    private File defectDir;
-    private final File pluginSettingDir;
+    public static class ConfigurationKey {
+        public static final String WORKSPACE = "workspace";
+        public static final String OLI = "oil";
+        public static final String TEST_SPEC_FILE_PATH = "test";
+        public static final String DEFECT_SPEC_FILE_PATH = "defect";
+        public static final String SAFE_SPEC_FILE_PATH = "safe";
+        public static final String TRAMPOLINE_PATH = "trampoline";
+        public static final String PROPERTIES_PATH = "properties";
+        public static final String LIBRARIES_PATH = "libs";
+    }
 
-    public DefectInjectorSetting(String pluginName, Map<String, String> defectInjectorSetting) {
+    private final String pluginName;
+    private final String oilFile;
+    private final String testSpecFile;
+    private final String defectSpecFile;
+    private final String safeSpecFile;
+    private final String trampoline;
+    private final String libraries;
+
+    private final File projectWorkspace;
+    private final File defectDir;
+
+    private int defectLength;
+
+    public DefectInjectorSetting(String pluginName, Map<String, String> defectInjectorConfiguration) {
         this.pluginName = pluginName;
-        var projectDir = defectInjectorSetting.getOrDefault("project", PluginPaths.generatePluginSettingsPath(pluginName).toString());
-        this.pluginSettingDir = new File(projectDir);
-        this.oilFile = defectInjectorSetting.getOrDefault("oil","");
-        this.testSpecFile = defectInjectorSetting.getOrDefault("test","");
-        this.defectSpecFile = defectInjectorSetting.getOrDefault("defect","");
-        this.safeSpecFile = defectInjectorSetting.getOrDefault("safe","");
-        this.trampoline = defectInjectorSetting.getOrDefault("trampoline","");
-        this.defectDir = Paths.get(pluginSettingDir.toString(), "defect").toFile();
+        var projectDir = defectInjectorConfiguration.getOrDefault(ConfigurationKey.WORKSPACE, PluginPaths.generatePluginSettingsPath(pluginName).toString());
+        this.projectWorkspace = new File(projectDir);
+        this.oilFile = defectInjectorConfiguration.getOrDefault(ConfigurationKey.OLI,"");
+        this.testSpecFile = defectInjectorConfiguration.getOrDefault(ConfigurationKey.TEST_SPEC_FILE_PATH,"");
+        this.defectSpecFile = defectInjectorConfiguration.getOrDefault(ConfigurationKey.DEFECT_SPEC_FILE_PATH,"");
+        this.safeSpecFile = defectInjectorConfiguration.getOrDefault(ConfigurationKey.SAFE_SPEC_FILE_PATH,"");
+        this.trampoline = defectInjectorConfiguration.getOrDefault(ConfigurationKey.TRAMPOLINE_PATH,"");
+        this.defectDir = Paths.get(projectWorkspace.toString(), "defect").toFile();
+
+        var propertiesDir = defectInjectorConfiguration.getOrDefault(ConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
+        this.libraries = getLibraryPath(propertiesDir);
+
+    }
+
+    private String getLibraryPath(String propertiesFile) {
+        var properties = PropertiesFileReader.readPropertiesFile(propertiesFile);
+        return properties.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(ConfigurationKey.LIBRARIES_PATH) && Files.exists(Paths.get(String.valueOf(entry.getValue()))) )
+                .map(entry -> String.valueOf(entry.getValue()))
+                .findFirst()
+                .orElse(null);
+
     }
 
     public void makeDefectJson() throws Exception{
@@ -58,7 +89,7 @@ public class DefectInjectorSetting {
 
     public void moveCRCFile(String targetSource, int id) {
         String crcFile =  targetSource + File.separator + getTargetCRC(id);
-        FileUtils.moveFile(crcFile,pluginSettingDir.toString());
+        FileUtils.moveFile(crcFile, projectWorkspace.toString());
     }
 
     public String getTestSpecFile() {
@@ -74,10 +105,8 @@ public class DefectInjectorSetting {
     }
 
 
-
-
     public File getOilFile() {
-        return Paths.get(pluginSettingDir.toString(), oilFile).toFile();
+        return Paths.get(projectWorkspace.toString(), oilFile).toFile();
     }
 
 
@@ -117,8 +146,8 @@ public class DefectInjectorSetting {
         return new File(defectDir + File.separator + outputFileName).getAbsolutePath();
     }
 
-    public File getPluginSettingDir() {
-        return pluginSettingDir;
+    public File getProjectWorkspace() {
+        return projectWorkspace;
     }
 
     public String getOutputFilePath() {
@@ -131,7 +160,7 @@ public class DefectInjectorSetting {
     }
 
     public File getOutputFile(int id) {
-        return Paths.get(pluginSettingDir.getAbsolutePath(), getOutputName(id)).toFile();
+        return Paths.get(projectWorkspace.getAbsolutePath(), getOutputName(id)).toFile();
     }
 
     public String getExeBinaryFilePath() {
@@ -140,7 +169,7 @@ public class DefectInjectorSetting {
 
     public String getExeBinary(int id) {
         String fileName = FilenameUtils.getBaseName(getTarget(id)) + "_exe";
-        return Paths.get(pluginSettingDir.toString(), fileName).toFile().getAbsolutePath();
+        return Paths.get(projectWorkspace.toString(), fileName).toFile().getAbsolutePath();
     }
 
     public String getViperPath() {

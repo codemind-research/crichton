@@ -1,7 +1,6 @@
 package injector.process;
 
 import injector.setting.DefectInjectorSetting;
-import runner.paths.PluginPaths;
 import runner.process.ProcessRunner;
 import runner.util.CommandBuilder;
 
@@ -12,7 +11,7 @@ public class MakePythonRunner extends ProcessRunner {
     public MakePythonRunner(DefectInjectorSetting setting) {
         super();
         this.setting = setting;
-        processBuilder.directory(PluginPaths.generatePluginSettingsPath(setting.getPluginName()).toFile());
+        processBuilder.directory(setting.getProjectWorkspace());
     }
 
     @Override

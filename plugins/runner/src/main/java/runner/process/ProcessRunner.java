@@ -4,6 +4,7 @@ import lombok.NonNull;
 import runner.util.CommandBuilder;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -22,12 +23,36 @@ public abstract class ProcessRunner {
         try {
             processBuilder.command(buildCommand().getCommand());
             Process process = processBuilder.start();
+            var stdOutHandle = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    var stream = process.getInputStream();
+                    if(stream != null){
+                        try(var stdout = new BufferedReader(new InputStreamReader(stream))) {
+                            String line;
+                            while ((line = stdout.readLine()) != null) {
+                                System.out.println(line);
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } finally {
+
+                        }
+                    }
+
+                }
+            });
+
+
+
+
             InputStream errorStream = process.getErrorStream();
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream));
             String line;
             while ((line = errorReader.readLine()) != null) {
                 System.out.println(line);
             }
+            stdOutHandle.start();
             int exitCode = process.waitFor();
             return exitCode == 0;
         }catch (Exception e){

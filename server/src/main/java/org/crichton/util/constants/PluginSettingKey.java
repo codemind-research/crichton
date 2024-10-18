@@ -3,8 +3,7 @@ package org.crichton.util.constants;
 public class PluginSettingKey {
 
     public static final String PROJECT_ID = "project_id";
-    public static final String PROJECT_DIR_PATH = "project";
-
+    public static final String WORKSPACE = "workspace";
 
     private PluginSettingKey() {
         throw new AssertionError();
@@ -16,6 +15,8 @@ public class PluginSettingKey {
         public static final String SAFE_SPEC_FILE_PATH = "safe";
         public static final String OIL_FILE_PATH = "oil";
         public static final String TRAMPOLINE_PATH = "trampoline";
+        public static final String PROPERTIES_PATH = "properties";
+
     }
 
     public static class UnitTester {
