@@ -34,7 +34,7 @@ public class CrichtonDataStorageProperties {
             directory.mkdirs(); // 디렉토리가 없을 경우 생성
         }
         else {
-            log.info("'{}' already exists.", directory.getAbsolutePath());
+            log.info("Data Storage '{}' already exists.", directory.getAbsolutePath());
         }
     }
 }
