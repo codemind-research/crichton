@@ -7,14 +7,18 @@ import org.crichton.domain.dtos.project.UpdatedProjectInformationDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.IRepository;
 import org.crichton.domain.utils.enums.ProjectStatus;
+import org.crichton.domain.utils.enums.TestResult;
 import org.crichton.domain.utils.mapper.ProjectInformationMapper;
 import org.crichton.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import runner.Plugin;
+import runner.PluginRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,11 +33,17 @@ public class ProjectInformationService implements IProjectInformationService<UUI
 
     private final CrichtonDataStorageProperties crichtonDataStorageProperties;
 
+    private final PluginService pluginService;
+
     @Autowired
-    public ProjectInformationService(IRepository<ProjectInformation, UUID> repository, ProjectInformationMapper mapper, CrichtonDataStorageProperties crichtonDataStorageProperties) {
+    public ProjectInformationService(IRepository<ProjectInformation, UUID> repository,
+                                     ProjectInformationMapper mapper,
+                                     CrichtonDataStorageProperties crichtonDataStorageProperties,
+                                     PluginService pluginService) {
         this.repository = repository;
         this.mapper = mapper;
         this.crichtonDataStorageProperties = crichtonDataStorageProperties;
+        this.pluginService = pluginService;
     }
 
     @Override
@@ -42,6 +52,21 @@ public class ProjectInformationService implements IProjectInformationService<UUI
         log.info("creating project information");
 
         var entity = mapper.toEntry(creationProjectInformationDto);
+
+        // 1. DefectInjector Plugin 수행
+        try {
+            entity.updateStatus(ProjectStatus.Running);
+            pluginService.run(entity);
+        } catch (Exception e) {
+            log.error("plugin failed.", e);
+            entity.updateStatus(ProjectStatus.Complete);
+            entity.updateTestResult(TestResult.Fail);
+            entity.updateFailReason(e.getMessage());
+        }
+
+        // 2. DefectInjector Plugin 수행
+
+
         return repository.save(entity);
     }
 
