@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import runner.PluginRunner;
 import runner.paths.PluginPaths;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class PluginService {
         defectInjectorConfiguration.put(PluginSettingKey.PROJECT_ID, id.toString());
 
         var projectDirectory = FileUtils.getAbsolutePath(crichtonDataStorageProperties.getBasePath(), entity.getId().toString());
-        defectInjectorConfiguration.put(PluginSettingKey.WORKSPACE, projectDirectory);
+        defectInjectorConfiguration.put(PluginSettingKey.WORKSPACE, projectDirectory + File.separator);
         defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.TEST_SPEC_FILE_PATH, FileName.TEST_SPEC);
         defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_PATH, FileName.DEFECT_SPEC);
         defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.SAFE_SPEC_FILE_PATH, FileName.SAFE_SPEC);
