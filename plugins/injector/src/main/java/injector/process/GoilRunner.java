@@ -21,7 +21,7 @@ public class GoilRunner extends ProcessRunner {
         command.addOption("goil");
         command.addOption("--target=posix/linux");
         command.addOption("--templates="+setting.getGoilTemplates());
-        command.addOption(setting.getOilCrOilFile().getAbsolutePath());
+        command.addOption(setting.getOilFile().getAbsolutePath());
         return command;
     }
 

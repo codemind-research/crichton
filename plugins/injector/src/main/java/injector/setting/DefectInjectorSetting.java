@@ -109,7 +109,7 @@ public class DefectInjectorSetting {
         return Paths.get(projectWorkspace.toString(), oilFile).toFile();
     }
 
-
+    @Deprecated
     public File getOilCrOilFile() {
         return Paths.get(getOilFile().toString()+".cr.oil").toFile();
     }
