@@ -6,26 +6,8 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
-@Getter
-public class TestSpec {
+public record TestSpec(List<Task> tasks, long stopDuration) {
 
-    private List<Task> tasks;
-
-    private long stopDuration;
-
-    @Builder
-    @Getter
-    public static class Task {
-
-        private String name;
-
-        private long startTime;
-
-        private long cycleDuration;
-
-        private long priority;
-
-        private String file;
+    public record Task(String name, long startTime, long cycleDuration, long priority, String file) {
     }
 }
