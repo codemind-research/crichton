@@ -22,6 +22,7 @@ public class PluginRunner implements Runner  {
 
     private static final Logger logger = LoggerFactory.getLogger(PluginRunner.class);
     private final String pluginName;
+    private final Path pluginDirectory;
     private final Path pluginLogFile;
     private final Path pluginJar;
     private final PluginLoader pluginLoader;
@@ -29,6 +30,7 @@ public class PluginRunner implements Runner  {
 
     public PluginRunner(@NonNull String pluginName) throws Exception {
         this.pluginName = pluginName;
+        this.pluginDirectory = PluginPaths.PLUGIN_DIR_PATH;
         this.pluginLogFile = PluginPaths.generatePluginLogPath(PluginPaths.PLUGIN_DIR_PATH.resolve(pluginName));
         this.pluginJar = PluginPaths.generatePluginJarPath(pluginName);
         this.pluginLoader = new BasicPluginLoader(pluginJar);
@@ -36,7 +38,8 @@ public class PluginRunner implements Runner  {
 
     public PluginRunner(@NonNull String pluginDirectory, @NonNull String pluginName) throws Exception {
         this.pluginName = pluginName.replace(".jar", "");
-        this.pluginLogFile = PluginPaths.generatePluginLogPath(Paths.get(pluginDirectory));
+        this.pluginDirectory = Paths.get(pluginDirectory);
+        this.pluginLogFile = PluginPaths.generatePluginLogPath(this.pluginDirectory);
         this.pluginJar = PluginPaths.generatePluginJarPath(pluginDirectory, pluginName);
         this.pluginLoader = new BasicPluginLoader(pluginJar);
     }
