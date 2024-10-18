@@ -5,6 +5,7 @@ import coyote.report.CsvParser;
 import coyote.setting.CoyoteSetting;
 import lombok.NonNull;
 import runner.Plugin;
+import runner.dto.PluginOption;
 import runner.dto.ProcessedReportDTO;
 import runner.dto.RunResult;
 import runner.util.CommandBuilder;
@@ -33,9 +34,9 @@ public class CoyotePlugin implements Plugin {
     }
 
     @Override
-    public void initialize(@NonNull String pluginName, @NonNull String targetSource, Map<String, String> coyoteSetting) {
-        this.targetSource = targetSource;
-        CoyoteSetting setting = new CoyoteSetting(coyoteSetting);
+    public void initialize(PluginOption pluginOption) {
+        this.targetSource = pluginOption.targetSource();
+        CoyoteSetting setting = new CoyoteSetting(pluginOption.pluginSetting());
         this.reportFile = new File(setting.getReport());
         this.projectSetting =  new File(setting.getProjectSetting());
     }
