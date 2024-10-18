@@ -114,6 +114,10 @@ public class FileUtils {
         return Paths.get(directory, fileName).normalize();
     }
 
+    public static Path getFilePath(String directory, String ...fileName) {
+        return Paths.get(directory, fileName).normalize();
+    }
+
 
     /**
      * 지정된 디렉터리의 하위 디렉터리 목록을 반환합니다.
