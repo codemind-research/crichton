@@ -24,7 +24,7 @@ public class InjectionTesterRunner extends ProcessRunner {
         CommandBuilder command = new CommandBuilder();
         command.addOption("dotnet");
         command.addOption(InjectorBinaries.getFileInResources(InjectorBinaries.INJECTION));
-        command.addOption(setting.getSafeJson().getAbsolutePath());
+        command.addOption(setting.getSafeSpecFile().getAbsolutePath());
         command.addOption(setting.getOutputName(id));
         command.addOption(setting.getExeBinary(id));
         return command;

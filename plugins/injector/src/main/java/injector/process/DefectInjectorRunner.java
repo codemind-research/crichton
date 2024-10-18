@@ -5,19 +5,15 @@ import injector.setting.DefectInjectorSetting;
 import runner.process.ProcessRunner;
 import runner.util.CommandBuilder;
 
-import java.io.File;
-
 public class DefectInjectorRunner extends ProcessRunner {
 
     private final DefectInjectorSetting setting;
     private final String targetSource;
-    private final int id;
 
-    public DefectInjectorRunner(String targetSource, DefectInjectorSetting setting, int id) {
+    public DefectInjectorRunner(String targetSource, DefectInjectorSetting setting) {
         super();
         this.targetSource = targetSource;
         this.setting = setting;
-        this.id = id;
     }
 
     @Override
@@ -25,10 +21,10 @@ public class DefectInjectorRunner extends ProcessRunner {
         CommandBuilder command = new CommandBuilder();
         command.addOption("dotnet");
         command.addOption(InjectorBinaries.getFileInResources(InjectorBinaries.DEFECT));
-        command.addOption(targetSource + File.separator + setting.getTarget(id));
-        command.addOption(setting.getOilFile().getAbsolutePath());
-        command.addOption(setting.getDefectNumberJson(id));
-        command.addOption(setting.getSafeJson().getAbsolutePath());
+        command.addOption(targetSource);
+        command.addOption(setting.getTestSpecFile().getAbsolutePath());
+        command.addOption(setting.getDefectSpecFile().getAbsolutePath());
+        command.addOption(setting.getSafeSpecFile().getAbsolutePath());
         command.addOption(setting.getTrampoline());
         return command;
     }

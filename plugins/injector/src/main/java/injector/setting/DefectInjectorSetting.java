@@ -15,8 +15,8 @@ public class DefectInjectorSetting {
 
     private String pluginName;
     private String oilFile;
-    private String defectJson;
-    private String safeJson;
+    private String defectSpecFile;
+    private String safeSpecFile;
     private String trampoline;
     private int defectLength;
     private File defectDir;
@@ -24,17 +24,19 @@ public class DefectInjectorSetting {
 
     public DefectInjectorSetting(String pluginName, Map<String, String> defectInjectorSetting) {
         this.pluginName = pluginName;
-        this.pluginSettingDir = PluginPaths.generatePluginSettingsPath(pluginName).toFile();
+        var projectDir = defectInjectorSetting.getOrDefault("project", PluginPaths.generatePluginSettingsPath(pluginName).toString());
+        this.pluginSettingDir = new File(projectDir);
         this.oilFile = defectInjectorSetting.getOrDefault("oil","");
-        this.defectJson = defectInjectorSetting.getOrDefault("defect","");
-        this.safeJson = defectInjectorSetting.getOrDefault("safe","");
+        this.defectSpecFile = defectInjectorSetting.getOrDefault("defect","");
+        this.safeSpecFile = defectInjectorSetting.getOrDefault("safe","");
         this.trampoline = defectInjectorSetting.getOrDefault("trampoline","");
         this.defectDir = Paths.get(pluginSettingDir.toString(), "defect").toFile();
     }
 
     public void makeDefectJson() throws Exception{
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(getDefectJson());
+        var defectJsonFile = getDefectSpecFile();
+        JsonNode jsonNode = objectMapper.readTree(defectJsonFile);
         if (!defectDir.exists())
             defectDir.mkdir();
 
@@ -65,12 +67,16 @@ public class DefectInjectorSetting {
         return Paths.get(getOilFile().toString()+".cr.oil").toFile();
     }
 
-    public File getDefectJson() {
-        return Paths.get(pluginSettingDir.toString(), defectJson).toFile();
+    public File getTestSpecFile() {
+        return Paths.get(pluginSettingDir.toString(), defectSpecFile).toFile();
     }
 
-    public File getSafeJson() {
-        return Paths.get(pluginSettingDir.toString(), safeJson).toFile();
+    public File getDefectSpecFile() {
+        return Paths.get(pluginSettingDir.toString(), defectSpecFile).toFile();
+    }
+
+    public File getSafeSpecFile() {
+        return Paths.get(pluginSettingDir.toString(), safeSpecFile).toFile();
     }
 
     public String getTrampoline() {
@@ -91,17 +97,6 @@ public class DefectInjectorSetting {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(Json);
             return rootNode.get("target").asText();
-        }catch (Exception e){
-            return "";
-        }
-    }
-
-    public String getTitle(int id) {
-        try {
-            File Json = new File(getDefectNumberJson(id));
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(Json);
-            return rootNode.get("title").asText();
         }catch (Exception e){
             return "";
         }

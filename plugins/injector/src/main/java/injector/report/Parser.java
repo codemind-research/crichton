@@ -7,7 +7,6 @@ import runner.util.FileUtils;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Parser {
 
@@ -18,7 +17,7 @@ public class Parser {
     }
 
     public LinkedHashMap<String, Object> convert() {
-        File defectJson = setting.getDefectJson();
+        File defectJson = setting.getDefectSpecFile();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -41,7 +40,7 @@ public class Parser {
 
     private List<LinkedHashMap<String, Object>> getSaveJsonData(int id) {
         try {
-            File safeJson = setting.getSafeJson();
+            File safeJson = setting.getSafeSpecFile();
             File report = setting.getOutputFile(id);
             ObjectMapper objectMapper = new ObjectMapper();
             List<LinkedHashMap<String, Object>> safeMap = objectMapper
