@@ -82,7 +82,7 @@ public abstract class ProjectInformationMapper {
             // 나머지 파일 저장
             if (dto.getTestSpecFile() != null) {
 
-                var testSpecFilePath = FileUtils.getFilePath(baseDirPath, FileName.TEST_SPEC);
+                var testSpecFilePath = FileUtils.getFilePath(defectDirectoryPath, FileName.TEST_SPEC);
 
                 log.info("save test spec file: {}", testSpecFilePath);
                 saveFile(dto.getTestSpecFile(), testSpecFilePath);
