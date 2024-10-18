@@ -49,7 +49,9 @@ public class CrichtonPluginProperties {
     @PostConstruct
     public void init() {
         FileUtils.assertFileExists(getInjectorPath(), FileName.INJECTOR_PLUGIN);
+        FileUtils.assertFileExists(getInjectorPath(), FileName.PLUGIN_PROPERTY_FILE);
         FileUtils.assertFileExists(getUnitTesterPath(), FileName.UNIT_TESTER_PLUGIN);
+        FileUtils.assertFileExists(getUnitTesterPath(), FileName.PLUGIN_PROPERTY_FILE);
     }
 
 }
