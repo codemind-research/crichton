@@ -154,4 +154,18 @@ public class FileUtils {
         }
     }
 
+    public static void makeDirectory(String directory) {
+        makeDirectory(new File(directory));
+    }
+
+    public static void makeDirectory(Path directory) {
+        makeDirectory(directory.toFile());
+    }
+
+    public static void makeDirectory(File directory) {
+        if(!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
+
 }

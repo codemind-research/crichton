@@ -1,5 +1,6 @@
 package org.crichton.domain.utils.mapper;
 
+import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.crichton.configuration.CrichtonDataStorageProperties;
@@ -10,6 +11,7 @@ import org.crichton.util.FileUtils;
 import org.crichton.util.ObjectMapperUtils;
 import org.crichton.util.OperationSystemUtil;
 import org.crichton.util.constants.FileName;
+import org.crichton.util.constants.PluginSettingKey;
 import org.mapstruct.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,40 +56,61 @@ public abstract class ProjectInformationMapper {
         try {
             var uuid = UUID.randomUUID();
 
+            log.info("Create Project File: {}", uuid);
+
             String baseDirPath = crichtonDataStorageProperties.getBasePath() + File.separator + uuid;
 
-            File baseDir = new File(baseDirPath);
+            log.info("Make project directory: {}", baseDirPath);
+            FileUtils.makeDirectory(baseDirPath);
 
-            if(!baseDir.exists()) {
-                baseDir.mkdirs();
-            }
+            var defectDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_PATH);
+
+            log.info("Make project defect directory: {}", defectDirectoryPath);
+            FileUtils.makeDirectory(defectDirectoryPath);
+
+            var unitTestDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, PluginSettingKey.UnitTester.UNIT_TEST_SPEC_FILE_PATH);
+
+            log.info("Make project unit test directory: {}", unitTestDirectoryPath);
+            FileUtils.makeDirectory(unitTestDirectoryPath);
 
             // sourceCode 파일 압축 해제
             if (dto.getSourceCode() != null) {
+                log.info("unzip source file: {}", dto.getSourceCode());
                 unzipFile(dto.getSourceCode(), baseDirPath);
             }
 
             // 나머지 파일 저장
             if (dto.getTestSpecFile() != null) {
+
                 var testSpecFilePath = FileUtils.getFilePath(baseDirPath, FileName.TEST_SPEC);
+
+                log.info("save test spec file: {}", testSpecFilePath);
                 saveFile(dto.getTestSpecFile(), testSpecFilePath);
+
+                log.info("Updated JSON file content: {}", testSpecFilePath);
                 var jsonString = Files.readString(testSpecFilePath);
                 var testSpecDto = ObjectMapperUtils.convertJsonStringToObject(jsonString, TestSpecDto.class);
                 dto.setTestSpec(testSpecDto);
             }
 
             if (dto.getDefectSpecFile() != null) {
-                var defectSpecFilePath = FileUtils.getFilePath(baseDirPath, FileName.DEFECT_SPEC);
+                var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  FileName.DEFECT_SPEC);
+
+                log.info("save defect spec file: {}", defectSpecFilePath);
                 saveFile(dto.getDefectSpecFile(), defectSpecFilePath);
             }
 
             if (dto.getSafeSpecFile() != null) {
-                var safeSpecFilePath = FileUtils.getFilePath(baseDirPath, FileName.SAFE_SPEC);
+                var safeSpecFilePath = FileUtils.getFilePath(defectDirectoryPath, FileName.SAFE_SPEC);
+
+                log.info("save safe spec file: {}", safeSpecFilePath);
                 saveFile(dto.getSafeSpecFile(), safeSpecFilePath);
             }
 
             if (dto.getUnitTestSpecFile() != null) {
-                var unitTestSpecFilePath = FileUtils.getFilePath(baseDirPath, FileName.UNIT_TEST_SPEC);
+                var unitTestSpecFilePath = FileUtils.getFilePath(unitTestDirectoryPath, FileName.UNIT_TEST_SPEC);
+
+                log.info("save unit test spec file: {}", unitTestSpecFilePath);
                 saveFile(dto.getUnitTestSpecFile(), unitTestSpecFilePath);
             }
 
