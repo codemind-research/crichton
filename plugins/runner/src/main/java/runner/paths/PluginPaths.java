@@ -17,8 +17,8 @@ public class PluginPaths {
         return PLUGIN_DIR_PATH.resolve(plugin);
     }
 
-    public static Path generatePluginJarPath(String directory, String pluginFileName) {
-        return generatePluginJarPath(Paths.get(directory), pluginFileName);
+    public static Path generatePluginJarPath(String directory, String pluginName) {
+        return generatePluginJarPath(Paths.get(directory), pluginName + ".jar");
     }
 
     public static Path generatePluginJarPath(String pluginName) {
