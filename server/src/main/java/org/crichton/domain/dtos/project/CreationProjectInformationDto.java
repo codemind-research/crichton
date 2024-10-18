@@ -23,15 +23,15 @@ public class CreationProjectInformationDto {
     private MultipartFile sourceCode;
 
     @Setter
-    @ValidFile(allowFileDefines = { JSON }, required = false, message = "Only JSON files are allowed for testSpecFile")
+    @ValidFile(allowFileDefines = { JSON }, message = "Only JSON files are allowed for testSpecFile")
     private MultipartFile testSpecFile;
 
     @Setter
-    @ValidFile(allowFileDefines = { JSON }, required = false, message = "Only JSON files are allowed for defectSpecFile")
+    @ValidFile(allowFileDefines = { JSON }, message = "Only JSON files are allowed for defectSpecFile")
     private MultipartFile defectSpecFile;
 
     @Setter
-    @ValidFile(allowFileDefines = { JSON}, required = false, message = "Only JSON files are allowed for safeSpecFile")
+    @ValidFile(allowFileDefines = { JSON}, message = "Only JSON files are allowed for safeSpecFile")
     private MultipartFile safeSpecFile;
 
     @Setter
