@@ -9,3 +9,4 @@ server/gradlew
 server/gradlew.bat
 client/node_modules
 server/crichton/**
+**/.vs
