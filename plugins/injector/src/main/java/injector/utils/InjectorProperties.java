@@ -1,16 +1,19 @@
 package injector.utils;
 
+import injector.enumerations.InjectorBinaries;
 import lombok.Getter;
-import runner.util.PropertiesFileReader;
+import lombok.NonNull;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class DefectInjectorProperties extends Properties {
+public class InjectorProperties extends Properties {
 
     @Getter
     public enum Property {
+        DefectInjectorEnginePath("engine.defect-injector.path", "libs/engines/DefectInjector.dll"),
+        InjectionTesterEnginePath("engine.injection-tester.path", "libs/engines/InjectionTester.dll"),
         TrampolinePath("trampoline.path", "libs/trampoline"),
         GoilProcessPath("goil.process.path", "/usr/bin/goil"),
         GoilTemplatePath("goil.template.path", "libs/trampoline/goil/templates"),
@@ -30,9 +33,9 @@ public class DefectInjectorProperties extends Properties {
         }
     }
 
-    public static DefectInjectorProperties loadProperties(String propertiesFilePath) {
+    public static InjectorProperties loadProperties(String propertiesFilePath) {
 
-        var properties = new DefectInjectorProperties();
+        var properties = new InjectorProperties();
         try (FileInputStream fileInputStream = new FileInputStream(propertiesFilePath)) {
             properties.load(fileInputStream);
         } catch (IOException e) {
@@ -55,6 +58,15 @@ public class DefectInjectorProperties extends Properties {
 
     public String getViperPath() {
         return this.getProperty(Property.ViperPath.getKey(), Property.ViperPath.getDefaultValue());
+    }
+
+    public String getEnginePath(@NonNull InjectorBinaries binaries) {
+
+        return switch (binaries) {
+            case DEFECT -> this.getProperty(Property.DefectInjectorEnginePath.getKey(), Property.DefectInjectorEnginePath.getDefaultValue());
+            case INJECTION -> this.getProperty(Property.InjectionTesterEnginePath.getKey(), Property.InjectionTesterEnginePath.getDefaultValue());
+            default -> null;
+        };
     }
 
 }

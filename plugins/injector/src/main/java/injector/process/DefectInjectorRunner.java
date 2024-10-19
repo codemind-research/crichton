@@ -1,11 +1,12 @@
 package injector.process;
 
-import injector.enumerations.InjectorBinaries;
 import injector.setting.DefectInjectorSetting;
-import runner.process.ProcessRunner;
+import runner.process.DotnetRunner;
 import runner.util.CommandBuilder;
 
-public class DefectInjectorRunner extends ProcessRunner {
+import java.util.List;
+
+public class DefectInjectorRunner extends DotnetRunner {
 
     private final DefectInjectorSetting setting;
     private final String targetSource;
@@ -18,14 +19,17 @@ public class DefectInjectorRunner extends ProcessRunner {
 
     @Override
     protected CommandBuilder buildCommand() {
-        CommandBuilder command = new CommandBuilder();
-        command.addOption("dotnet");
-        command.addOption(InjectorBinaries.getFileInResources(setting.getLibraryPath(),InjectorBinaries.DEFECT));
-        command.addOption(targetSource);
-        command.addOption(setting.getTestSpecFile());
-        command.addOption(setting.getDefectSpecFile());
-        command.addOption(setting.getSafeSpecFile());
-        command.addOption(setting.getTrampoline());
+
+        var arguments = List.of(
+                targetSource,
+                setting.getTestSpecFile(),
+                setting.getDefectSpecFile(),
+                setting.getSafeSpecFile(),
+                setting.getTrampoline()
+        );
+
+        CommandBuilder command = this.buildCommand(setting.getInjectionTesterEngine(), arguments);
+
         return command;
     }
 

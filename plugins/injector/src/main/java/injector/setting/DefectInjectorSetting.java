@@ -2,7 +2,8 @@ package injector.setting;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import injector.utils.DefectInjectorProperties;
+import injector.enumerations.InjectorBinaries;
+import injector.utils.InjectorProperties;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,6 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 
 @Getter
 public class DefectInjectorSetting {
@@ -37,7 +37,7 @@ public class DefectInjectorSetting {
 
     private final File projectWorkspace;
     private final File defectDir;
-    private final DefectInjectorProperties properties;
+    private final InjectorProperties properties;
 
     private int defectLength;
 
@@ -52,12 +52,8 @@ public class DefectInjectorSetting {
         this.defectDir = Paths.get(projectWorkspace.toString(), "defect").toFile();
 
         var propertiesDir = defectInjectorConfiguration.getOrDefault(ConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
-        this.properties = DefectInjectorProperties.loadProperties(propertiesDir);
+        this.properties = InjectorProperties.loadProperties(propertiesDir);
 
-    }
-
-    public String getLibraryPath() {
-        return properties.getProperty(ConfigurationKey.LIBRARIES_PATH, null);
     }
 
     public void makeDefectJson() throws Exception{
@@ -109,6 +105,23 @@ public class DefectInjectorSetting {
     public String getTrampoline() {
         var trampolinePath = properties.getTrampolinePath();
         return Paths.get(trampolinePath).toFile().getAbsolutePath();
+    }
+
+    public String getDefectInjectorEngine() {
+        return getEngine(InjectorBinaries.DEFECT);
+    }
+
+    public String getInjectionTesterEngine() {
+        return getEngine(InjectorBinaries.INJECTION);
+    }
+
+    public String getEngine(InjectorBinaries binaries) {
+        var enginePath = properties.getEnginePath(binaries);
+        var engineFile = Paths.get(enginePath).toFile();
+        if(!engineFile.exists()) {
+            return binaries.getFileInResources();
+        }
+        return engineFile.getAbsolutePath();
     }
 
     public String getGoilProcess() {

@@ -39,6 +39,10 @@ public enum InjectorBinaries {
         }
     }
 
+    public String getFileInResources() {
+        return getFileInResources(this);
+    }
+
     public static String getFileInResources(InjectorBinaries binaries) {
         ClassLoader classLoader = InjectorBinaries.class.getClassLoader();
         return classLoader.getResource(binaries.getFileName()).getPath();
