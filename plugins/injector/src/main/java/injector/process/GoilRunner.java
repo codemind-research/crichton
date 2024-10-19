@@ -5,8 +5,6 @@ import runner.paths.PluginPaths;
 import runner.process.ProcessRunner;
 import runner.util.CommandBuilder;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class GoilRunner extends ProcessRunner {
@@ -30,7 +28,7 @@ public class GoilRunner extends ProcessRunner {
         var arguments = List.of(
                 "--target=posix/linux",
                 String.format("--templates=%s", setting.getGoilTemplates()),
-                setting.getOilFile().getAbsolutePath()
+                setting.getDefectSimulationOilFileName().getAbsolutePath()
         );
 
         return buildCommand(arguments);

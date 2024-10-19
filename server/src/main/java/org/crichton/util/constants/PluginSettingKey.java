@@ -10,12 +10,12 @@ public class PluginSettingKey {
     }
 
     public static class DefectInjector {
-        public static final String TEST_SPEC_FILE_NAME = "test";
-        public static final String DEFECT_SPEC_FILE_NAME = "defect";
-        public static final String SAFE_SPEC_FILE_NAME = "safe";
-        public static final String OIL_FILE_NAME = "oil";
-        public static final String TRAMPOLINE_PATH = "trampoline";
-        public static final String PROPERTIES_PATH = "properties";
+        public static final String TEST_SPEC_FILE_NAME = "file.spec.test";
+        public static final String DEFECT_SPEC_FILE_NAME = "file.spec.defect";
+        public static final String SAFE_SPEC_FILE_NAME = "file.spec.safe";
+        public static final String DEFECT_SIMULATION_OIL_FILE_NAME = "file.defect.simulation.oil";
+        public static final String DEFECT_SIMULATION_EXE_FILE_NAME = "file.defect.simulation.execute";
+        public static final String PROPERTIES_PATH = "file.properties";
 
     }
 

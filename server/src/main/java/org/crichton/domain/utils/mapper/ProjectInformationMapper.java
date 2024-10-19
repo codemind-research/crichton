@@ -9,6 +9,7 @@ import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.util.FileUtils;
 import org.crichton.util.ObjectMapperUtils;
 import org.crichton.util.OperationSystemUtil;
+import org.crichton.util.constants.DirectoryName;
 import org.crichton.util.constants.FileName;
 import org.crichton.util.constants.PluginSettingKey;
 import org.mapstruct.*;
@@ -62,7 +63,7 @@ public abstract class ProjectInformationMapper {
             log.info("Make project directory: {}", baseDirPath);
             FileUtils.makeDirectory(baseDirPath);
 
-            var defectDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_NAME);
+            var defectDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, DirectoryName.DEFECT);
 
             log.info("Make project defect directory: {}", defectDirectoryPath);
             FileUtils.makeDirectory(defectDirectoryPath);
@@ -142,7 +143,7 @@ public abstract class ProjectInformationMapper {
     protected void replaceTestSpecTaskFilePath(ProjectInformation target) {
 
         var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), target.getId().toString()).toAbsolutePath();
-        Path testSpecFilePath = FileUtils.getFilePath(baseDirAbsolutePath.toString(), PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_NAME, FileName.TEST_SPEC);
+        Path testSpecFilePath = FileUtils.getFilePath(baseDirAbsolutePath.toString(), DirectoryName.DEFECT, FileName.TEST_SPEC);
 
         try {
             var jsonString = Files.readString(testSpecFilePath);
