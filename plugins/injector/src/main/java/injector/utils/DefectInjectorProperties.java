@@ -9,6 +9,7 @@ import java.util.Properties;
 
 public class DefectInjectorProperties extends Properties {
 
+    @Getter
     public enum Property {
         TrampolinePath("trampoline.path", "libs/trampoline"),
         GoilProcessPath("goil.process.path", "/usr/bin/goil"),
