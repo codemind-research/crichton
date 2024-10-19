@@ -104,7 +104,7 @@ public class DefectInjectorSetting {
 
     public String getTrampoline() {
         var trampolinePath = properties.getTrampolinePath();
-        return Paths.get(trampolinePath).toFile().getAbsolutePath();
+        return Paths.get(trampolinePath).normalize().toFile().getAbsolutePath();
     }
 
     public String getDefectInjectorEngine() {
@@ -117,7 +117,7 @@ public class DefectInjectorSetting {
 
     public String getEngine(InjectorBinaries binaries) {
         var enginePath = properties.getEnginePath(binaries);
-        var engineFile = Paths.get(enginePath).toFile();
+        var engineFile = Paths.get(enginePath).normalize().toFile();
         if(!engineFile.exists()) {
             return binaries.getFileInResources();
         }
@@ -126,12 +126,12 @@ public class DefectInjectorSetting {
 
     public String getGoilProcess() {
         var goilProcessPath = properties.getGoilProcessPath();
-        return Paths.get(goilProcessPath).toFile().getAbsolutePath();
+        return Paths.get(goilProcessPath).normalize().toFile().getAbsolutePath();
     }
 
     public String getGoilTemplates() {
         var goilTemplatesPath = properties.getGoilTemplatePath();
-        return Paths.get(goilTemplatesPath).toFile().getAbsolutePath();
+        return Paths.get(goilTemplatesPath).normalize().toFile().getAbsolutePath();
     }
 
     public int getDefectLength() {
