@@ -21,15 +21,11 @@ public class InjectorProperties extends Properties {
         ;
 
         final String key;
-        final Object defaultValue;
+        final String defaultValue;
 
-        Property(String key, Object value) {
+        Property(String key, String value) {
             this.key = key;
             this.defaultValue = value;
-        }
-
-        public <T> T getDefaultValue() {
-            return (T) defaultValue;
         }
     }
 
