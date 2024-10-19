@@ -61,9 +61,10 @@ public class PluginService {
 
         var projectDirectory = FileUtils.getAbsolutePath(crichtonDataStorageProperties.getBasePath(), entity.getId().toString());
         defectInjectorConfiguration.put(PluginSettingKey.WORKSPACE, projectDirectory + File.separator);
-        defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.TEST_SPEC_FILE_PATH, FileName.TEST_SPEC);
-        defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_PATH, FileName.DEFECT_SPEC);
-        defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.SAFE_SPEC_FILE_PATH, FileName.SAFE_SPEC);
+        defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.TEST_SPEC_FILE_NAME, FileName.TEST_SPEC);
+        defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_NAME, FileName.DEFECT_SPEC);
+        defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.SAFE_SPEC_FILE_NAME, FileName.SAFE_SPEC);
+        defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.OIL_FILE_NAME, FileName.DEFECT_SIMULATION_OIL);
         defectInjectorConfiguration.put(PluginSettingKey.DefectInjector.TRAMPOLINE_PATH, crichtonPluginProperties.getTrampolinePath());
 
         var propertiesFilePath = PluginPaths.generatePluginPropertiesPath(crichtonPluginProperties.getInjectorPath(), FileName.PLUGIN_PROPERTY_FILE);

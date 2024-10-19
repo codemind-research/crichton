@@ -1,6 +1,5 @@
 package org.crichton.domain.utils.mapper;
 
-import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.crichton.configuration.CrichtonDataStorageProperties;
@@ -63,7 +62,7 @@ public abstract class ProjectInformationMapper {
             log.info("Make project directory: {}", baseDirPath);
             FileUtils.makeDirectory(baseDirPath);
 
-            var defectDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_PATH);
+            var defectDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_NAME);
 
             log.info("Make project defect directory: {}", defectDirectoryPath);
             FileUtils.makeDirectory(defectDirectoryPath);
@@ -143,7 +142,7 @@ public abstract class ProjectInformationMapper {
     protected void replaceTestSpecTaskFilePath(ProjectInformation target) {
 
         var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), target.getId().toString()).toAbsolutePath();
-        Path testSpecFilePath = FileUtils.getFilePath(baseDirAbsolutePath.toString(), PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_PATH, FileName.TEST_SPEC);
+        Path testSpecFilePath = FileUtils.getFilePath(baseDirAbsolutePath.toString(), PluginSettingKey.DefectInjector.DEFECT_SPEC_FILE_NAME, FileName.TEST_SPEC);
 
         try {
             var jsonString = Files.readString(testSpecFilePath);
