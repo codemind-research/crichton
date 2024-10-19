@@ -153,8 +153,8 @@ let modifiedFile
     targetContents <- targetContents + safeCode
     (*use swTarget = new StreamWriter(targetName + ".cr.c")
     use swOil = new StreamWriter(oilName + ".cr.oil")*)
-    use swTarget = new StreamWriter(workPath + "defectSim.c")
-    use swOil = new StreamWriter(workPath + "defectSim.oil")
+    use swTarget = new StreamWriter(Path.Combine(workPath, "defectSim.c"))
+    use swOil = new StreamWriter(Path.Combine(workPath, "defectSim.oil"))
     swTarget.Write(targetContents)
     swOil.Write(oilContents)
 
