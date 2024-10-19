@@ -32,7 +32,7 @@ public class BasicPluginLoader implements PluginLoader {
 
     @Override
     public boolean isApplicable(Path pluginPath) {
-        return Files.exists(pluginPath);
+        return pluginPath.toFile().exists();
     }
 
     @Override

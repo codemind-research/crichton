@@ -61,7 +61,7 @@ public class DefectInjectorSetting {
     private String getLibraryPath(String propertiesFile) {
         var properties = PropertiesFileReader.readPropertiesFile(propertiesFile);
         return properties.entrySet().stream()
-                .filter(entry -> entry.getKey().equals(ConfigurationKey.LIBRARIES_PATH) && Files.exists(Paths.get(String.valueOf(entry.getValue()))) )
+                .filter(entry -> entry.getKey().equals(ConfigurationKey.LIBRARIES_PATH) && Paths.get(String.valueOf(entry.getValue())).toFile().exists())
                 .map(entry -> String.valueOf(entry.getValue()))
                 .findFirst()
                 .orElse(null);
