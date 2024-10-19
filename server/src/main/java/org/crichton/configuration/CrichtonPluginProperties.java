@@ -17,8 +17,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CrichtonPluginProperties {
 
-    private static final String DEFAULT_TRAMPOLINE_PATH = System.getProperty("user.home") + File.separator + ".crichton" + File.separator + "libs" + File.separator + "trampoline";
-
     private static final String DEFAULT_PLUGIN_PATH = System.getProperty("user.home") + File.separator + ".crichton" + File.separator + "plugin";
 
     private static final String DEFAULT_INJECTOR_PLUGIN_PATH = DEFAULT_PLUGIN_PATH + File.separator + "injector";
@@ -30,11 +28,6 @@ public class CrichtonPluginProperties {
     private final Optional<String> injectorPath;
 
     private final Optional<String> unitTesterPath;
-
-    public String getTrampolinePath() {
-        var path = trampolinePath.orElse(DEFAULT_TRAMPOLINE_PATH);
-        return FileUtils.getAbsolutePath(path);
-    }
 
     public String getInjectorPath() {
         var path = injectorPath.orElse(DEFAULT_INJECTOR_PLUGIN_PATH);

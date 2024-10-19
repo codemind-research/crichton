@@ -2,14 +2,14 @@ package injector.setting;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import injector.utils.DefectInjectorProperties;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import runner.paths.PluginPaths;
 import runner.util.FileUtils;
-import runner.util.PropertiesFileReader;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,10 +21,10 @@ public class DefectInjectorSetting {
     public static class ConfigurationKey {
         public static final String WORKSPACE = "workspace";
         public static final String OLI = "oil";
+        public static final String GOIL_PROCESS_PATH = "goil.process.path";
         public static final String TEST_SPEC_FILE_PATH = "test";
         public static final String DEFECT_SPEC_FILE_PATH = "defect";
         public static final String SAFE_SPEC_FILE_PATH = "safe";
-        public static final String TRAMPOLINE_PATH = "trampoline";
         public static final String PROPERTIES_PATH = "properties";
         public static final String LIBRARIES_PATH = "libs";
     }
@@ -34,11 +34,10 @@ public class DefectInjectorSetting {
     private final String testSpecFile;
     private final String defectSpecFile;
     private final String safeSpecFile;
-    private final String trampoline;
-    private final String libraries;
 
     private final File projectWorkspace;
     private final File defectDir;
+    private final DefectInjectorProperties properties;
 
     private int defectLength;
 
@@ -50,22 +49,15 @@ public class DefectInjectorSetting {
         this.testSpecFile = defectInjectorConfiguration.getOrDefault(ConfigurationKey.TEST_SPEC_FILE_PATH,"");
         this.defectSpecFile = defectInjectorConfiguration.getOrDefault(ConfigurationKey.DEFECT_SPEC_FILE_PATH,"");
         this.safeSpecFile = defectInjectorConfiguration.getOrDefault(ConfigurationKey.SAFE_SPEC_FILE_PATH,"");
-        this.trampoline = defectInjectorConfiguration.getOrDefault(ConfigurationKey.TRAMPOLINE_PATH,"");
         this.defectDir = Paths.get(projectWorkspace.toString(), "defect").toFile();
 
         var propertiesDir = defectInjectorConfiguration.getOrDefault(ConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
-        this.libraries = getLibraryPath(propertiesDir);
+        this.properties = DefectInjectorProperties.loadProperties(propertiesDir);
 
     }
 
-    private String getLibraryPath(String propertiesFile) {
-        var properties = PropertiesFileReader.readPropertiesFile(propertiesFile);
-        return properties.entrySet().stream()
-                .filter(entry -> entry.getKey().equals(ConfigurationKey.LIBRARIES_PATH) && Paths.get(String.valueOf(entry.getValue())).toFile().exists())
-                .map(entry -> String.valueOf(entry.getValue()))
-                .findFirst()
-                .orElse(null);
-
+    public String getLibraryPath() {
+        return properties.getProperty(ConfigurationKey.LIBRARIES_PATH, null);
     }
 
     public void makeDefectJson() throws Exception{
@@ -115,11 +107,18 @@ public class DefectInjectorSetting {
     }
 
     public String getTrampoline() {
-        return this.trampoline;
+        var trampolinePath = properties.getTrampolinePath();
+        return Paths.get(trampolinePath).toFile().getAbsolutePath();
+    }
+
+    public String getGoilProcess() {
+        var goilProcessPath = properties.getGoilProcessPath();
+        return Paths.get(goilProcessPath).toFile().getAbsolutePath();
     }
 
     public String getGoilTemplates() {
-        return Paths.get(this.trampoline, "goil" , "templates").toFile().getAbsolutePath();
+        var goilTemplatesPath = properties.getGoilTemplatePath();
+        return Paths.get(goilTemplatesPath).toFile().getAbsolutePath();
     }
 
     public int getDefectLength() {
@@ -159,6 +158,11 @@ public class DefectInjectorSetting {
         return fileName + "_report_" + id + ".csv";
     }
 
+    public String getGoilProcessPath() {
+        return properties.getProperty(ConfigurationKey.GOIL_PROCESS_PATH, "/usr/bin/goil");
+    }
+
+
     public File getOutputFile(int id) {
         return Paths.get(projectWorkspace.getAbsolutePath(), getOutputName(id)).toFile();
     }
@@ -173,7 +177,13 @@ public class DefectInjectorSetting {
     }
 
     public String getViperPath() {
-        return Paths.get(trampoline,"viper").toFile().getAbsolutePath();
+
+        var viperPath = System.getenv("VIPER_PATH");
+        if(StringUtils.isBlank(viperPath)) {
+            viperPath = properties.getViperPath();
+        }
+
+        return Paths.get(viperPath).toFile().getAbsolutePath();
     }
 
     public String getPluginName() {
