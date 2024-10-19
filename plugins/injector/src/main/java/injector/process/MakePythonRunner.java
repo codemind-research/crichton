@@ -2,9 +2,12 @@ package injector.process;
 
 import injector.setting.DefectInjectorSetting;
 import runner.process.ProcessRunner;
+import runner.process.PythonProcessRunner;
 import runner.util.CommandBuilder;
 
-public class MakePythonRunner extends ProcessRunner {
+import java.util.List;
+
+public class MakePythonRunner extends PythonProcessRunner {
 
     private final DefectInjectorSetting setting;
 
@@ -16,9 +19,7 @@ public class MakePythonRunner extends ProcessRunner {
 
     @Override
     protected CommandBuilder buildCommand() {
-        CommandBuilder command = new CommandBuilder();
-        command.addOption("./make.py");
-        return command;
+        return buildCommand(List.of(setting.getMakeFilePath("make.py")));
     }
 
 

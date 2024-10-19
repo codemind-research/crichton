@@ -134,8 +134,8 @@ public class DefectInjectorSetting {
         return Paths.get(goilTemplatesPath).normalize().toFile().getAbsolutePath();
     }
 
-    public int getDefectLength() {
-        return defectLength;
+    public String getMakeFilePath(String makeFileName) {
+        return Paths.get(this.projectWorkspace.getAbsolutePath(), makeFileName).normalize().toFile().getAbsolutePath();
     }
 
     public String getTarget(int id) {

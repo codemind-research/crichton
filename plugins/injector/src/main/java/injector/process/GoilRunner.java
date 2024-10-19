@@ -7,6 +7,7 @@ import runner.util.CommandBuilder;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class GoilRunner extends ProcessRunner {
 
@@ -25,12 +26,14 @@ public class GoilRunner extends ProcessRunner {
 
     @Override
     protected CommandBuilder buildCommand() {
-        CommandBuilder command = new CommandBuilder();
-        command.addOption(setting.getGoilProcess());
-        command.addOption("--target=posix/linux");
-        command.addOption("--templates="+setting.getGoilTemplates());
-        command.addOption(setting.getOilFile().getAbsolutePath());
-        return command;
+
+        var arguments = List.of(
+                "--target=posix/linux",
+                String.format("--templates=%s", setting.getGoilTemplates()),
+                setting.getOilFile().getAbsolutePath()
+        );
+
+        return buildCommand(arguments);
     }
 
     @Override
@@ -38,5 +41,10 @@ public class GoilRunner extends ProcessRunner {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.redirectErrorStream(true);
         return processBuilder;
+    }
+
+    @Override
+    protected String getProcessName() {
+        return setting.getGoilProcess();
     }
 }

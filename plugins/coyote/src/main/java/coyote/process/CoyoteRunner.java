@@ -11,6 +11,8 @@ import static runner.Plugin.OUTPUT_PATH;
 
 public class CoyoteRunner extends ProcessRunner {
 
+    private static final String COYOTE = "CoyoteCLI";
+
     private final String targetSource;
     private File reportFile;
     private File projectSetting;
@@ -31,6 +33,11 @@ public class CoyoteRunner extends ProcessRunner {
         command.checkAndAddOption("-p", projectSetting.getAbsolutePath(),
                 () -> projectSetting.exists() && projectSetting.isFile());
         return command;
+    }
+
+    @Override
+    protected String getProcessName() {
+        return COYOTE;
     }
 
 }

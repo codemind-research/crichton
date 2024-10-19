@@ -62,6 +62,14 @@ public abstract class ProcessRunner {
 
     protected abstract CommandBuilder buildCommand();
 
+    protected CommandBuilder buildCommand(List<String> arguments) {
+        return buildCommand(null, arguments);
+    }
+
+    protected CommandBuilder buildCommand(String ...arguments) {
+        return buildCommand(null, arguments);
+    }
+
     protected CommandBuilder buildCommand(String program, List<String> arguments) {
         return buildCommand(program, arguments.toArray(new String[arguments.size()]));
     }
@@ -70,7 +78,10 @@ public abstract class ProcessRunner {
         var command = new CommandBuilder();
 
         command.addOption(getProcessName());
-        command.addOption(program);
+
+        if(program != null){
+            command.addOption(program);
+        }
 
         for (String argument : arguments) {
             command.addOption(argument);
