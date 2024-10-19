@@ -1,12 +1,12 @@
 package injector.process;
 
 import injector.setting.DefectInjectorSetting;
-import runner.process.DotnetRunner;
+import runner.process.DotnetProcessRunner;
 import runner.util.CommandBuilder;
 
 import java.util.List;
 
-public class InjectionTesterRunner extends DotnetRunner {
+public class InjectionTesterRunner extends DotnetProcessRunner {
 
     private final DefectInjectorSetting setting;
 

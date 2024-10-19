@@ -1,12 +1,12 @@
 package injector.process;
 
 import injector.setting.DefectInjectorSetting;
-import runner.process.DotnetRunner;
+import runner.process.DotnetProcessRunner;
 import runner.util.CommandBuilder;
 
 import java.util.List;
 
-public class DefectInjectorRunner extends DotnetRunner {
+public class DefectInjectorRunner extends DotnetProcessRunner {
 
     private final DefectInjectorSetting setting;
     private final String targetSource;
@@ -28,7 +28,7 @@ public class DefectInjectorRunner extends DotnetRunner {
                 setting.getTrampoline()
         );
 
-        CommandBuilder command = this.buildCommand(setting.getInjectionTesterEngine(), arguments);
+        CommandBuilder command = this.buildCommand(setting.getDefectInjectorEngine(), arguments);
 
         return command;
     }

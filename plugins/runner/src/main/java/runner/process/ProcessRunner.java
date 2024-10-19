@@ -62,6 +62,23 @@ public abstract class ProcessRunner {
 
     protected abstract CommandBuilder buildCommand();
 
+    protected CommandBuilder buildCommand(String program, List<String> arguments) {
+        return buildCommand(program, arguments.toArray(new String[arguments.size()]));
+    }
+
+    protected CommandBuilder buildCommand(String program, String ...arguments) {
+        var command = new CommandBuilder();
+
+        command.addOption(getProcessName());
+        command.addOption(program);
+
+        for (String argument : arguments) {
+            command.addOption(argument);
+        }
+
+        return command;
+    }
+
 
     protected ProcessBuilder buildProcess(){
         ProcessBuilder processBuilder = new ProcessBuilder();
@@ -69,5 +86,7 @@ public abstract class ProcessRunner {
         processBuilder.redirectOutput(ProcessBuilder.Redirect.appendTo(OUTPUT_PATH.toFile()));
         return processBuilder;
     }
+
+    protected abstract String getProcessName();
 
 }
