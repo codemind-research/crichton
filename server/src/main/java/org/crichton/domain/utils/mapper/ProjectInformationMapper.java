@@ -107,7 +107,7 @@ public abstract class ProjectInformationMapper {
             }
 
             if (dto.getUnitTestSpecFile() != null) {
-                var unitTestSpecFilePath = FileUtils.getFilePath(unitTestDirectoryPath, FileName.UNIT_TEST_SPEC);
+                var unitTestSpecFilePath = FileUtils.getFilePath(unitTestDirectoryPath, FileName.UNIT_TEST_PROJECT_SETTINGS);
 
                 log.info("save unit test spec file: {}", unitTestSpecFilePath);
                 saveFile(dto.getUnitTestSpecFile(), unitTestSpecFilePath);
