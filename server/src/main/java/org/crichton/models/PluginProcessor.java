@@ -68,7 +68,7 @@ public class PluginProcessor implements Runnable {
 
 //            runDefectInjectorPlugin();
 
-            if(Paths.get(this.unitTestPluginPath).toFile().exists()) {
+            if(Paths.get(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN).toFile().exists()) {
                 runUnitTesterPlugin();
             }
 
@@ -134,10 +134,10 @@ public class PluginProcessor implements Runnable {
         unitTesterConfiguration.put(PluginConfigurationKey.PROPERTIES_PATH, this.unitTestPluginPropertiesFilePath);
 
         try {
-            var uniTestPluginRunner = new PluginRunner(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN);
-
+            var unitTestPluginRunner = new PluginRunner(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN);
+            unitTestPluginRunner.check();
             log.info("run unit-tester plugin...");
-            uniTestPluginRunner.run(this.workingDirectoryPath, unitTesterConfiguration);
+            unitTestPluginRunner.run(this.workingDirectoryPath, unitTesterConfiguration);
         }
         catch (Exception e) {
             throw e;

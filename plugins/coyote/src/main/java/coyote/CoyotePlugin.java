@@ -3,23 +3,16 @@ package coyote;
 import coyote.process.CoyoteRunner;
 import coyote.report.CsvParser;
 import coyote.setting.CoyoteSetting;
-import lombok.NonNull;
 import runner.Plugin;
 import runner.dto.PluginOption;
 import runner.dto.ProcessedReportDTO;
-import runner.dto.RunResult;
-import runner.util.CommandBuilder;
 import runner.util.FileUtils;
-import runner.util.constants.FileName;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
 
 public class CoyotePlugin implements Plugin {
 
@@ -61,7 +54,7 @@ public class CoyotePlugin implements Plugin {
     public ProcessedReportDTO transformReportData() {
         try {
 
-            var reportFile = new File(this.setting.getReport());
+            var reportFile = new File(this.setting.getReportFilePath());
 
             if (!reportFile.exists()) {
                 throw new NoSuchFileException(String.format("Report file does not exist: %s", reportFile.getAbsolutePath()));

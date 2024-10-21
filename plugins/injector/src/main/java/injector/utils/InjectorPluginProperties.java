@@ -3,6 +3,7 @@ package injector.utils;
 import injector.enumerations.InjectorBinaries;
 import lombok.Getter;
 import lombok.NonNull;
+import runner.util.constants.FileName;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class InjectorPluginProperties extends Properties {
         GoilProcessPath("goil.process.path", "/usr/bin/goil"),
         GoilTemplatePath("goil.template.path", "libs/trampoline/goil/templates"),
         ViperPath("viper.path", "libs/trampoline/viper"),
+        ReportFileName("file.report", FileName.INJECTION_RESULT),
         ;
 
         final String key;
@@ -63,6 +65,10 @@ public class InjectorPluginProperties extends Properties {
             case INJECTION -> this.getProperty(Property.InjectionTesterEnginePath.getKey(), Property.InjectionTesterEnginePath.getDefaultValue());
             default -> null;
         };
+    }
+
+    public String getReportFileName() {
+        return this.getProperty(Property.ReportFileName.getKey(), Property.ReportFileName.getDefaultValue());
     }
 
 }

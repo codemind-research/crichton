@@ -1,14 +1,10 @@
 package coyote.process;
 
 import coyote.setting.CoyoteSetting;
-import lombok.NonNull;
 import runner.process.ProcessRunner;
 import runner.util.CommandBuilder;
 
 import java.io.File;
-import java.util.List;
-
-import static runner.Plugin.OUTPUT_PATH;
 
 public class CoyoteRunner extends ProcessRunner {
 
@@ -27,8 +23,8 @@ public class CoyoteRunner extends ProcessRunner {
         CommandBuilder command = new CommandBuilder();
         command.addOption(getProcessName());
         command.addOption("-n", targetSource);
-        command.addOption("-o", setting.getReport());
-        command.checkAndAddOption("-p", setting.getProjectSetting(),
+        command.addOption("-o", setting.getReportFilePath());
+        command.checkAndAddOption("-p", setting.getProjectSettingFilPath(),
                 (projectSettingFileName) -> {
                     try {
                         var projectSettingFile = new File(projectSettingFileName);

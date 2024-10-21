@@ -1,6 +1,7 @@
 package coyote.util;
 
 import lombok.Getter;
+import runner.util.constants.FileName;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,6 +12,7 @@ public class CoyotePluginProperties extends Properties {
     @Getter
     public enum Property {
         CoyoteEnginePath("engine.path", "/usr/bin/CoyoteCLI"),
+        ReportFileName("file.report", FileName.UNIT_TEST_RESULT),
         ;
 
         final String key;
@@ -36,6 +38,10 @@ public class CoyotePluginProperties extends Properties {
 
     public String getEnginePath() {
         return this.getProperty(Property.CoyoteEnginePath.getKey(), Property.CoyoteEnginePath.getDefaultValue());
+    }
+
+    public String getReportFileName() {
+        return this.getProperty(Property.ReportFileName.getKey(), Property.ReportFileName.getDefaultValue());
     }
 
 }

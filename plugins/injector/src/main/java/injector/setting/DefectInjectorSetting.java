@@ -166,7 +166,7 @@ public class DefectInjectorSetting extends PluginSetting {
     }
 
     public String getOutputFilePath() {
-        return this.defectDir.toPath().resolve(FileName.INJECTION_RESULT).normalize().toFile().getAbsolutePath().toString();
+        return this.defectDir.toPath().resolve(this.properties.getReportFileName()).normalize().toFile().getAbsolutePath().toString();
     }
 
     public String getOutputName(int id) {

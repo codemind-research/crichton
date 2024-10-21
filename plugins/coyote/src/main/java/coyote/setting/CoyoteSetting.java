@@ -31,11 +31,11 @@ public class CoyoteSetting extends PluginSetting {
         return this.properties.getEnginePath();
     }
 
-    public String getReport() {
-        return this.unitTestDir.toPath().resolve(report).toFile().getAbsolutePath();
+    public String getReportFilePath() {
+        return this.unitTestDir.toPath().resolve(this.properties.getReportFileName()).toFile().getAbsolutePath();
     }
 
-    public String getProjectSetting() {
+    public String getProjectSettingFilPath() {
         return this.unitTestDir.toPath().resolve(projectSettingFileName).toFile().getAbsolutePath();
     }
 }
