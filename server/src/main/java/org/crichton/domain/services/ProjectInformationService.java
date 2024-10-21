@@ -56,7 +56,7 @@ public class ProjectInformationService implements IProjectInformationService<UUI
         // 1. DefectInjector Plugin 수행
         try {
             entity.updateStatus(ProjectStatus.Running);
-            pluginService.run(entity);
+            pluginService.runPlugin(entity);
         } catch (Exception e) {
             log.error("plugin failed.", e);
             entity.updateStatus(ProjectStatus.Complete);

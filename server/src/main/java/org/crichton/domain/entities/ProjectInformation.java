@@ -23,6 +23,8 @@ public class ProjectInformation {
 
     private String failReason;
 
+    private UUID pluginProcessorId;
+
 
     public void updateStatus(ProjectStatus status) {
         this.status = status;
@@ -34,5 +36,9 @@ public class ProjectInformation {
 
     public void updateFailReason(String failReason) {
         this.failReason = failReason;
+    }
+
+    public void updatePluginProcessorId(UUID pluginProcessorId) {
+        this.pluginProcessorId = pluginProcessorId;
     }
 }

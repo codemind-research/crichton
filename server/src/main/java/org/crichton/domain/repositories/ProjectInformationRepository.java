@@ -5,11 +5,12 @@ import org.crichton.util.constants.EntityCode;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component("projectInformationRepository")
 public class ProjectInformationRepository implements IRepository<ProjectInformation, UUID> {
 
-    private static final Map<UUID, ProjectInformation> store = new HashMap<>();
+    private static final Map<UUID, ProjectInformation> store = new ConcurrentHashMap<>();
 
 
     @Override
