@@ -29,14 +29,17 @@ public class CoyotePlugin implements Plugin {
 
     @Override
     public boolean check() {
-        String symbolicLink = FileName.DEFECT_SIMULATION_EXE;
 
         if(setting != null) {
-            symbolicLink = setting.getEnginePath();
+            String enginePath = setting.getEnginePath();
+            Path path = FileSystems.getDefault().getPath(enginePath);
+            return Files.isSymbolicLink(path) || Files.isRegularFile(path);
         }
-
-        Path path = FileSystems.getDefault().getPath(symbolicLink);
-        return Files.isSymbolicLink(path);
+        else {
+            String symbolicLink = "/usr/bin/CoyoteCLI";
+            Path path = FileSystems.getDefault().getPath(symbolicLink);
+            return Files.isSymbolicLink(path);
+        }
     }
 
     @Override
@@ -47,7 +50,11 @@ public class CoyotePlugin implements Plugin {
 
     @Override
     public boolean execute() {
-        return new CoyoteRunner(targetSource, this.setting).run();
+        if(check()) {
+            return new CoyoteRunner(targetSource, this.setting).run();
+        } else {
+            throw new RuntimeException("Coyote dose not exists.");
+        }
     }
 
     @Override
