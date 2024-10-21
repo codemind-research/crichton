@@ -23,6 +23,7 @@ public class FileName {
 
 
     public static final String INJECTION_RESULT = "injection_result.csv";
+    public static final String UNIT_TEST_RESULT = "unit_test_result.csv";
 
 
 

@@ -11,7 +11,6 @@ import org.crichton.util.ObjectMapperUtils;
 import org.crichton.util.OperationSystemUtil;
 import org.crichton.util.constants.DirectoryName;
 import org.crichton.util.constants.FileName;
-import org.crichton.util.constants.PluginSettingKey;
 import org.mapstruct.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +67,7 @@ public abstract class ProjectInformationMapper {
             log.info("Make project defect directory: {}", defectDirectoryPath);
             FileUtils.makeDirectory(defectDirectoryPath);
 
-            var unitTestDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, PluginSettingKey.UnitTester.UNIT_TEST_SPEC_FILE_PATH);
+            var unitTestDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, DirectoryName.UNIT_TEST);
 
             log.info("Make project unit test directory: {}", unitTestDirectoryPath);
             FileUtils.makeDirectory(unitTestDirectoryPath);

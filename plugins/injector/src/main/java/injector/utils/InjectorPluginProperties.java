@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class InjectorProperties extends Properties {
+public class InjectorPluginProperties extends Properties {
 
     @Getter
     public enum Property {
@@ -29,9 +29,9 @@ public class InjectorProperties extends Properties {
         }
     }
 
-    public static InjectorProperties loadProperties(String propertiesFilePath) {
+    public static InjectorPluginProperties loadProperties(String propertiesFilePath) {
 
-        var properties = new InjectorProperties();
+        var properties = new InjectorPluginProperties();
         try (FileInputStream fileInputStream = new FileInputStream(propertiesFilePath)) {
             properties.load(fileInputStream);
         } catch (IOException e) {
