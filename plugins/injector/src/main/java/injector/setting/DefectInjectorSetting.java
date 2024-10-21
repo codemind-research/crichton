@@ -33,19 +33,19 @@ public class DefectInjectorSetting extends PluginSetting {
 
     private int defectLength;
 
-    public DefectInjectorSetting(String pluginName, Map<String, String> defectInjectorConfiguration) {
-        super(pluginName, defectInjectorConfiguration);
+    public DefectInjectorSetting(String pluginName, Map<String, String> configuration) {
+        super(pluginName, configuration);
 
-        this.defectDir = Paths.get(this.workingDirectory.getAbsolutePath(), "defect").toFile();
+        this.defectDir = Paths.get(this.workingDirectory.getAbsolutePath(), configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DIR_NAME, "defect")).toFile();
 
-        this.testSpecFile = defectInjectorConfiguration.getOrDefault(PluginConfigurationKey.DefectInjector.TEST_SPEC_FILE_NAME,"");
-        this.defectSpecFile = defectInjectorConfiguration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SPEC_FILE_NAME,"");
-        this.safeSpecFile = defectInjectorConfiguration.getOrDefault(PluginConfigurationKey.DefectInjector.SAFE_SPEC_FILE_NAME,"");
+        this.testSpecFile = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.TEST_SPEC_FILE_NAME,"");
+        this.defectSpecFile = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SPEC_FILE_NAME,"");
+        this.safeSpecFile = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.SAFE_SPEC_FILE_NAME,"");
 
-        this.defectSimulationOilFileName = defectInjectorConfiguration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_OIL_FILE_NAME,"defectSim.oil");
-        this.defectSimulationExeFileName = defectInjectorConfiguration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_EXE_FILE_NAME,"defectSim_exe");
+        this.defectSimulationOilFileName = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_OIL_FILE_NAME,FileName.DEFECT_SIMULATION_OIL);
+        this.defectSimulationExeFileName = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_EXE_FILE_NAME,FileName.DEFECT_SIMULATION_EXE);
 
-        var propertiesDir = defectInjectorConfiguration.getOrDefault(PluginConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
+        var propertiesDir = configuration.getOrDefault(PluginConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
         this.properties = InjectorPluginProperties.loadProperties(propertiesDir);
 
     }

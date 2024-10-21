@@ -12,6 +12,7 @@ public class PluginConfigurationKey {
 
     public static class DefectInjector {
         public static final String TEST_SPEC_FILE_NAME = "file.spec.test";
+        public static final String DIR_NAME = "dir.defect";
         public static final String DEFECT_SPEC_FILE_NAME = "file.spec.defect";
         public static final String SAFE_SPEC_FILE_NAME = "file.spec.safe";
         public static final String DEFECT_SIMULATION_OIL_FILE_NAME = "file.defect.simulation.oil";
@@ -19,7 +20,8 @@ public class PluginConfigurationKey {
     }
 
     public static class UnitTester {
-        public static final String UNIT_TEST_SETTING_FILE_NAME = "file.setting.unit-tester";
+        public static final String DIR_NAME = "dir.unit-test";
+        public static final String UNIT_TEST_PROJECT_SETTING_FILE_NAME = "file.unit-tester.setting.project";
     }
 
 }

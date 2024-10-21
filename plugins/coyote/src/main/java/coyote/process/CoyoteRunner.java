@@ -1,5 +1,6 @@
 package coyote.process;
 
+import coyote.setting.CoyoteSetting;
 import lombok.NonNull;
 import runner.process.ProcessRunner;
 import runner.util.CommandBuilder;
@@ -11,33 +12,41 @@ import static runner.Plugin.OUTPUT_PATH;
 
 public class CoyoteRunner extends ProcessRunner {
 
-    private static final String COYOTE = "CoyoteCLI";
-
     private final String targetSource;
-    private File reportFile;
-    private File projectSetting;
+    private final CoyoteSetting setting;
 
-    public CoyoteRunner(String targetSource, File reportFile, File projectSetting) {
+    public CoyoteRunner(String targetSource, CoyoteSetting setting) {
         super();
         this.targetSource = targetSource;
-        this.reportFile = reportFile;
-        this.projectSetting = projectSetting;
+        this.setting = setting;
     }
 
     @Override
     protected CommandBuilder buildCommand() {
+
         CommandBuilder command = new CommandBuilder();
-        command.addOption("coyoteCli");
+        command.addOption(getProcessName());
         command.addOption("-n", targetSource);
-        command.addOption("-o", reportFile.getAbsolutePath());
-        command.checkAndAddOption("-p", projectSetting.getAbsolutePath(),
-                () -> projectSetting.exists() && projectSetting.isFile());
+        command.addOption("-o", setting.getReport());
+        command.checkAndAddOption("-p", setting.getProjectSetting(),
+                (projectSettingFileName) -> {
+                    try {
+                        var projectSettingFile = new File(projectSettingFileName);
+                        return projectSettingFile.exists() && projectSettingFile.isFile();
+                    }
+                    catch (NullPointerException e) {
+                        return false;
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                });
         return command;
     }
 
     @Override
     protected String getProcessName() {
-        return COYOTE;
+        return setting.getEnginePath();
     }
 
 }
