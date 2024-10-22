@@ -81,7 +81,10 @@ public class DefectInjectorSetting extends PluginSetting {
                 JsonNode element = elements.next();
                 String outputFileName = defectJsonFileName.replace(".json", "_" + id + ".json");
                 objectMapper.writeValue(new File(defectDir + File.separator + outputFileName), element);
-                id++;
+
+                if(elements.hasNext()) {
+                    id++;
+                }
             }
         }
         else {
@@ -197,19 +200,9 @@ public class DefectInjectorSetting extends PluginSetting {
     }
 
     public String getOutputFilePath(int id) {
-        var fileExt = FilenameUtils.getExtension(this.properties.getReportFileName());
+        var fileExt = "." + FilenameUtils.getExtension(this.properties.getReportFileName());
         var outputFileName = this.properties.getReportFileName().replace(fileExt, "_" + id + fileExt);
         return this.defectDir.toPath().resolve(outputFileName).normalize().toFile().getAbsolutePath().toString();
-    }
-
-    public String getOutputName(int id) {
-        String fileName = FilenameUtils.getBaseName(getTarget(id));
-        return fileName + "_report_" + id + ".csv";
-    }
-
-
-    public File getOutputFile(int id) {
-        return Paths.get(workingDirectory.getAbsolutePath(), getOutputName(id)).toFile();
     }
 
     public String getViperPath() {
