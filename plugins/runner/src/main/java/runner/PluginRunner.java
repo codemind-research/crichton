@@ -127,14 +127,14 @@ public class PluginRunner implements Runner  {
             plugin.setLogFilePath(this.pluginLogFile);
 
             String start = String.format("\nStart of Plugin : %s  \n", pluginName);
-            FileUtils.overWriteDump(pluginLogFile.toFile(), start,"\n");
+            FileUtils.overWriteDump(pluginLogFile.toFile(), start,System.lineSeparator());
 
             boolean runResult = plugin.execute();
 
             ProcessedReportDTO data = plugin.transformReportData();
 
             String end = String.format("\nPlugin completed : %s  \n", pluginName);
-            FileUtils.overWriteDump(pluginLogFile.toFile(),end,"\n");
+            FileUtils.overWriteDump(pluginLogFile.toFile(), end, System.lineSeparator());
 
             return new RunResult(runResult , data);
         }catch (Exception e) {

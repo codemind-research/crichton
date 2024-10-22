@@ -1,7 +1,10 @@
 package injector.report;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import injector.setting.DefectInjectorSetting;
 import lombok.Builder;
 import lombok.NonNull;
@@ -24,17 +27,30 @@ public class Parser {
         File defectJson = Paths.get(setting.getDefectSpecFile()).toFile();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-            LinkedHashMap<String, Object> defectMap = objectMapper
-                    .readValue(defectJson, new TypeReference<List<LinkedHashMap<String, Object>>>() {})
-                    .stream()
+
+            JsonNode rootNode = objectMapper.readTree(defectJson);
+            List<Map<String, Object>> defectSpecs = new ArrayList<>();
+            if(rootNode.isArray()) {
+                defectSpecs = objectMapper.readValue(rootNode.toString(), objectMapper.getTypeFactory().constructCollectionType(List.class, LinkedHashMap.class));
+            }
+            else {
+                var defectSpec = objectMapper.treeToValue(rootNode, LinkedHashMap.class);
+                defectSpecs.add(defectSpec);
+            }
+
+
+
+            LinkedHashMap<String, Object> defectMap = defectSpecs.stream()
                     .collect(LinkedHashMap::new,
                             (map, entry) -> {
-                        String key = entry.remove("id").toString();
-                        entry.putIfAbsent("safe", getSaveJsonData(Integer.parseInt(key)));
-                        map.put(key, entry);
-                        },
-                        LinkedHashMap::putAll);
+                                String key = entry.remove("id").toString();
+                                entry.putIfAbsent("safe", getSaveJsonData(Integer.parseInt(key)));
+                                map.put(key, entry);
+                            },
+                            LinkedHashMap::putAll);
             return defectMap;
         } catch (Exception e) {
             return new LinkedHashMap<>();
