@@ -155,35 +155,20 @@ public abstract class ProjectInformationMapper {
 
     protected void replaceTestSpecTaskFilePath(ProjectInformation target) {
 
-        var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), target.getId().toString()).toAbsolutePath();
+        final var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), target.getId().toString()).toAbsolutePath();
 
         try {
 
             Path testSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.DEFECT).resolve(FileName.TEST_SPEC);
-            var testSpecDto = ObjectMapperUtils.convertJsonToObject(testSpecFilePath.toFile(), TestSpecDto.class);
-
-            log.debug("Modify the File path value in '{}'.", testSpecFilePath.toAbsolutePath());
-            for(var taskDto : testSpecDto.getTasks()) {
-
-                var taskLocalFilePath = convertToLocalPath(baseDirAbsolutePath, taskDto.getFile());
-                taskDto.setFile(taskLocalFilePath);
-            }
 
             log.debug("Overwrite the modified values into file '{}'.", testSpecFilePath.toAbsolutePath());
-            ObjectMapperUtils.saveObjectToJsonFile(testSpecDto, testSpecFilePath.toFile());
+            ObjectMapperUtils.modifyJsonFile(testSpecFilePath, "tasks.file", (value) ->  convertToLocalPath(baseDirAbsolutePath, value), String.class);
 
 
             Path defectSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.DEFECT).resolve(FileName.DEFECT_SPEC);
-            var defectSpecs = ObjectMapperUtils.convertJsonToList(defectSpecFilePath, DefectSpec.class);
-
-            log.debug("Modify the File path value in '{}'.", defectSpecFilePath.toAbsolutePath());
-            for(var defectSpec : defectSpecs) {
-                var defectSpecLocaleFilePath = convertToLocalPath(baseDirAbsolutePath, defectSpec.getFilePath());
-                defectSpec.setFilePath(defectSpecLocaleFilePath);
-            }
 
             log.debug("Overwrite the modified values into file '{}'.", defectSpecFilePath.toAbsolutePath());
-            ObjectMapperUtils.saveObjectToJsonFile(defectSpecs, defectSpecFilePath.toFile());
+            ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "target", (value) ->  convertToLocalPath(baseDirAbsolutePath, value), String.class);
 
 
 
@@ -211,7 +196,6 @@ public abstract class ProjectInformationMapper {
         else {
             return localPath.toString();
         }
-
-
     }
+
 }
