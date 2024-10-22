@@ -39,7 +39,11 @@ public class PluginPaths {
     }
 
     public static Path generatePluginLogPath(Path pluginLogDirectory) {
-        return pluginLogDirectory.resolve(CRICHTON_LOG_PATH);
+        return generatePluginLogPath(pluginLogDirectory, CRICHTON_LOG_FILE);
+    }
+
+    public static Path generatePluginLogPath(Path logDirectory, String logFileName) {
+        return logDirectory.resolve(logFileName);
     }
 
     public static Path generatePluginUnZipPath(String pluginName, String settings) {

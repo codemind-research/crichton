@@ -130,6 +130,15 @@ public class DefectInjectorPlugin implements Plugin {
         return result;
     }
 
+    private boolean runAndContinueOnFailure(int defectSpecId, RunnerStatus runnerStatus, BooleanSupplier task) {
+        boolean result = task.getAsBoolean();
+        if (!result) {
+            String log = String.format("%s Failed for id: %s \n", runnerStatus.getStatus(), id);
+            writeFailedLog(log);
+        }
+        return result;
+    }
+
     private void writeFailedLog(String failedLog) {
         FileUtils.overWriteDump(pluginLogPath.toFile(),failedLog,"\n");
     }
@@ -141,6 +150,11 @@ public class DefectInjectorPlugin implements Plugin {
                 .pluginName(setting.getPluginName())
                 .info(parser.convert())
                 .build();
+    }
+
+    @Override
+    public void setLogFilePath(Path logFilePath) {
+        this.pluginLogPath = logFilePath;
     }
 
 

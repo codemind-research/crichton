@@ -14,6 +14,8 @@ import runner.util.FileUtils;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,14 +36,35 @@ public class PluginRunner implements Runner  {
         this.pluginLogFile = PluginPaths.generatePluginLogPath(PluginPaths.PLUGIN_DIR_PATH.resolve(pluginName));
         this.pluginJar = PluginPaths.generatePluginJarPath(pluginName);
         this.pluginLoader = new BasicPluginLoader(pluginJar);
+        validate();
     }
 
     public PluginRunner(@NonNull String pluginDirectory, @NonNull String pluginName) throws Exception {
         this.pluginName = pluginName.replace(".jar", "");
         this.pluginDirectory = Paths.get(pluginDirectory);
-        this.pluginLogFile = PluginPaths.generatePluginLogPath(this.pluginDirectory);
+
+        // 현재 날짜를 yyyy-MM-dd 형식으로 가져오기
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String logFileName = currentDate.format(formatter) + ".log";
+        this.pluginLogFile = PluginPaths.generatePluginLogPath(this.pluginDirectory.resolve("log"), logFileName);
+
         this.pluginJar = PluginPaths.generatePluginJarPath(pluginDirectory, pluginName);
+
         this.pluginLoader = new BasicPluginLoader(pluginJar);
+
+        validate();
+    }
+
+    private void validate() throws NoSuchFileException {
+
+        if(!this.pluginDirectory.toFile().exists() || !this.pluginDirectory.toFile().isDirectory()) {
+            throw new NoSuchFileException(String.format("Plugin directory does not exist or is not a directory: %s", this.pluginDirectory));
+        }
+
+        if(!this.pluginJar.toFile().exists()) {
+            throw new NoSuchFileException(String.format("Plugin jar does not exist: %s", this.pluginJar));
+        }
     }
 
     @Override
@@ -82,6 +105,7 @@ public class PluginRunner implements Runner  {
 
             var pluginOption = new PluginOption(projectId, pluginName, targetSource, pluginSetting, pluginLogFile);
             plugin.initialize(pluginOption);
+            plugin.setLogFilePath(this.pluginLogFile);
 
             String start = String.format("\nStart of Plugin : %s  \n", pluginName);
             FileUtils.overWriteDump(pluginLogFile.toFile(), start,"\n");
