@@ -100,8 +100,6 @@ public abstract class ProjectInformationMapper {
 
                 log.info("save defect spec file: {}", defectSpecFilePath);
                 saveFile(dto.getDefectSpecFile(), defectSpecFilePath);
-
-                var defectSpecs = ObjectMapperUtils.convertJsonToList(dto.getDefectSpecFile().getInputStream(), DefectSpec.class);
 //
 //                log.info("split defect spec file: {}", dto.getDefectSpecFile());
 //                for (var defectSpec : defectSpecs) {
@@ -110,7 +108,6 @@ public abstract class ProjectInformationMapper {
 //                    ObjectMapperUtils.saveObjectToJsonFile(defectSpec, defectSpecFilePath.toFile());
 //                }
 
-                dto.setDefectSpecs(defectSpecs);
             }
 
             if (dto.getSafeSpecFile() != null) {

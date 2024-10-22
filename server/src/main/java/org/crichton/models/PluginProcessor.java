@@ -5,18 +5,22 @@ import lombok.Getter;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
+import org.crichton.domain.utils.mapper.InjectorPluginResultMapper;
 import org.crichton.util.FileUtils;
+import org.crichton.util.ObjectMapperUtils;
 import org.crichton.util.constants.DirectoryName;
 import org.crichton.util.constants.FileName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import runner.PluginRunner;
+import runner.dto.RunResult;
 import runner.util.constants.PluginConfigurationKey;
 
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 public class PluginProcessor implements Runnable {
@@ -35,6 +39,10 @@ public class PluginProcessor implements Runnable {
 
     private final String unitTestPluginPath;
     private final String unitTestPluginPropertiesFilePath;
+
+
+    private RunResult injectorPluginRunResult;
+    private RunResult unitTestPluginRunResult;
 
 
     @Builder
@@ -69,9 +77,19 @@ public class PluginProcessor implements Runnable {
             runDefectInjectorPlugin();
 
             if(Paths.get(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN).toFile().exists()) {
-//                runUnitTesterPlugin();
+                runUnitTesterPlugin();
             }
 
+            if(!injectorPluginRunResult.getIsSuccess()) {
+                throw new RuntimeException("Injector Plugin processing failed");
+            }
+
+            if(unitTestPluginRunResult != null && !unitTestPluginRunResult.getIsSuccess()) {
+                throw new RuntimeException("Unit test Plugin processing failed");
+            }
+
+            targetProject.setInjectorPluginRunResult(InjectorPluginResultMapper.INSTANCE.processedReportDtoToInjectorPluginReport(injectorPluginRunResult.getData()));
+            targetProject.setUnitTestPluginRunResult(unitTestPluginRunResult);
             targetProject.updateTestResult(TestResult.Success);
 
         }
@@ -111,7 +129,7 @@ public class PluginProcessor implements Runnable {
                 log.info("defect injector plugin check passed.");
 
                 log.info("run defect injector plugin...");
-                defectInjectorPlugin.run(this.workingDirectoryPath, defectInjectorConfiguration);
+                injectorPluginRunResult = defectInjectorPlugin.run(this.workingDirectoryPath, defectInjectorConfiguration);
             }
             else {
                 throw new IllegalStateException("defect injector plugin check failed.");
@@ -138,7 +156,7 @@ public class PluginProcessor implements Runnable {
             var unitTestPluginRunner = new PluginRunner(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN);
             unitTestPluginRunner.check();
             log.info("run unit-tester plugin...");
-            unitTestPluginRunner.run(this.workingDirectoryPath, unitTesterConfiguration);
+            unitTestPluginRunResult = unitTestPluginRunner.run(this.workingDirectoryPath, unitTesterConfiguration);
         }
         catch (Exception e) {
             throw e;
