@@ -50,6 +50,7 @@ public abstract class ProjectInformationMapper {
     @Mapping(target = "status", constant = "None")
     @Mapping(target = "testResult", constant = "None")
     @Mapping(target = "failReason", ignore = true)
+    @Mapping(target = "pluginProcessorId", ignore = true)
     protected abstract ProjectInformation toEntryInternal(CreationProjectInformationDto createdDto);
 
 
@@ -96,14 +97,19 @@ public abstract class ProjectInformationMapper {
 
             if (dto.getDefectSpecFile() != null) {
 
-                var defectSpecs = ObjectMapperUtils.convertJsonToList(dto.getDefectSpecFile().getInputStream(), DefectSpec.class);
+                var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  FileName.DEFECT_SPEC);
 
-                log.info("split defect spec file: {}", dto.getDefectSpecFile());
-                for (var defectSpec : defectSpecs) {
-                    var defectSpecFileName = FileName.DEFECT_SPEC.replace(".json", "_" + defectSpec.id() + ".json");
-                    var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  defectSpecFileName);
-                    ObjectMapperUtils.saveObjectToJsonFile(defectSpec, defectSpecFilePath.toFile());
-                }
+                log.info("save defect spec file: {}", defectSpecFilePath);
+                saveFile(dto.getDefectSpecFile(), defectSpecFilePath);
+
+                var defectSpecs = ObjectMapperUtils.convertJsonToList(dto.getDefectSpecFile().getInputStream(), DefectSpec.class);
+//
+//                log.info("split defect spec file: {}", dto.getDefectSpecFile());
+//                for (var defectSpec : defectSpecs) {
+//                    var defectSpecFileName = FileName.DEFECT_SPEC.replace(".json", "_" + defectSpec.id() + ".json");
+//                    var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  defectSpecFileName);
+//                    ObjectMapperUtils.saveObjectToJsonFile(defectSpec, defectSpecFilePath.toFile());
+//                }
 
                 dto.setDefectSpecs(defectSpecs);
             }

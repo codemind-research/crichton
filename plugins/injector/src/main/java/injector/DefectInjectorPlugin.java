@@ -46,14 +46,28 @@ public class DefectInjectorPlugin implements Plugin {
 
         this.setting = new DefectInjectorSetting(pluginOption.pluginName(), pluginOption.pluginSetting());
 
+        if(this.setting.isMultiMode()) {
+            setting.splitDefectSpecFile();
+        }
 //        setting.makeDefectJson();
     }
 
     @Override
     public boolean execute(){
-        boolean isPluginSuccess = false;
 
         // DefectInjector 실행
+
+        if(setting.isMultiMode()) {
+            var defectSpecCount = setting.getDefectSpecCount();
+            return multiExecute(defectSpecCount);
+        }
+        else {
+            return singleExecute();
+        }
+
+    }
+
+    private boolean singleExecute() {
         if (!runAndContinueOnFailure(RunnerStatus.DEFECT_INJECTOR_RUNNER,
                 () -> new DefectInjectorRunner(targetSource, setting).run())) {
             return false;
@@ -74,6 +88,37 @@ public class DefectInjectorPlugin implements Plugin {
         }
 
         return true;
+    }
+
+    private boolean multiExecute(int defectSpecCount) {
+
+        boolean isPluginSuccess = false;
+
+        for(int i = 1 ; i <= defectSpecCount ; i++) {
+            final int defectSpecId = i;
+            if (!runAndContinueOnFailure(RunnerStatus.DEFECT_INJECTOR_RUNNER,
+                    () -> new DefectInjectorRunner(defectSpecId, targetSource, setting).run())) {
+                continue;
+            }
+
+            if (!runAndContinueOnFailure(RunnerStatus.GOIL_RUNNER,
+                    () -> new GoilRunner(setting).run())) {
+                continue;
+            }
+
+            if (!runAndContinueOnFailure(RunnerStatus.MAKE_PYTHON_RUNNER,
+                    () -> new MakePythonRunner(setting).run())) {
+                continue;
+            }
+            if (!runAndContinueOnFailure(RunnerStatus.INJECTION_TESTER_RUNNER,
+                    () -> new InjectionTesterRunner(defectSpecId, setting).run())) {
+                continue;
+            }
+
+            isPluginSuccess = true;
+        }
+
+        return isPluginSuccess;
     }
 
     private boolean runAndContinueOnFailure(RunnerStatus runnerStatus, BooleanSupplier task) {

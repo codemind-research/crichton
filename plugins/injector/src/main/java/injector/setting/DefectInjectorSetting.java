@@ -1,5 +1,6 @@
 package injector.setting;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import injector.enumerations.InjectorBinaries;
@@ -31,7 +32,9 @@ public class DefectInjectorSetting extends PluginSetting {
     private final File defectDir;
     private final InjectorPluginProperties properties;
 
-    private int defectLength;
+    private final boolean isMultiMode;
+
+    private Integer defectSpecCount = null;
 
     public DefectInjectorSetting(String pluginName, Map<String, String> configuration) {
         super(pluginName, configuration);
@@ -45,28 +48,48 @@ public class DefectInjectorSetting extends PluginSetting {
         this.defectSimulationOilFileName = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_OIL_FILE_NAME,FileName.DEFECT_SIMULATION_OIL);
         this.defectSimulationExeFileName = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_EXE_FILE_NAME,FileName.DEFECT_SIMULATION_EXE);
 
+        var processMode = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_MULTI_PROCESS_MODE, String.valueOf(Boolean.TRUE));
+
+        if(Boolean.valueOf(processMode)){
+            this.isMultiMode = true;
+        }
+        else {
+            this.isMultiMode = false;
+        }
+
         var propertiesDir = configuration.getOrDefault(PluginConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
         this.properties = InjectorPluginProperties.loadProperties(propertiesDir);
 
     }
 
-    public void makeDefectJson() throws Exception{
+    public void splitDefectSpecFile() throws Exception{
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+
         var defectJsonFile = getDefectSpecFile();
-        JsonNode jsonNode = objectMapper.readTree(defectJsonFile);
+        JsonNode jsonNode = objectMapper.readTree(new File(defectJsonFile));
         if (!defectDir.exists())
             defectDir.mkdir();
 
-        Iterator<JsonNode> elements = jsonNode.elements();
+        var defectJsonFileName = new File(defectJsonFile).getName();
         int id = 1;
+        if(jsonNode.isArray()) {
 
-        while (elements.hasNext()) {
-            JsonNode element = elements.next();
-            String outputFileName = "defect_" + id + ".json";
-            objectMapper.writeValue(new File(defectDir + File.separator + outputFileName), element);
-            id++;
+            Iterator<JsonNode> elements = jsonNode.elements();
+
+            while (elements.hasNext()) {
+                JsonNode element = elements.next();
+                String outputFileName = defectJsonFileName.replace(".json", "_" + id + ".json");
+                objectMapper.writeValue(new File(defectDir + File.separator + outputFileName), element);
+                id++;
+            }
         }
-        defectLength = id;
+        else {
+            String outputFileName = defectJsonFileName.replace(".json", "_" + id + ".json");
+            objectMapper.writeValue(new File(defectDir + File.separator + outputFileName), jsonNode);
+        }
+
+        defectSpecCount = id;
     }
 
     public void moveCRCFile(String targetSource, int id) {
@@ -80,6 +103,10 @@ public class DefectInjectorSetting extends PluginSetting {
 
     public String getDefectSpecFile() {
         return Paths.get(defectDir.getAbsolutePath(), defectSpecFile).normalize().toAbsolutePath().toString();
+    }
+
+    public String getDefectSpecFile(int id) {
+        return Paths.get(defectDir.getAbsolutePath(), defectSpecFile.replace(".json", "_" + id + ".json")).normalize().toAbsolutePath().toString();
     }
 
     public String getSafeSpecFile() {
@@ -100,7 +127,7 @@ public class DefectInjectorSetting extends PluginSetting {
         return Paths.get(workingDirectory.getAbsolutePath(), defectSimulationExeFileName).normalize().toFile().getAbsolutePath();
     }
 
-    public String getExeBinary(int id) {
+    public String getExeBinaryFilePath(int id) {
         String fileName = FilenameUtils.getBaseName(getTarget(id)) + "_exe";
         return Paths.get(workingDirectory.getAbsolutePath(), fileName).toFile().getAbsolutePath();
     }
@@ -158,7 +185,7 @@ public class DefectInjectorSetting extends PluginSetting {
 
     public String getDefectNumberJson(int id) {
         String outputFileName = "defect_spec" + id + ".json";
-        return new File(defectDir + File.separator + outputFileName).getAbsolutePath();
+        return defectDir.toPath().resolve(outputFileName).toFile().getAbsolutePath();
     }
 
     public File getProjectWorkspace() {
@@ -167,6 +194,12 @@ public class DefectInjectorSetting extends PluginSetting {
 
     public String getOutputFilePath() {
         return this.defectDir.toPath().resolve(this.properties.getReportFileName()).normalize().toFile().getAbsolutePath().toString();
+    }
+
+    public String getOutputFilePath(int id) {
+        var fileExt = FilenameUtils.getExtension(this.properties.getReportFileName());
+        var outputFileName = this.properties.getReportFileName().replace(fileExt, "_" + id + fileExt);
+        return this.defectDir.toPath().resolve(outputFileName).normalize().toFile().getAbsolutePath().toString();
     }
 
     public String getOutputName(int id) {

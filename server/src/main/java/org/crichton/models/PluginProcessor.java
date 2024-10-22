@@ -66,9 +66,7 @@ public class PluginProcessor implements Runnable {
         try {
             log.info("Starting plugin processing...");
 
-            for (var defectSpec : targetProject.getDefectSpecs()) {
-                runDefectInjectorPlugin(defectSpec.id());
-            }
+            runDefectInjectorPlugin();
 
             if(Paths.get(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN).toFile().exists()) {
 //                runUnitTesterPlugin();
@@ -89,7 +87,7 @@ public class PluginProcessor implements Runnable {
         }
     }
 
-    private void runDefectInjectorPlugin(int defectSpecId) throws Exception {
+    private void runDefectInjectorPlugin() throws Exception {
 
         Map<String, String> defectInjectorConfiguration = new ConcurrentHashMap<>();
 
@@ -97,8 +95,9 @@ public class PluginProcessor implements Runnable {
 
         defectInjectorConfiguration.put(PluginConfigurationKey.WORKSPACE, this.workingDirectoryPath);
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DIR_NAME, DirectoryName.DEFECT);
+        defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DEFECT_MULTI_PROCESS_MODE, String.valueOf(Boolean.TRUE));
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.TEST_SPEC_FILE_NAME, FileName.TEST_SPEC);
-        defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DEFECT_SPEC_FILE_NAME, FileName.DEFECT_SPEC.replace(".json", "_" + defectSpecId + ".json"));
+        defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DEFECT_SPEC_FILE_NAME, FileName.DEFECT_SPEC);
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.SAFE_SPEC_FILE_NAME, FileName.SAFE_SPEC);
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_OIL_FILE_NAME, FileName.DEFECT_SIMULATION_OIL);
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DEFECT_SIMULATION_EXE_FILE_NAME, FileName.DEFECT_SIMULATION_EXE);
