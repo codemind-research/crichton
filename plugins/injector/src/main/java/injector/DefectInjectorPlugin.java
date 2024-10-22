@@ -91,7 +91,7 @@ public class DefectInjectorPlugin implements Plugin {
 
     @Override
     public ProcessedReportDTO transformReportData()  {
-        Parser parser = new Parser(setting);;
+        Parser parser = new Parser(setting);
         return ProcessedReportDTO.builder()
                 .pluginName(setting.getPluginName())
                 .info(parser.convert())

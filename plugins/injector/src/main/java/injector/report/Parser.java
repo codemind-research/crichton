@@ -3,6 +3,7 @@ package injector.report;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import injector.setting.DefectInjectorSetting;
+import lombok.Builder;
 import runner.util.FileUtils;
 
 import java.io.File;
@@ -11,14 +12,24 @@ import java.util.*;
 
 public class Parser {
 
-    private final DefectInjectorSetting setting;
+//    private final DefectInjectorSetting setting;
+    private final String defectSpecFilePath;
+    private final String outputFilePath;
 
+    @Builder(builderMethodName = "settingBuilder")
     public Parser(DefectInjectorSetting setting) {
-        this.setting = setting;
+        this.defectSpecFilePath = setting.getDefectSpecFile();
+        this.outputFilePath = setting.getOutputFilePath();
+    }
+
+    @Builder(builderMethodName = "pathBuilder")
+    public Parser(String defectSpecFilePath, String outputFilePath) {
+        this.defectSpecFilePath = defectSpecFilePath;
+        this.outputFilePath = outputFilePath;
     }
 
     public LinkedHashMap<String, Object> convert() {
-        File defectJson = Paths.get(setting.getDefectSpecFile()).toFile();
+        File defectJson = Paths.get(defectSpecFilePath).toFile();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -41,8 +52,8 @@ public class Parser {
 
     private List<LinkedHashMap<String, Object>> getSaveJsonData(int id) {
         try {
-            File safeJson = Paths.get(setting.getDefectSpecFile()).toFile();
-            File report = Paths.get(setting.getOutputFilePath()).toFile();
+            File safeJson = Paths.get(defectSpecFilePath).toFile();
+            File report = Paths.get(outputFilePath).toFile();
             ObjectMapper objectMapper = new ObjectMapper();
             List<LinkedHashMap<String, Object>> safeMap = objectMapper
                     .readValue(safeJson, new TypeReference<List<LinkedHashMap<String, Object>>>() {});

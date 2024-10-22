@@ -157,7 +157,7 @@ public class DefectInjectorSetting extends PluginSetting {
     }
 
     public String getDefectNumberJson(int id) {
-        String outputFileName = "defect_" + id + ".json";
+        String outputFileName = "defect_spec" + id + ".json";
         return new File(defectDir + File.separator + outputFileName).getAbsolutePath();
     }
 
