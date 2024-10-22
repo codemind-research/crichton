@@ -6,6 +6,7 @@ import org.crichton.configuration.CrichtonDataStorageProperties;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.spec.TestSpecDto;
 import org.crichton.domain.entities.ProjectInformation;
+import org.crichton.models.defect.DefectSpec;
 import org.crichton.util.FileUtils;
 import org.crichton.util.ObjectMapperUtils;
 import org.crichton.util.OperationSystemUtil;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring", imports = {UUID.class}, uses = { TestSpecMapper.class })
@@ -93,10 +95,17 @@ public abstract class ProjectInformationMapper {
             }
 
             if (dto.getDefectSpecFile() != null) {
-                var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  FileName.DEFECT_SPEC);
 
-                log.info("save defect spec file: {}", defectSpecFilePath);
-                saveFile(dto.getDefectSpecFile(), defectSpecFilePath);
+                var defectSpecs = ObjectMapperUtils.convertJsonToList(dto.getDefectSpecFile().getInputStream(), DefectSpec.class);
+
+                log.info("split defect spec file: {}", dto.getDefectSpecFile());
+                for (var defectSpec : defectSpecs) {
+                    var defectSpecFileName = FileName.DEFECT_SPEC.replace(".json", "_" + defectSpec.id() + ".json");
+                    var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  defectSpecFileName);
+                    ObjectMapperUtils.saveObjectToJsonFile(defectSpec, defectSpecFilePath.toFile());
+                }
+
+                dto.setDefectSpecs(defectSpecs);
             }
 
             if (dto.getSafeSpecFile() != null) {

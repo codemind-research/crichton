@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
+import org.crichton.models.defect.DefectSpec;
 
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -24,6 +26,9 @@ public class ProjectInformation {
     private String failReason;
 
     private UUID pluginProcessorId;
+
+    @Setter
+    private List<DefectSpec> defectSpecs;
 
 
     public void updateStatus(ProjectStatus status) {

@@ -5,8 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.crichton.domain.dtos.spec.TestSpecDto;
 import org.crichton.domain.utils.anotations.ValidFile;
+import org.crichton.models.defect.DefectSpec;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.crichton.domain.utils.enums.UploadAllowFileDefine.*;
@@ -41,4 +44,8 @@ public class CreationProjectInformationDto {
     @Setter
     @JsonIgnore
     private TestSpecDto testSpec = TestSpecDto.builder().build();
+
+    @Setter
+    @JsonIgnore
+    private List<DefectSpec> defectSpecs = new ArrayList<>();
 }
