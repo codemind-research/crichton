@@ -8,21 +8,23 @@ import injector.process.InjectionTesterRunner;
 import injector.process.MakePythonRunner;
 import injector.report.Parser;
 import injector.setting.DefectInjectorSetting;
-import lombok.NonNull;
 import runner.Plugin;
+import runner.dto.PluginOption;
 import runner.dto.ProcessedReportDTO;
 import runner.paths.PluginPaths;
 import runner.util.FileUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 
 public class DefectInjectorPlugin implements Plugin {
 
+    private UUID id = UUID.randomUUID();
+
     private String targetSource;
     private DefectInjectorSetting setting;
+    private Path pluginLogPath = PluginPaths.CRICHTON_LOG_PATH;
 
     @Override
     public boolean check() {
@@ -30,55 +32,66 @@ public class DefectInjectorPlugin implements Plugin {
     }
 
     @Override
-    public void initialize(@NonNull String pluginName, @NonNull String targetSource, Map<String, String> pluginSetting) throws Exception {
-        this.targetSource = targetSource;
-        this.setting = new DefectInjectorSetting(pluginName, pluginSetting);
-        setting.makeDefectJson();
+    public void initialize(PluginOption pluginOption) throws Exception {
+
+        if(!Objects.isNull(pluginOption.id())) {
+            this.id = pluginOption.id();
+        }
+
+        this.targetSource = pluginOption.targetSource();
+
+        if(!Objects.isNull(pluginOption.pluginLogPath())) {
+            this.pluginLogPath = pluginOption.pluginLogPath();
+        }
+
+        this.setting = new DefectInjectorSetting(pluginOption.pluginName(), pluginOption.pluginSetting());
+
+//        setting.makeDefectJson();
     }
 
     @Override
     public boolean execute(){
         boolean isPluginSuccess = false;
-        for (int i = 1; i < setting.getDefectLength(); i++) {
-            int id = i;
-            if (!runAndContinueOnFailure(RunnerStatus.DEFECT_INJECTOR_RUNNER, id ,
-                    () -> new DefectInjectorRunner(targetSource, setting, id).run())) {
-                continue;
-            }
-            setting.moveCRCFile(targetSource, id);
-            if (!runAndContinueOnFailure(RunnerStatus.GOIL_RUNNER, id ,
-                    () -> new GoilRunner(setting).run())) {
-                continue;
-            }
-            if (!runAndContinueOnFailure(RunnerStatus.MAKE_PYTHON_RUNNER, id ,
-                    () -> new MakePythonRunner(setting).run())) {
-                continue;
-            }
-            if (!runAndContinueOnFailure(RunnerStatus.INJECTION_TESTER_RUNNER, id ,
-                    () -> new InjectionTesterRunner(setting, id).run())) {
-                continue;
-            }
-            isPluginSuccess = true;
+
+        // DefectInjector 실행
+        if (!runAndContinueOnFailure(RunnerStatus.DEFECT_INJECTOR_RUNNER,
+                () -> new DefectInjectorRunner(targetSource, setting).run())) {
+            return false;
         }
-        return isPluginSuccess;
+
+        if (!runAndContinueOnFailure(RunnerStatus.GOIL_RUNNER,
+                () -> new GoilRunner(setting).run())) {
+            return false;
+        }
+
+        if (!runAndContinueOnFailure(RunnerStatus.MAKE_PYTHON_RUNNER,
+                () -> new MakePythonRunner(setting).run())) {
+            return false;
+        }
+        if (!runAndContinueOnFailure(RunnerStatus.INJECTION_TESTER_RUNNER,
+                () -> new InjectionTesterRunner(setting).run())) {
+            return false;
+        }
+
+        return true;
     }
 
-    private boolean runAndContinueOnFailure(RunnerStatus runnerStatus, int id , BooleanSupplier task) {
+    private boolean runAndContinueOnFailure(RunnerStatus runnerStatus, BooleanSupplier task) {
         boolean result = task.getAsBoolean();
         if (!result) {
-            String log = String.format("%s Failed for id: %d \n", runnerStatus.getStatus(), id);
+            String log = String.format("%s Failed for id: %s \n", runnerStatus.getStatus(), id);
             writeFailedLog(log);
         }
         return result;
     }
 
     private void writeFailedLog(String failedLog) {
-        FileUtils.overWriteDump(PluginPaths.CRICHTON_LOG_PATH.toFile(),failedLog,"\n");
+        FileUtils.overWriteDump(pluginLogPath.toFile(),failedLog,"\n");
     }
 
     @Override
     public ProcessedReportDTO transformReportData()  {
-        Parser parser = new Parser(setting);;
+        Parser parser = new Parser(setting);
         return ProcessedReportDTO.builder()
                 .pluginName(setting.getPluginName())
                 .info(parser.convert())

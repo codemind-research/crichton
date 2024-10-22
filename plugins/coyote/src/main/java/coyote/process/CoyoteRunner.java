@@ -1,36 +1,48 @@
 package coyote.process;
 
-import lombok.NonNull;
+import coyote.setting.CoyoteSetting;
 import runner.process.ProcessRunner;
 import runner.util.CommandBuilder;
 
 import java.io.File;
-import java.util.List;
-
-import static runner.Plugin.OUTPUT_PATH;
 
 public class CoyoteRunner extends ProcessRunner {
 
     private final String targetSource;
-    private File reportFile;
-    private File projectSetting;
+    private final CoyoteSetting setting;
 
-    public CoyoteRunner(String targetSource, File reportFile, File projectSetting) {
+    public CoyoteRunner(String targetSource, CoyoteSetting setting) {
         super();
         this.targetSource = targetSource;
-        this.reportFile = reportFile;
-        this.projectSetting = projectSetting;
+        this.setting = setting;
     }
 
     @Override
     protected CommandBuilder buildCommand() {
+
         CommandBuilder command = new CommandBuilder();
-        command.addOption("coyoteCli");
+        command.addOption(getProcessName());
         command.addOption("-n", targetSource);
-        command.addOption("-o", reportFile.getAbsolutePath());
-        command.checkAndAddOption("-p", projectSetting.getAbsolutePath(),
-                () -> projectSetting.exists() && projectSetting.isFile());
+        command.addOption("-o", setting.getReportFilePath());
+        command.checkAndAddOption("-p", setting.getProjectSettingFilPath(),
+                (projectSettingFileName) -> {
+                    try {
+                        var projectSettingFile = new File(projectSettingFileName);
+                        return projectSettingFile.exists() && projectSettingFile.isFile();
+                    }
+                    catch (NullPointerException e) {
+                        return false;
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                });
         return command;
+    }
+
+    @Override
+    protected String getProcessName() {
+        return setting.getEnginePath();
     }
 
 }

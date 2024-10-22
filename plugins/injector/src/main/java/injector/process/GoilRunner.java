@@ -5,6 +5,8 @@ import runner.paths.PluginPaths;
 import runner.process.ProcessRunner;
 import runner.util.CommandBuilder;
 
+import java.util.List;
+
 public class GoilRunner extends ProcessRunner {
 
     private final DefectInjectorSetting setting;
@@ -12,17 +14,24 @@ public class GoilRunner extends ProcessRunner {
     public GoilRunner(DefectInjectorSetting setting) {
         super();
         this.setting = setting;
-        processBuilder.directory(PluginPaths.generatePluginSettingsPath(setting.getPluginName()).toFile());
+        var workingDir = PluginPaths.generatePluginSettingsPath(setting.getPluginName()).toFile();
+        if(!workingDir.exists() && setting.getProjectWorkspace().exists()) {
+            workingDir = setting.getProjectWorkspace();
+        }
+        processBuilder.directory(workingDir);
+        processBuilder.environment().put("PATH", System.getenv("PATH"));
     }
 
     @Override
     protected CommandBuilder buildCommand() {
-        CommandBuilder command = new CommandBuilder();
-        command.addOption("goil");
-        command.addOption("--target=posix/linux");
-        command.addOption("--templates="+setting.getGoilTemplates());
-        command.addOption(setting.getOilCrOilFile().getAbsolutePath());
-        return command;
+
+        var arguments = List.of(
+                "--target=posix/linux",
+                String.format("--templates=%s", setting.getGoilTemplates()),
+                setting.getDefectSimulationOilFileName().getAbsolutePath()
+        );
+
+        return buildCommand(arguments);
     }
 
     @Override
@@ -30,5 +39,10 @@ public class GoilRunner extends ProcessRunner {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.redirectErrorStream(true);
         return processBuilder;
+    }
+
+    @Override
+    protected String getProcessName() {
+        return setting.getGoilProcess();
     }
 }

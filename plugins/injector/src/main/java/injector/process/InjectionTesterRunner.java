@@ -1,32 +1,33 @@
 package injector.process;
 
-import injector.enumerations.InjectorBinaries;
 import injector.setting.DefectInjectorSetting;
-import runner.process.ProcessRunner;
+import runner.process.DotnetProcessRunner;
 import runner.util.CommandBuilder;
 
-public class InjectionTesterRunner extends ProcessRunner {
+import java.util.List;
+
+public class InjectionTesterRunner extends DotnetProcessRunner {
 
     private final DefectInjectorSetting setting;
-    private final int id;
 
-    public InjectionTesterRunner(DefectInjectorSetting setting, int id) {
+    public InjectionTesterRunner(DefectInjectorSetting setting) {
         super();
         this.setting = setting;
-        this.id = id;
-        processBuilder.directory(setting.getPluginSettingDir());
-        processBuilder.environment().put("VIPER_PATH",setting.getViperPath());
+        processBuilder.directory(setting.getProjectWorkspace());
+        processBuilder.environment().put("VIPER_PATH", setting.getViperPath());
     }
 
 
     @Override
     protected CommandBuilder buildCommand() {
-        CommandBuilder command = new CommandBuilder();
-        command.addOption("dotnet");
-        command.addOption(InjectorBinaries.getFileInResources(InjectorBinaries.INJECTION));
-        command.addOption(setting.getSafeJson().getAbsolutePath());
-        command.addOption(setting.getOutputName(id));
-        command.addOption(setting.getExeBinary(id));
+        
+        var arguments = List.of(
+                setting.getSafeSpecFile(),
+                setting.getOutputFilePath(),
+                setting.getExeBinaryFilePath()
+        );
+        
+        CommandBuilder command = this.buildCommand(setting.getInjectionTesterEngine(), arguments);
         return command;
     }
 

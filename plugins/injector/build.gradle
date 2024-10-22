@@ -24,8 +24,15 @@ repositories {
 dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'commons-io:commons-io:2.11.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0' // Apache Commons Lang
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+
+    // AssertJ for fluent assertions
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
+
 }
 
 test {

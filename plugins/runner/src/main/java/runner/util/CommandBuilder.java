@@ -2,6 +2,7 @@ package runner.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class CommandBuilder {
@@ -22,9 +23,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder addOption(String option, int value) {
-        this.command.add(option);
-        this.command.add(String.valueOf(value));
-        return this;
+        return addOption(option, String.valueOf(value));
     }
 
 
@@ -38,11 +37,26 @@ public class CommandBuilder {
         if (checker.get()) {
             this.addOption(option, value);
         }
+
         return this;
     }
 
     public CommandBuilder checkAndAddOption(String option, String value, Supplier<Boolean> checker) {
         if (checker.get()) {
+            this.addOption(option, value);
+        }
+        return this;
+    }
+
+    public CommandBuilder checkAndAddOption(String option, int value, Predicate<Integer> checker) {
+        if (checker.test(value)) {
+            this.addOption(option, value);
+        }
+        return this;
+    }
+
+    public CommandBuilder checkAndAddOption(String option, String value, Predicate<String> checker) {
+        if (checker.test(value)) {
             this.addOption(option, value);
         }
         return this;

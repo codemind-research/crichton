@@ -1,5 +1,13 @@
 rootProject.name = 'crichton'
+
 include ':server'
 project(':server').projectDir = "$rootDir/server" as File
-include ':plugins:runner'
 
+include ':plugins:runner'
+project(':plugins:runner').projectDir = file("$rootDir/plugins/runner")
+
+include ':plugins:injector'
+project(':plugins:injector').projectDir = file("$rootDir/plugins/injector")
+
+include ':plugins:coyote'
+project(':plugins:coyote').projectDir = file("$rootDir/plugins/coyote")

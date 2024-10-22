@@ -1,0 +1,14 @@
+{
+  "id": 1,
+  "trigger": 500,
+  "cycle": 100000,
+  "target": "periodic.c",
+  "defect": {
+    "bitflip": {
+      "var": "v1",
+      "type": "int",
+      "value": "0x00ff",
+      "pattern": "random"
+    }
+  }
+}
