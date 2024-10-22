@@ -11,6 +11,8 @@ import runner.loader.PluginLoader;
 import runner.paths.PluginPaths;
 import runner.util.FileUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +39,7 @@ public class PluginRunner implements Runner  {
         this.pluginJar = PluginPaths.generatePluginJarPath(pluginName);
         this.pluginLoader = new BasicPluginLoader(pluginJar);
         validate();
+        createLogFileIfNotExists();
     }
 
     public PluginRunner(@NonNull String pluginDirectory, @NonNull String pluginName) throws Exception {
@@ -48,22 +51,38 @@ public class PluginRunner implements Runner  {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String logFileName = currentDate.format(formatter) + ".log";
         this.pluginLogFile = PluginPaths.generatePluginLogPath(this.pluginDirectory.resolve("log"), logFileName);
-
         this.pluginJar = PluginPaths.generatePluginJarPath(pluginDirectory, pluginName);
-
         this.pluginLoader = new BasicPluginLoader(pluginJar);
 
         validate();
+        createLogFileIfNotExists();
     }
 
     private void validate() throws NoSuchFileException {
 
-        if(!this.pluginDirectory.toFile().exists() || !this.pluginDirectory.toFile().isDirectory()) {
+        if(!Files.exists(this.pluginDirectory) || !Files.isDirectory(this.pluginDirectory)) {
             throw new NoSuchFileException(String.format("Plugin directory does not exist or is not a directory: %s", this.pluginDirectory));
         }
 
-        if(!this.pluginJar.toFile().exists()) {
+        if(!Files.exists(this.pluginJar)) {
             throw new NoSuchFileException(String.format("Plugin jar does not exist: %s", this.pluginJar));
+        }
+
+    }
+
+    private void createLogFileIfNotExists() {
+        if(!Files.exists(this.pluginLogFile)) {
+            try {
+
+                // 필요한 상위 디렉토리를 먼저 생성
+                Files.createDirectories(this.pluginLogFile.getParent());
+
+                // 그 후 파일 생성 (파일만 없는 경우 파일만 생성)
+                Files.createFile(this.pluginLogFile);
+            }
+            catch (IOException e) {
+                throw new RuntimeException(String.format("Unable to create plugin log file: %s", this.pluginLogFile), e);
+            }
         }
     }
 
