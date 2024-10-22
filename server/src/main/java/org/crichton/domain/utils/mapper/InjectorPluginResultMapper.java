@@ -24,7 +24,7 @@ public interface InjectorPluginResultMapper {
 
     @Mapping(target = "defectId", source = "key")
     @Mapping(target = "file", source = "value.target", qualifiedByName = "mapTargetToString")
-    @Mapping(target = "safeSpecs", source = "value.safe", qualifiedByName = "mapSafeToList")
+    @Mapping(target = "safeSpecs", source = "value.safe", qualifiedByName = "convertSafeSpecList")
     DefectReport mapEntryToDefectReport(Map.Entry<String, Map<String, Object>> entry);
 
     @Named("mapTargetToString")
