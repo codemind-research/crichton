@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import injector.setting.DefectInjectorSetting;
 import lombok.Builder;
+import lombok.NonNull;
 import runner.util.FileUtils;
 
 import java.io.File;
@@ -12,24 +13,15 @@ import java.util.*;
 
 public class Parser {
 
-//    private final DefectInjectorSetting setting;
-    private final String defectSpecFilePath;
-    private final String outputFilePath;
+    private final DefectInjectorSetting setting;
 
-    @Builder(builderMethodName = "settingBuilder")
-    public Parser(DefectInjectorSetting setting) {
-        this.defectSpecFilePath = setting.getDefectSpecFile();
-        this.outputFilePath = setting.getOutputFilePath();
+    public Parser(@NonNull DefectInjectorSetting setting) {
+        this.setting = setting;
     }
 
-    @Builder(builderMethodName = "pathBuilder")
-    public Parser(String defectSpecFilePath, String outputFilePath) {
-        this.defectSpecFilePath = defectSpecFilePath;
-        this.outputFilePath = outputFilePath;
-    }
 
     public LinkedHashMap<String, Object> convert() {
-        File defectJson = Paths.get(defectSpecFilePath).toFile();
+        File defectJson = Paths.get(setting.getDefectSpecFile()).toFile();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -52,11 +44,11 @@ public class Parser {
 
     private List<LinkedHashMap<String, Object>> getSaveJsonData(int id) {
         try {
-            File safeJson = Paths.get(defectSpecFilePath).toFile();
-            File report = Paths.get(outputFilePath).toFile();
+            File safeJson = Paths.get(setting.getSafeSpecFile()).toFile();
+            File report = Paths.get(setting.getOutputFilePath(id)).toFile();
             ObjectMapper objectMapper = new ObjectMapper();
             List<LinkedHashMap<String, Object>> safeMap = objectMapper
-                    .readValue(safeJson, new TypeReference<List<LinkedHashMap<String, Object>>>() {});
+                    .readValue(safeJson, new TypeReference<>() {});
             if (report.exists()){
                 List<String> error = convertReportCsv(report);
                 safeMap.forEach( map -> {
