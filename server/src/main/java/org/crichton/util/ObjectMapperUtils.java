@@ -1,5 +1,6 @@
 package org.crichton.util;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,27 +14,34 @@ import java.util.List;
 
 public class ObjectMapperUtils {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
     private ObjectMapperUtils() {
         throw new AssertionError();
     }
 
     public static <T> List<T> convertJsonToList(InputStream inputStream, Class<T> clazz) {
-        ObjectMapper objectMapper = new ObjectMapper();
+        mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         List<T> result = new ArrayList<>();
 
         try {
 
-            JsonNode jsonNode = objectMapper.readTree(inputStream);
+            JsonNode jsonNode = mapper.readTree(inputStream);
 
             // JSON이 배열인 경우
             if (jsonNode.isArray()) {
                 // InputStream을 다시 읽기 위해 리셋하거나, 다시 받아야 함
                 // 새로운 InputStream을 사용하여 배열을 처리
-                result = objectMapper.readValue(jsonNode.toString(), objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+                result = mapper.readValue(jsonNode.toString(), mapper.getTypeFactory().constructCollectionType(List.class, clazz));
             }
             // JSON이 단일 객체인 경우
             else {
-                T obj = objectMapper.treeToValue(jsonNode, clazz);
+                T obj = mapper.treeToValue(jsonNode, clazz);
                 result.add(obj);  // 단일 객체를 리스트로 변환
             }
 
@@ -44,9 +52,8 @@ public class ObjectMapperUtils {
     }
 
     public static <T> T convertJsonStringToObject(String jsonString, Class<T> valueType) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(jsonString, valueType);
+            return mapper.readValue(jsonString, valueType);
         } catch (Exception e) {
             throw new RuntimeException("Error converting JSON string to object", e);
         }
@@ -57,29 +64,24 @@ public class ObjectMapperUtils {
     }
 
     public static <T> T convertJsonFileToObject(File jsonFile, Class<T> valueType) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(jsonFile, valueType);
+            return mapper.readValue(jsonFile, valueType);
         } catch (Exception e) {
             throw new RuntimeException("Error converting JSON string to object", e);
         }
     }
 
     public static String convertObjectToJsonString(Object object) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
-            return objectMapper.writeValueAsString(object);
+            return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error converting object to JSON string", e);
         }
     }
 
     public static <T> void saveObjectToJsonFile(T object, String filePath) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
-            objectMapper.writeValue(new File(filePath), object);
+            mapper.writeValue(new File(filePath), object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error converting object to JSON string", e);
         } catch (IOException e) {
@@ -88,10 +90,8 @@ public class ObjectMapperUtils {
     }
 
     public static <T> void saveObjectToJsonFile(T object, File file) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
-            objectMapper.writeValue(file, object);
+            mapper.writeValue(file, object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error converting object to JSON string", e);
         } catch (IOException e) {
