@@ -7,6 +7,7 @@ import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
 import org.crichton.models.defect.DefectSpec;
 import org.crichton.models.report.InjectorPluginReport;
+import org.crichton.models.report.UnitTestPluginReport;
 import runner.dto.RunResult;
 
 import java.util.List;
@@ -33,7 +34,10 @@ public class ProjectInformation {
     private List<DefectSpec> defectSpecs;
 
     @Setter
-    private InjectorPluginReport injectorPluginRunResult;
+    private InjectorPluginReport injectorPluginReport;
+
+    @Setter
+    private UnitTestPluginReport unitTestPluginReport;
 
     @Setter
     private RunResult unitTestPluginRunResult;
