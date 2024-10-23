@@ -49,6 +49,7 @@ public interface InjectorPluginResultMapper {
         return safes.stream()
                 .map(safe -> SafeSpec.builder()
                         .id(Integer.parseInt(String.valueOf(safe.get("id"))))
+                        .isSuccess(Boolean.valueOf(String.valueOf(safe.get("isSuccess"))))
                         .build())
                 .collect(Collectors.toUnmodifiableList());
     }
