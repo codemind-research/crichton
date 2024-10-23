@@ -23,8 +23,6 @@ public class CrichtonPluginProperties {
 
     private static final String DEFAULT_UNIT_TESTER_PLUGIN_PATH = DEFAULT_PLUGIN_PATH + File.separator + "coyote";
 
-    private final Optional<String> trampolinePath;
-
     private final Optional<String> injectorPath;
 
     private final Optional<String> unitTesterPath;
