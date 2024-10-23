@@ -33,7 +33,7 @@ public class ProjectController {
     private IProjectInformationService<UUID> projectInformationService;
 
     @Autowired
-    public ProjectController(IProjectInformationService projectInformationService) {
+    public ProjectController(IProjectInformationService<UUID> projectInformationService) {
         this.projectInformationService = projectInformationService;
     }
 

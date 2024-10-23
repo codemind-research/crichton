@@ -22,7 +22,7 @@ public class Parser {
         this.setting = setting;
     }
 
-
+    @SuppressWarnings("unchecked")
     public LinkedHashMap<String, Object> convert() {
         File defectJson = Paths.get(setting.getDefectSpecFile()).toFile();
         try {

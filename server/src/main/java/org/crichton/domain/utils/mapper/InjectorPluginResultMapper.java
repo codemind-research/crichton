@@ -32,6 +32,7 @@ public interface InjectorPluginResultMapper {
         return target != null ? target.toString() : null;
     }
 
+    @SuppressWarnings("unchecked")
     @Named("convertSafeSpecList")
     default List<SafeSpec> convertSafeSpecs(Object safesObj) {
         if (safesObj instanceof List) {
@@ -58,6 +59,7 @@ public interface InjectorPluginResultMapper {
     @Mapping(target = "defectReports", expression = "java(mapInfoToDefectReports(report.getInfo()))")
     InjectorPluginReport processedReportDtoToInjectorPluginReport(ProcessedReportDTO report);
 
+    @SuppressWarnings("unchecked")
     default List<DefectReport> mapInfoToDefectReports(LinkedHashMap<String, Object> info) {
         return info.entrySet().stream()
                 .map(entry -> {
