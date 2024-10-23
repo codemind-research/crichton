@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
+import org.crichton.domain.dtos.response.CreatedResponseDto;
+import org.crichton.domain.dtos.response.ProjectStatusResponseDto;
 import org.crichton.domain.services.IProjectInformationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +39,12 @@ public class ProjectController {
 
     @Operation(summary = "분석하기", description = "분석 대상을 프로젝트로 생성하여 분석을 진행합니다.")
     @PostMapping(value = "/run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UUID> createProject(@Valid @ModelAttribute CreationProjectInformationDto creationProjectInformationDto) {
+    public ResponseEntity<?> createProject(@Valid @ModelAttribute CreationProjectInformationDto creationProjectInformationDto) {
         try {
             var entity =  projectInformationService.create(creationProjectInformationDto);
             if(entity != null) {
-                return ResponseEntity.ok(entity.getId());
+
+                return ResponseEntity.ok(new CreatedResponseDto(entity.getId()));
             }
             else {
                 return ResponseEntity.badRequest().build();
@@ -56,11 +59,15 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 상태 조회", description = "프로젝트의 상태를 조회 합니다.")
     @GetMapping(value = "/status/{id}")
-    public ResponseEntity<String> getProjectStatus(
+    public ResponseEntity<?> getProjectStatus(
             @Parameter(description = "분석 요청시 전달 받은 ID", required = true) @PathVariable UUID id) {
         try {
             var projectStatus = projectInformationService.getProjectStatus(id);
-            return ResponseEntity.ok(projectStatus);
+            var response = ProjectStatusResponseDto.builder()
+                    .id(id)
+                    .status(projectStatus)
+                    .build();
+            return ResponseEntity.ok(response);
         }
         catch (Exception e) {
             logger.error(e.getMessage(), e);
