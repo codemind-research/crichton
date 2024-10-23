@@ -20,7 +20,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 
 public class PluginProcessor implements Runnable {
@@ -80,15 +79,18 @@ public class PluginProcessor implements Runnable {
                 runUnitTesterPlugin();
             }
 
-            if(!injectorPluginRunResult.getIsSuccess()) {
+            if(unitTestPluginRunResult != null && !injectorPluginRunResult.getIsSuccess()) {
                 throw new RuntimeException("Injector Plugin processing failed");
             }
 
             if(unitTestPluginRunResult != null && !unitTestPluginRunResult.getIsSuccess()) {
                 throw new RuntimeException("Unit test Plugin processing failed");
             }
+            else {
+                ObjectMapperUtils.saveObjectToJsonFile(unitTestPluginRunResult, Paths.get(this.workingDirectoryPath, DirectoryName.UNIT_TEST).resolve("pluginResult.json").toFile());
+            }
 
-            targetProject.setInjectorPluginRunResult(InjectorPluginResultMapper.INSTANCE.processedReportDtoToInjectorPluginReport(injectorPluginRunResult.getData()));
+            targetProject.setInjectorPluginReport(InjectorPluginResultMapper.INSTANCE.processedReportDtoToInjectorPluginReport(injectorPluginRunResult.getData()));
             targetProject.setUnitTestPluginRunResult(unitTestPluginRunResult);
             targetProject.updateTestResult(TestResult.Success);
 
