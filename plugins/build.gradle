@@ -31,9 +31,11 @@ subprojects {
     task buildAllPlugin(dependsOn: project.collect { it.tasks.named('build') })
 
     task copyPlugin(type: Copy) {
-        if (project.name == 'runner')
+        if (project.name == 'runner') {
             return
-        def destinationDir = file(System.getProperty("user.home") + "/.crichton" + "/plugins")
+        }
+
+        def destinationDir = file(System.getProperty("user.dir") + "/build/dist/plugins")
         from "$buildDir/libs"
         into "$destinationDir/${project.name}"
         include '*.jar'

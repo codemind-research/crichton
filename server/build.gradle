@@ -31,6 +31,11 @@ repositories {
     mavenCentral()
 }
 
+// processResources 작업을 수정하여 특정 파일 제외
+processResources {
+    exclude 'application-dev.properties'
+}
+
 jar {
     manifest {
         attributes 'Main-Class': 'org.crichton.ServerApplication'
@@ -39,12 +44,29 @@ jar {
     jar.enabled = true
 }
 
-task buildServer(type: Copy, dependsOn: build) {
-    def destinationDir = file(System.getProperty("user.home") + "/.crichton")
+task copyJar(type: Copy, dependsOn: build) {
+    def destinationDir = file(System.getProperty("user.dir") + "/build/dist/bin")
+
     from "$buildDir/libs/server-${version}.jar"
     into destinationDir
     rename("server-${version}.jar", "server.jar")
+
 }
+
+task copyConfig(type: Copy, dependsOn: build) {
+    def destinationDir = file(System.getProperty("user.dir") + "/build/dist/config")
+
+    from "$buildDir/resources/main/application.properties"
+    into destinationDir
+    rename("application.properties", "crichton.properties")
+
+    from "$buildDir/resources/main/logback-config.xml"
+    into destinationDir
+}
+
+task buildServer(dependsOn: [copyJar, copyConfig])
+
+
 
 
 dependencies {
