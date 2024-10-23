@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- crichton.properties에서 로그 파일 경로 가져오기 -->
+    <property name="LOG_FILE" value="${logging.file.name:${user.home}/.crichton/logs/crichton-server.log}" />
+
+    <!-- RollingFileAppender 설정 -->
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+
+        <!-- 파일 롤링 정책: 파일 크기와 보관 설정 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 파일 이름 패턴 (날짜와 순번 포함) -->
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <!-- 각 파일의 최대 크기 설정 -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- 보관할 파일의 최대 개수 설정 -->
+            <maxHistory>7</maxHistory>
+            <!-- 전체 보관 용량 제한 -->
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 루트 로거 설정 (필수) -->
+    <root level="info">
+        <appender-ref ref="ROLLING" />
+    </root>
+
+</configuration>
