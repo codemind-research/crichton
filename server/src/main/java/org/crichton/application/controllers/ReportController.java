@@ -51,11 +51,8 @@ public class ReportController {
             return ResponseEntity.badRequest()
                     .body(errorResponse);
         }
-        catch (CustomException e) {
-            log.error(e.getErrorCode().getMessage(), e);
-            throw e;
-        }
         catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw e;
         }
     }
