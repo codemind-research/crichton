@@ -115,3 +115,8 @@ test {
     }
 
 }
+
+// Append Java Compile Options
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked"
+}
