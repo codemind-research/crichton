@@ -12,6 +12,7 @@ public class UnitInfo extends Information<List<LinkedHashMap<String,Object>>> {
         parser(unitLines);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void addInfo(Object... values) {
         getInfo().add((LinkedHashMap<String,Object>) values[0]);

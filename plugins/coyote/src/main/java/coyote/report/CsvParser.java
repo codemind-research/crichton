@@ -25,23 +25,33 @@ public class CsvParser {
     public static ProcessedReportDTO parser(String csvData) {
         List<String> lines = Arrays.stream(csvData.split("\n"))
                                    .toList();
-        ProjectInfo projectInfo = new ProjectInfo(lines.
-                subList(findProjectIndex(lines),findFileIndex(lines)));
-        FileInfo fileInfo = new FileInfo(lines
-                .subList(findFileIndex(lines), findFileTotalIndex(lines)));
-        UnitInfo unitInfo = new UnitInfo(lines
-                .subList(findUnitIndex(lines), findUnitTotalIndex(lines)));
+
+        int projectInfoStartIndex = findProjectIndex(lines);
+        int projectInfoEndIndex = findFileIndex(lines);
+        List<String> projectInfoLines = lines.subList(projectInfoStartIndex, projectInfoEndIndex);
+        ProjectInfo projectInfo = new ProjectInfo(projectInfoLines);
+
+
+        int fileInfoStartIndex = findFileIndex(lines);
+        int fileInfoEndIndex = findFileTotalIndex(lines);
+        List<String> fileInfoLines = lines.subList(fileInfoStartIndex, fileInfoEndIndex);
+        FileInfo fileInfo = new FileInfo(fileInfoLines);
+
+        int unitInfoStartIndex = findUnitIndex(lines);
+        int unitInfoEndIndex = findUnitTotalIndex(lines);
+        List<String> unitInfoLines = lines.subList(unitInfoStartIndex, unitInfoEndIndex);
+        UnitInfo unitInfo = new UnitInfo(unitInfoLines);
 
         Coverage.convertCoverageOfList(fileInfo);
         Coverage.convertCoverageOfList(unitInfo);
         fileInfo.combineUnitInfo(unitInfo.getInfo());
 
-        List<Integer> totalIndex = List.of(findFileIndex(lines),findFileTotalIndex(lines),findUnitIndex(lines), findUnitTotalIndex(lines));
-        List<String> totalLines = IntStream.range(0, lines.size())
+        List<Integer> totalIndex = List.of(fileInfoStartIndex, fileInfoEndIndex, unitInfoStartIndex, unitInfoEndIndex);
+        List<String> totalInfoLines = IntStream.range(0, lines.size())
                                            .filter(totalIndex::contains)
                                            .mapToObj(lines::get)
                                            .toList();
-        new TotalInfo(totalLines).getInfo().forEach(projectInfo.getInfo()::putIfAbsent);
+        new TotalInfo(totalInfoLines).getInfo().forEach(projectInfo.getInfo()::putIfAbsent);
         Coverage.convertCoverage(projectInfo);
         Total.convertTotal(projectInfo);
         RemoveType.removeTypeInformation(projectInfo);

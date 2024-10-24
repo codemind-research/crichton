@@ -1,10 +1,15 @@
 package org.crichton.models.defect;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import org.crichton.models.safe.SafeSpec;
 
-@Builder
 @Getter
-public record DefectSpec(int id, long trigger, long cycle, String target, @JsonProperty("defect") Spec spec) {
+public class DefectSpec {
+
+    private String filePath;
+
+    private SafeSpec spec;
+
 }

@@ -14,9 +14,9 @@ public class InjectionTestDefectDto {
 
     // 결함 주입 스펙상의 id
     @JsonProperty("defect_id")
-    private Long defectId;
+    private int defectId;
 
     // 안정 판정 스펙상의 id
     @JsonProperty("violation_id")
-    private Long violationId;
+    private int violationId;
 }

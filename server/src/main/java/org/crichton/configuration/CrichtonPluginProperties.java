@@ -9,6 +9,7 @@ import org.crichton.util.constants.FileName;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Getter
@@ -22,8 +23,6 @@ public class CrichtonPluginProperties {
     private static final String DEFAULT_INJECTOR_PLUGIN_PATH = DEFAULT_PLUGIN_PATH + File.separator + "injector";
 
     private static final String DEFAULT_UNIT_TESTER_PLUGIN_PATH = DEFAULT_PLUGIN_PATH + File.separator + "coyote";
-
-    private final Optional<String> trampolinePath;
 
     private final Optional<String> injectorPath;
 
@@ -40,10 +39,17 @@ public class CrichtonPluginProperties {
     }
 
     @PostConstruct
-    public void init() {
+    public void validate() {
+        log.info("Validating Crichton injector jar path: {}", Paths.get(getInjectorPath(), FileName.INJECTOR_PLUGIN));
         FileUtils.assertFileExists(getInjectorPath(), FileName.INJECTOR_PLUGIN);
+
+        log.info("Validating Crichton injector plugin.properties path: {}", Paths.get(getInjectorPath(), FileName.PLUGIN_PROPERTY_FILE));
         FileUtils.assertFileExists(getInjectorPath(), FileName.PLUGIN_PROPERTY_FILE);
+
+        log.info("Validating Crichton unit-tester plugin.properties path: {}", Paths.get(getInjectorPath(), FileName.UNIT_TESTER_PLUGIN));
         FileUtils.assertFileExists(getUnitTesterPath(), FileName.UNIT_TESTER_PLUGIN);
+
+        log.info("Validating Crichton unit-tester plugin.properties path: {}", Paths.get(getInjectorPath(), FileName.PLUGIN_PROPERTY_FILE));
         FileUtils.assertFileExists(getUnitTesterPath(), FileName.PLUGIN_PROPERTY_FILE);
     }
 

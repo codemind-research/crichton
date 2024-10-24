@@ -26,12 +26,14 @@ public class FileUtils {
     }
 
     public static boolean overWriteDump(File filename, String fileContents, String delim) {
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(filename, true);
-            for (String line : fileContents.split(delim))
-                fw.write(line + delim);
-            fw.close();
+        try(var file = new FileWriter(filename, true)) {
+
+            var lineSeparator = delim == null ? System.lineSeparator() : delim;
+
+            for (String line : fileContents.split(lineSeparator)) {
+                file.write(line + lineSeparator);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
             return false;

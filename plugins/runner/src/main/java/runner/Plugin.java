@@ -47,5 +47,5 @@ public interface Plugin {
      */
     ProcessedReportDTO transformReportData();
 
-
+    void setLogFilePath(Path logFilePath);
 }

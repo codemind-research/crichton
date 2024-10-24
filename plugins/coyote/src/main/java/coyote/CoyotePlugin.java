@@ -6,6 +6,7 @@ import coyote.setting.CoyoteSetting;
 import runner.Plugin;
 import runner.dto.PluginOption;
 import runner.dto.ProcessedReportDTO;
+import runner.paths.PluginPaths;
 import runner.util.FileUtils;
 
 import java.io.File;
@@ -18,6 +19,7 @@ public class CoyotePlugin implements Plugin {
 
     private String targetSource;
     private CoyoteSetting setting;
+    private Path pluginLogPath = PluginPaths.CRICHTON_LOG_PATH;
 
 
     @Override
@@ -62,11 +64,16 @@ public class CoyotePlugin implements Plugin {
             StringBuilder csvData = FileUtils.readFile(reportFile);
             return CsvParser.parser(csvData.toString());
         }catch (Exception e) {
+            FileUtils.overWriteDump(pluginLogPath.toFile(), e.getMessage(),"\n");
             return ProcessedReportDTO.builder()
                                      .build();
         }
     }
 
+    @Override
+    public void setLogFilePath(Path logFilePath) {
+        this.pluginLogPath = logFilePath;
+    }
 
 
 }

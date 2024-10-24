@@ -1,9 +1,13 @@
 package injector.report;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import injector.setting.DefectInjectorSetting;
 import lombok.Builder;
+import lombok.NonNull;
 import runner.util.FileUtils;
 
 import java.io.File;
@@ -12,37 +16,41 @@ import java.util.*;
 
 public class Parser {
 
-//    private final DefectInjectorSetting setting;
-    private final String defectSpecFilePath;
-    private final String outputFilePath;
+    private final DefectInjectorSetting setting;
 
-    @Builder(builderMethodName = "settingBuilder")
-    public Parser(DefectInjectorSetting setting) {
-        this.defectSpecFilePath = setting.getDefectSpecFile();
-        this.outputFilePath = setting.getOutputFilePath();
+    public Parser(@NonNull DefectInjectorSetting setting) {
+        this.setting = setting;
     }
 
-    @Builder(builderMethodName = "pathBuilder")
-    public Parser(String defectSpecFilePath, String outputFilePath) {
-        this.defectSpecFilePath = defectSpecFilePath;
-        this.outputFilePath = outputFilePath;
-    }
-
+    @SuppressWarnings("unchecked")
     public LinkedHashMap<String, Object> convert() {
-        File defectJson = Paths.get(defectSpecFilePath).toFile();
+        File defectJson = Paths.get(setting.getDefectSpecFile()).toFile();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-            LinkedHashMap<String, Object> defectMap = objectMapper
-                    .readValue(defectJson, new TypeReference<List<LinkedHashMap<String, Object>>>() {})
-                    .stream()
+
+            JsonNode rootNode = objectMapper.readTree(defectJson);
+            List<Map<String, Object>> defectSpecs = new ArrayList<>();
+            if(rootNode.isArray()) {
+                defectSpecs = objectMapper.readValue(rootNode.toString(), objectMapper.getTypeFactory().constructCollectionType(List.class, LinkedHashMap.class));
+            }
+            else {
+                var defectSpec = objectMapper.treeToValue(rootNode, LinkedHashMap.class);
+                defectSpecs.add(defectSpec);
+            }
+
+
+
+            LinkedHashMap<String, Object> defectMap = defectSpecs.stream()
                     .collect(LinkedHashMap::new,
                             (map, entry) -> {
-                        String key = entry.remove("id").toString();
-                        entry.putIfAbsent("safe", getSaveJsonData(Integer.parseInt(key)));
-                        map.put(key, entry);
-                        },
-                        LinkedHashMap::putAll);
+                                String key = entry.remove("id").toString();
+                                entry.putIfAbsent("safe", getSaveJsonData(Integer.parseInt(key)));
+                                map.put(key, entry);
+                            },
+                            LinkedHashMap::putAll);
             return defectMap;
         } catch (Exception e) {
             return new LinkedHashMap<>();
@@ -52,11 +60,11 @@ public class Parser {
 
     private List<LinkedHashMap<String, Object>> getSaveJsonData(int id) {
         try {
-            File safeJson = Paths.get(defectSpecFilePath).toFile();
-            File report = Paths.get(outputFilePath).toFile();
+            File safeJson = Paths.get(setting.getSafeSpecFile()).toFile();
+            File report = Paths.get(setting.getOutputFilePath(id)).toFile();
             ObjectMapper objectMapper = new ObjectMapper();
             List<LinkedHashMap<String, Object>> safeMap = objectMapper
-                    .readValue(safeJson, new TypeReference<List<LinkedHashMap<String, Object>>>() {});
+                    .readValue(safeJson, new TypeReference<>() {});
             if (report.exists()){
                 List<String> error = convertReportCsv(report);
                 safeMap.forEach( map -> {

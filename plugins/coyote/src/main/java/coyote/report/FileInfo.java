@@ -13,6 +13,7 @@ public class FileInfo extends Information<List<LinkedHashMap<String,Object>>>{
         parser(fileLines);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void addInfo(Object... values) {
         getInfo().add((LinkedHashMap<String, Object>) values[0]);

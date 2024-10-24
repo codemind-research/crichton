@@ -6,6 +6,9 @@ import lombok.Setter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
 import org.crichton.models.defect.DefectSpec;
+import org.crichton.models.report.InjectorPluginReport;
+import org.crichton.models.report.UnitTestPluginReport;
+import runner.dto.RunResult;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +32,15 @@ public class ProjectInformation {
 
     @Setter
     private List<DefectSpec> defectSpecs;
+
+    @Setter
+    private InjectorPluginReport injectorPluginReport;
+
+    @Setter
+    private UnitTestPluginReport unitTestPluginReport;
+
+    @Setter
+    private RunResult unitTestPluginRunResult;
 
 
     public void updateStatus(ProjectStatus status) {
