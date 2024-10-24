@@ -2,7 +2,7 @@
 <configuration>
 
     <!-- crichton.properties에서 로그 파일 경로 가져오기 -->
-    <property name="LOG_FILE" value="${logging.file.name:${user.home}/.crichton/logs/crichton-server.log}" />
+    <property name="LOG_FILE" value="${logging.file.name:${user.home}/.crichton/logs/crichton-server.log}" resource="crichton.properties" />
 
     <!-- RollingFileAppender 설정 -->
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -28,6 +28,7 @@
     <!-- 루트 로거 설정 (필수) -->
     <root level="info">
         <appender-ref ref="ROLLING" />
+        <appender-ref ref="CONSOLE" />
     </root>
 
 </configuration>
