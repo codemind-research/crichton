@@ -10,7 +10,7 @@ import java.util.List;
 public enum Total {
 
     FILE("SuccessfulFiles","FailedFiles", "Files"),
-    UNIT("SuccessfulUnits","FailedUnits", "Units");
+    UNIT("SuccessfulFunctions","FailedFunctions", "Units");
 
     private final String success;
     private final String fail;
