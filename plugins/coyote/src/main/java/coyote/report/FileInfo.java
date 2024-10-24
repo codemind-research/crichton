@@ -35,7 +35,7 @@ public class FileInfo extends Information<List<LinkedHashMap<String,Object>>>{
 
     public void combineUnitInfo ( List<LinkedHashMap<String, Object>> unitInfo) {
         Map<Object, List<LinkedHashMap<String, Object>>> groupedData = unitInfo.stream()
-                                                                         .collect(Collectors.groupingBy(m -> m.get("FilePath")));
+                                                                         .collect(Collectors.groupingBy(m -> m.get(UnitInfo.FieldKey.FILE_PATH)));
 
         getInfo().forEach(fileMap -> {
             String files = (String) fileMap.get("title");
