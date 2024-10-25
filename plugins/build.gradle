@@ -30,7 +30,7 @@ subprojects {
 
     task buildAllPlugin(dependsOn: project.collect { it.tasks.named('build') })
 
-    task copyPlugin(type: Copy) {
+    task copyPlugin(type: Copy, dependsOn: buildAllPlugin) {
         if (project.name == 'runner') {
             return
         }
