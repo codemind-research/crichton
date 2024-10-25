@@ -7,7 +7,8 @@ public enum TestCase {
     DIV_ZERO("Div_Zero"),
     ARRAY_OUT_OF_BOUND("ArrayOutOfBound"),
     ASSERTS("Asserts"),
-    TIMEOUTS("TimeOuts");
+    TIMEOUTS("TimeOuts"),
+    FAILURE_FACTORS("Failure Factors");
 
     private final String type;
 
