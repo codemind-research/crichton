@@ -42,9 +42,11 @@ public class ProjectInfo extends Information<LinkedHashMap<String,Object>>{
         final Map<String, Object> info = getInfo();
         Arrays.stream(TestCase.values()).toList().forEach( testCase -> {
             String key = testCase.getType();
-            String value = info.get(key).toString();
-            info.remove(key);
-            testcaseMap.put(key,value);
+            if(info.containsKey(key)) {
+                String value = Objects.toString(info.get(key));
+                info.remove(key);
+                testcaseMap.put(key,value);
+            }
         });
 
         info.put("testcase", testcaseMap);
