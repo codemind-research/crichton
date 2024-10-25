@@ -7,7 +7,6 @@ import java.util.List;
 
 @Builder
 @Getter
-public class InjectorPluginReport {
-    private String pluginName;
-    private List<DefectReport> defectReports;
+public class InjectorPluginReport extends PluginReport {
+    private List<InjectorDefectReport> injectorDefectReports;
 }
