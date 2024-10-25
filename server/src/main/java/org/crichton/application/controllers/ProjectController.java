@@ -4,6 +4,7 @@ package org.crichton.application.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
@@ -77,11 +78,15 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 삭제", description = "프로젝트를 삭제합니다.")
     @DeleteMapping("/remove/{id}")
-    public ResponseEntity<String> deleteProject(
+    public ResponseEntity<?> deleteProject(
             @Parameter(description = "분석 요청시 전달 받은 ID", required = true) @PathVariable UUID id) {
         try {
             projectInformationService.deleteById(id);
             return ResponseEntity.ok().build();
+        }
+        catch (EntityNotFoundException e) {
+            logger.error("Project with id {} not found", id);
+            return ResponseEntity.notFound().build();
         }
         catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
