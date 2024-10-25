@@ -8,7 +8,7 @@ import org.crichton.domain.dtos.report.InjectionTestDefectDto;
 import org.crichton.domain.dtos.report.ResponseReportDto;
 import org.crichton.domain.dtos.report.UnitTestDefectDto;
 import org.crichton.domain.entities.ProjectInformation;
-import org.crichton.models.report.DefectReport;
+import org.crichton.models.report.InjectorDefectReport;
 import org.crichton.models.report.InjectorPluginReport;
 import org.crichton.models.report.UnitTestPluginReport;
 import org.crichton.models.safe.SafeSpec;
@@ -38,7 +38,7 @@ public abstract class ReportMapper {
     @Named("toInjectionTestDefects")
     public List<InjectionTestDefectDto> toInjectionTestDefects(@NonNull UUID projectInformationId, InjectorPluginReport injectorPluginReport) {
         if(injectorPluginReport != null) {
-            return toInjectionTestDefects(projectInformationId, injectorPluginReport.getDefectReports());
+            return toInjectionTestDefects(projectInformationId, injectorPluginReport.getInjectorDefectReports());
         }
         else {
             return new ArrayList<>();
@@ -46,22 +46,22 @@ public abstract class ReportMapper {
     }
 
     @Named("toInjectionTestDefects")
-    public List<InjectionTestDefectDto> toInjectionTestDefects(@NonNull UUID projectInformationId, @NonNull List<DefectReport> defectReports) {
+    public List<InjectionTestDefectDto> toInjectionTestDefects(@NonNull UUID projectInformationId, @NonNull List<InjectorDefectReport> injectorDefectReports) {
 
         String projectDirectoryPath = FileUtils.getAbsolutePath(dataStorageProperties.getBasePath(), projectInformationId.toString());
 
         List<InjectionTestDefectDto> dtos = new ArrayList<>();
-        for (DefectReport defectReport : defectReports) {
-            String file = defectReport.file().replace(projectDirectoryPath, StringUtils.EMPTY).substring(1);
+        for (InjectorDefectReport injectorDefectReport : injectorDefectReports) {
+            String file = injectorDefectReport.file().replace(projectDirectoryPath, StringUtils.EMPTY).substring(1);
 
-            List<SafeSpec> safeSpecs = defectReport.safeSpecs().stream()
+            List<SafeSpec> safeSpecs = injectorDefectReport.safeSpecs().stream()
                     .filter(safeSpec -> !safeSpec.isSuccess())
                     .collect(Collectors.toUnmodifiableList());
 
             for (SafeSpec safeSpec : safeSpecs) {
                 var dto = InjectionTestDefectDto.builder()
                         .file(file)
-                        .defectId(defectReport.defectId())
+                        .defectId(injectorDefectReport.defectId())
                         .violationId(safeSpec.id())
                         .build();
                 dtos.add(dto);
