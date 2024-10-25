@@ -82,22 +82,24 @@ public class PluginProcessor implements Runnable {
         try {
             log.info("Starting plugin processing...");
 
-
+            runDefectInjectorPlugin();
 
             if(Paths.get(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN).toFile().exists()) {
                 runUnitTesterPlugin();
             }
 
-            runDefectInjectorPlugin();
 
-            if(unitTestPluginRunResult != null && !injectorPluginRunResult.getIsSuccess()) {
+
+            if(injectorPluginRunResult != null && !injectorPluginRunResult.getIsSuccess()) {
                 throw new RuntimeException("Injector Plugin processing failed");
             }
+
 
             if(unitTestPluginRunResult != null && !unitTestPluginRunResult.getIsSuccess()) {
                 throw new RuntimeException("Unit test Plugin processing failed");
             }
             else {
+                var jsonContent = this.getClass().getResource("/resources-dev/coyote_result.json").getContent();
                 ObjectMapperUtils.saveObjectToJsonFile(unitTestPluginRunResult, Paths.get(this.workingDirectoryPath, DirectoryName.UNIT_TEST).resolve("pluginResult.json").toFile());
             }
 
@@ -143,14 +145,18 @@ public class PluginProcessor implements Runnable {
                 log.info("defect injector plugin check passed.");
 
                 log.info("run defect injector plugin...");
-                injectorPluginRunResult = defectInjectorPlugin.run(this.workingDirectoryPath, defectInjectorConfiguration);
+                String sourceDirectory = FileUtils.getAbsolutePath(this.workingDirectoryPath, DirectoryName.SOURCE);
+                injectorPluginRunResult = defectInjectorPlugin.run(sourceDirectory, defectInjectorConfiguration);
             }
             else {
                 throw new IllegalStateException("defect injector plugin check failed.");
             }
         }
+        catch (IllegalStateException e) {
+            log.warn("defect injector plugin check failed", e);
+        }
         catch (Exception e) {
-            throw e;
+            log.warn("defect injector plugin failed", e);
         }
 
 
