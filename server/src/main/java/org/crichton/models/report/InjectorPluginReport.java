@@ -1,12 +1,12 @@
 package org.crichton.models.report;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Builder
+@SuperBuilder
 @Getter
 public class InjectorPluginReport extends PluginReport {
-    private List<InjectorDefectReport> injectorDefectReports;
+    private List<InjectorDefectReport> reports;
 }
