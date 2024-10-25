@@ -162,16 +162,18 @@ public abstract class ProjectInformationMapper {
 
         try {
 
+            final Path sourceDirAbsolutePath = baseDirAbsolutePath.resolve(DirectoryName.SOURCE);
+
             Path testSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.INJECT_TEST).resolve(FileName.TEST_SPEC);
 
             log.debug("Overwrite the modified values into file '{}'.", testSpecFilePath.toAbsolutePath());
-            ObjectMapperUtils.modifyJsonFile(testSpecFilePath, "tasks.file", (value) ->  convertToLocalPath(baseDirAbsolutePath, value), String.class);
+            ObjectMapperUtils.modifyJsonFile(testSpecFilePath, "tasks.file", (value) ->  convertToLocalPath(sourceDirAbsolutePath, value), String.class);
 
 
             Path defectSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.INJECT_TEST).resolve(FileName.DEFECT_SPEC);
 
             log.debug("Overwrite the modified values into file '{}'.", defectSpecFilePath.toAbsolutePath());
-            ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "target", (value) ->  convertToLocalPath(baseDirAbsolutePath, value), String.class);
+            ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "target", (value) ->  convertToLocalPath(sourceDirAbsolutePath, value), String.class);
 
 
 
