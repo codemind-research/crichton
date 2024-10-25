@@ -18,11 +18,21 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
+// Default는 dev 로 지정
+ext {
+    profile = project.hasProperty('profile') ?
+            project.getProperty('profile') :
+            (System.hasProperty("spring.profiles.active") ? System.getProperty("spring.profiles.active") : "dev")
+}
+
 sourceSets.main.java.srcDirs = []
 sourceSets{
     main{
         java{
             srcDir "src/main/java"
+        }
+        resources {
+            srcDirs "src/main/resources", "src/main/resources-${profile}"
         }
     }
 }
@@ -33,7 +43,7 @@ repositories {
 
 // processResources 작업을 수정하여 특정 파일 제외
 processResources {
-    exclude 'application-dev.properties'
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
 }
 
 jar {
