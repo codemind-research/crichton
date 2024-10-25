@@ -40,13 +40,14 @@ public class PluginService {
 
     public void runPlugin(ProjectInformation entity) throws Exception {
 
+
         var pluginProcessor = PluginProcessor.builder()
                 .targetProject(entity)
                 .baseDirectoryPath(crichtonDataStorageProperties.getBasePath())
                 .defectInjectorPluginPath(crichtonPluginProperties.getInjectorPath())
                 .unitTestPluginPath(crichtonPluginProperties.getUnitTesterPath())
+                .log(log)
                 .build();
-
         try {
 
             entity.updatePluginProcessorId(pluginProcessor.getId());

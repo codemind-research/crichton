@@ -2,6 +2,7 @@ package org.crichton.models;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
@@ -24,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PluginProcessor implements Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(PluginProcessor.class);
+    private final Logger log;
 
     @Getter
     private final UUID id = UUID.randomUUID();
@@ -45,8 +46,10 @@ public class PluginProcessor implements Runnable {
 
 
     @Builder
-    public PluginProcessor(ProjectInformation targetProject, String baseDirectoryPath, String defectInjectorPluginPath, String unitTestPluginPath) {
+    public PluginProcessor(@NonNull ProjectInformation targetProject, @NonNull String baseDirectoryPath, @NonNull String defectInjectorPluginPath, @NonNull String unitTestPluginPath, Logger log) {
         this.targetProject = targetProject;
+
+        this.workingDirectoryPath = FileUtils.getAbsolutePath(baseDirectoryPath, targetProject.getId().toString());
 
         this.defectInjectorPluginPath = defectInjectorPluginPath;
         this.defectInjectorPluginPropertiesFilePath = FileUtils.getAbsolutePath(defectInjectorPluginPath, FileName.PLUGIN_PROPERTY_FILE);
@@ -54,7 +57,13 @@ public class PluginProcessor implements Runnable {
         this.unitTestPluginPath = unitTestPluginPath;
         this.unitTestPluginPropertiesFilePath = FileUtils.getAbsolutePath(unitTestPluginPath, FileName.PLUGIN_PROPERTY_FILE);
 
-        this.workingDirectoryPath = FileUtils.getAbsolutePath(baseDirectoryPath, targetProject.getId().toString());
+
+        if(log == null) {
+            this.log = LoggerFactory.getLogger(PluginProcessor.class);
+        }
+        else {
+            this.log = log;
+        }
     }
 
     /**
@@ -73,11 +82,13 @@ public class PluginProcessor implements Runnable {
         try {
             log.info("Starting plugin processing...");
 
-            runDefectInjectorPlugin();
+
 
             if(Paths.get(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN).toFile().exists()) {
                 runUnitTesterPlugin();
             }
+
+            runDefectInjectorPlugin();
 
             if(unitTestPluginRunResult != null && !injectorPluginRunResult.getIsSuccess()) {
                 throw new RuntimeException("Injector Plugin processing failed");
@@ -114,7 +125,8 @@ public class PluginProcessor implements Runnable {
         log.info("setting up defect injector plugin configuration...");
 
         defectInjectorConfiguration.put(PluginConfigurationKey.WORKSPACE, this.workingDirectoryPath);
-        defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DIR_NAME, DirectoryName.DEFECT);
+        defectInjectorConfiguration.put(PluginConfigurationKey.SOURCE_DIRECTORY_NAME, DirectoryName.SOURCE);
+        defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DIRECTORY_NAME, DirectoryName.INJECT_TEST);
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DEFECT_MULTI_PROCESS_MODE, String.valueOf(Boolean.TRUE));
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.TEST_SPEC_FILE_NAME, FileName.TEST_SPEC);
         defectInjectorConfiguration.put(PluginConfigurationKey.DefectInjector.DEFECT_SPEC_FILE_NAME, FileName.DEFECT_SPEC);
@@ -150,7 +162,8 @@ public class PluginProcessor implements Runnable {
         log.info("setting up unit-tester plugin configuration...");
         Map<String, String> unitTesterConfiguration = new ConcurrentHashMap<>();
         unitTesterConfiguration.put(PluginConfigurationKey.WORKSPACE, this.workingDirectoryPath);
-        unitTesterConfiguration.put(PluginConfigurationKey.UnitTester.DIR_NAME, DirectoryName.UNIT_TEST);
+        unitTesterConfiguration.put(PluginConfigurationKey.SOURCE_DIRECTORY_NAME, DirectoryName.SOURCE);
+        unitTesterConfiguration.put(PluginConfigurationKey.UnitTester.DIRECTORY_NAME, DirectoryName.UNIT_TEST);
         unitTesterConfiguration.put(PluginConfigurationKey.UnitTester.UNIT_TEST_PROJECT_SETTING_FILE_NAME, FileName.UNIT_TEST_PROJECT_SETTINGS);
         unitTesterConfiguration.put(PluginConfigurationKey.PROPERTIES_PATH, this.unitTestPluginPropertiesFilePath);
 

@@ -48,4 +48,16 @@ public class CreationProjectInformationDto {
     @Setter
     @JsonIgnore
     private List<DefectSpec> defectSpecs = new ArrayList<>();
+
+    @Setter
+    @JsonIgnore
+    private String sourceDirectoryPath;
+
+    @Setter
+    @JsonIgnore
+    private String injectTestDirectoryPath;
+
+    @Setter
+    @JsonIgnore
+    private String unitTestDirectoryPath;
 }

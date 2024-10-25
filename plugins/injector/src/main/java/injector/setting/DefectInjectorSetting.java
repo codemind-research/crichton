@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import runner.paths.PluginPaths;
 import runner.setting.PluginSetting;
 import runner.util.FileUtils;
+import runner.util.constants.DirectoryName;
 import runner.util.constants.FileName;
 import runner.util.constants.PluginConfigurationKey;
 
@@ -29,7 +30,7 @@ public class DefectInjectorSetting extends PluginSetting {
     private final String defectSimulationOilFileName;
     private final String defectSimulationExeFileName;
 
-    private final File defectDir;
+    private final File defectDirectory;
     private final InjectorPluginProperties properties;
 
     private final boolean isMultiMode;
@@ -39,7 +40,7 @@ public class DefectInjectorSetting extends PluginSetting {
     public DefectInjectorSetting(String pluginName, Map<String, String> configuration) {
         super(pluginName, configuration);
 
-        this.defectDir = Paths.get(this.workingDirectory.getAbsolutePath(), configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DIR_NAME, "defect")).toFile();
+        this.defectDirectory = Paths.get(this.workingDirectory.getAbsolutePath(), configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DIRECTORY_NAME, "defect")).toFile();
 
         this.testSpecFile = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.TEST_SPEC_FILE_NAME,"");
         this.defectSpecFile = configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DEFECT_SPEC_FILE_NAME,"");
@@ -68,8 +69,8 @@ public class DefectInjectorSetting extends PluginSetting {
 
         var defectJsonFile = getDefectSpecFile();
         JsonNode jsonNode = objectMapper.readTree(new File(defectJsonFile));
-        if (!defectDir.exists())
-            defectDir.mkdir();
+        if (!defectDirectory.exists())
+            defectDirectory.mkdir();
 
         var defectJsonFileName = new File(defectJsonFile).getName();
         int id = 1;
@@ -80,7 +81,7 @@ public class DefectInjectorSetting extends PluginSetting {
             while (elements.hasNext()) {
                 JsonNode element = elements.next();
                 String outputFileName = defectJsonFileName.replace(".json", "_" + id + ".json");
-                objectMapper.writeValue(new File(defectDir + File.separator + outputFileName), element);
+                objectMapper.writeValue(new File(defectDirectory + File.separator + outputFileName), element);
 
                 if(elements.hasNext()) {
                     id++;
@@ -89,7 +90,7 @@ public class DefectInjectorSetting extends PluginSetting {
         }
         else {
             String outputFileName = defectJsonFileName.replace(".json", "_" + id + ".json");
-            objectMapper.writeValue(new File(defectDir + File.separator + outputFileName), jsonNode);
+            objectMapper.writeValue(new File(defectDirectory + File.separator + outputFileName), jsonNode);
         }
 
         defectSpecCount = id;
@@ -97,28 +98,28 @@ public class DefectInjectorSetting extends PluginSetting {
 
     public void moveCRCFile(String targetSource, int id) {
         String crcFile =  targetSource + File.separator + getTargetCRC(id);
-        FileUtils.moveFile(crcFile, workingDirectory.getAbsolutePath());
+        FileUtils.moveFile(crcFile, sourceDirectory.getAbsolutePath());
     }
 
     public String getTestSpecFile() {
-        return Paths.get(defectDir.getAbsolutePath(), testSpecFile).normalize().toAbsolutePath().toString();
+        return Paths.get(defectDirectory.getAbsolutePath(), testSpecFile).normalize().toAbsolutePath().toString();
     }
 
     public String getDefectSpecFile() {
-        return Paths.get(defectDir.getAbsolutePath(), defectSpecFile).normalize().toAbsolutePath().toString();
+        return Paths.get(defectDirectory.getAbsolutePath(), defectSpecFile).normalize().toAbsolutePath().toString();
     }
 
     public String getDefectSpecFile(int id) {
-        return Paths.get(defectDir.getAbsolutePath(), defectSpecFile.replace(".json", "_" + id + ".json")).normalize().toAbsolutePath().toString();
+        return Paths.get(defectDirectory.getAbsolutePath(), defectSpecFile.replace(".json", "_" + id + ".json")).normalize().toAbsolutePath().toString();
     }
 
     public String getSafeSpecFile() {
-        return Paths.get(defectDir.getAbsolutePath(), safeSpecFile).normalize().toAbsolutePath().toString();
+        return Paths.get(defectDirectory.getAbsolutePath(), safeSpecFile).normalize().toAbsolutePath().toString();
     }
 
 
     public File getDefectSimulationOilFileName() {
-        return Paths.get(workingDirectory.getAbsolutePath(), defectSimulationOilFileName).normalize().toFile();
+        return Paths.get(sourceDirectory.getAbsolutePath(), defectSimulationOilFileName).normalize().toFile();
     }
 
     @Deprecated
@@ -127,12 +128,12 @@ public class DefectInjectorSetting extends PluginSetting {
     }
 
     public String getExeBinaryFilePath() {
-        return Paths.get(workingDirectory.getAbsolutePath(), defectSimulationExeFileName).normalize().toFile().getAbsolutePath();
+        return Paths.get(sourceDirectory.getAbsolutePath(), defectSimulationExeFileName).normalize().toFile().getAbsolutePath();
     }
 
     public String getExeBinaryFilePath(int id) {
         String fileName = FilenameUtils.getBaseName(getTarget(id)) + "_exe";
-        return Paths.get(workingDirectory.getAbsolutePath(), fileName).toFile().getAbsolutePath();
+        return Paths.get(sourceDirectory.getAbsolutePath(), fileName).toFile().getAbsolutePath();
     }
 
     public String getTrampoline() {
@@ -168,7 +169,7 @@ public class DefectInjectorSetting extends PluginSetting {
     }
 
     public String getMakeFilePath(String makeFileName) {
-        return Paths.get(this.workingDirectory.getAbsolutePath(), makeFileName).normalize().toFile().getAbsolutePath();
+        return Paths.get(this.sourceDirectory.getAbsolutePath(), makeFileName).normalize().toFile().getAbsolutePath();
     }
 
     public String getTarget(int id) {
@@ -188,7 +189,7 @@ public class DefectInjectorSetting extends PluginSetting {
 
     public String getDefectNumberJson(int id) {
         String outputFileName = "defect_spec" + id + ".json";
-        return defectDir.toPath().resolve(outputFileName).toFile().getAbsolutePath();
+        return defectDirectory.toPath().resolve(outputFileName).toFile().getAbsolutePath();
     }
 
     public File getProjectWorkspace() {
@@ -196,13 +197,13 @@ public class DefectInjectorSetting extends PluginSetting {
     }
 
     public String getOutputFilePath() {
-        return this.defectDir.toPath().resolve(this.properties.getReportFileName()).normalize().toFile().getAbsolutePath().toString();
+        return this.defectDirectory.toPath().resolve(this.properties.getReportFileName()).normalize().toFile().getAbsolutePath().toString();
     }
 
     public String getOutputFilePath(int id) {
         var fileExt = "." + FilenameUtils.getExtension(this.properties.getReportFileName());
         var outputFileName = this.properties.getReportFileName().replace(fileExt, "_" + id + fileExt);
-        return this.defectDir.toPath().resolve(outputFileName).normalize().toFile().getAbsolutePath().toString();
+        return this.defectDirectory.toPath().resolve(outputFileName).normalize().toFile().getAbsolutePath().toString();
     }
 
     public String getViperPath() {

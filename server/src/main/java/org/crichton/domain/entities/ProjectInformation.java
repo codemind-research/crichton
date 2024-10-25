@@ -30,8 +30,11 @@ public class ProjectInformation {
 
     private UUID pluginProcessorId;
 
-    @Setter
-    private List<DefectSpec> defectSpecs;
+    private String sourceDirectoryPath;
+
+    private String injectTestDirectoryPath;
+
+    private String unitTestDirectoryPath;
 
     @Setter
     private InjectorPluginReport injectorPluginReport;

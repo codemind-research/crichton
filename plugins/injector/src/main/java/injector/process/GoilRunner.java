@@ -15,8 +15,8 @@ public class GoilRunner extends ProcessRunner {
         super();
         this.setting = setting;
         var workingDir = PluginPaths.generatePluginSettingsPath(setting.getPluginName()).toFile();
-        if(!workingDir.exists() && setting.getProjectWorkspace().exists()) {
-            workingDir = setting.getProjectWorkspace();
+        if(!workingDir.exists() && setting.getSourceDirectory().exists()) {
+            workingDir = setting.getSourceDirectory();
         }
         processBuilder.directory(workingDir);
         processBuilder.environment().put("PATH", System.getenv("PATH"));
