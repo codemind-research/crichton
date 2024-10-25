@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import runner.paths.PluginPaths;
 import runner.setting.PluginSetting;
 import runner.util.FileUtils;
-import runner.util.constants.DirectoryName;
 import runner.util.constants.FileName;
 import runner.util.constants.PluginConfigurationKey;
 
