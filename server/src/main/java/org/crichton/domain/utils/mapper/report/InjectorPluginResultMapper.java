@@ -1,4 +1,4 @@
-package org.crichton.domain.utils.mapper;
+package org.crichton.domain.utils.mapper.report;
 
 import org.crichton.domain.dtos.report.InjectionTestDefectDto;
 import org.crichton.models.report.InjectorDefectReport;
@@ -20,7 +20,7 @@ public interface InjectorPluginResultMapper {
 
 
     @Mapping(target = "pluginName", source = "pluginName")
-    @Mapping(target = "defectReports", expression = "java(toInjectorDefectReports(report.getInfo()))")
+    @Mapping(target = "reports", expression = "java(toInjectorDefectReports(report.getInfo()))")
     InjectorPluginReport toInjectorPluginReport(ProcessedReportDTO report);
 
     @SuppressWarnings("unchecked")

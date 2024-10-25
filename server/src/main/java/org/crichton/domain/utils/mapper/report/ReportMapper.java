@@ -1,4 +1,4 @@
-package org.crichton.domain.utils.mapper;
+package org.crichton.domain.utils.mapper.report;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public abstract class ReportMapper {
     @Named("toInjectionTestDefects")
     public List<InjectionTestDefectDto> toInjectionTestDefects(@NonNull UUID projectInformationId, InjectorPluginReport injectorPluginReport) {
         if(injectorPluginReport != null) {
-            return toInjectionTestDefects(projectInformationId, injectorPluginReport.getInjectorDefectReports());
+            return toInjectionTestDefects(projectInformationId, injectorPluginReport.getReports());
         }
         else {
             return new ArrayList<>();
