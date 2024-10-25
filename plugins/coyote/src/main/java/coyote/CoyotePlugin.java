@@ -1,8 +1,5 @@
 package coyote;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import coyote.process.CoyoteRunner;
 import coyote.report.CsvParser;
 import coyote.setting.CoyoteSetting;
@@ -13,8 +10,6 @@ import runner.paths.PluginPaths;
 import runner.util.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.*;
 
 public class CoyotePlugin implements Plugin {
@@ -76,25 +71,4 @@ public class CoyotePlugin implements Plugin {
     public void setLogFilePath(Path logFilePath) {
         this.pluginLogPath = logFilePath;
     }
-
-    public static void main(String[] args) {
-        File file = null;
-        try {
-            file = Paths.get(CoyotePlugin.class.getResource("/demo_Total_Report.csv").toURI()).toAbsolutePath().toFile();
-            var csvData = Files.readString(Paths.get(CoyotePlugin.class.getResource("/demo_Total_Report.csv").toURI()));
-            var dto = CsvParser.parser(csvData);
-            var mapper = new ObjectMapper();
-            mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            mapper.writeValue(System.out, dto);
-            System.out.println(dto.toString());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-
 }
