@@ -119,6 +119,7 @@ dependencies {
     // 테스트 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
 
     // 파일 및 압축 관련 유틸리티
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14' // zt-zip for ZIP file handling

@@ -1,21 +1,17 @@
 package org.crichton.domain.utils.mapper.report;
 
-import lombok.extern.slf4j.Slf4j;
 import org.crichton.models.defect.UnitTestDefectInfo;
 import org.crichton.models.report.UnitTestPluginReport;
 import org.crichton.models.report.UnitTestReport;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import runner.dto.ProcessedReportDTO;
 
-import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -28,72 +24,86 @@ public interface UnitTesterPluginResultMapper {
     UnitTesterPluginResultMapper INSTANCE = Mappers.getMapper(UnitTesterPluginResultMapper.class);
 
 
+
+
     @Mapping(target = "pluginName", source = "pluginName")
-    @Mapping(target = "reports", expression = "java(toUnitTestReports(report.getInfo()))")
+    @Mapping(target = "reports", source = "info", qualifiedByName = "toUnitTestReports")
     UnitTestPluginReport toUnitTestPluginReport(ProcessedReportDTO report);
 
-
+    @SuppressWarnings("unchecked")
+    @Named("toUnitTestReports")
     default List<UnitTestReport> toUnitTestReports(Map<String, Object> info) {
-        if(info.containsKey(UnitTestReport.Key.FILE)) {
-            var fileInfos = (List<Map<String, Object>>) info.get(UnitTestReport.Key.FILE);
-            fileInfos.stream()
-                    .filter(fileInfo -> fileInfo.containsKey(UnitTestReport.Key.UNIT) && fileInfo.get(UnitTestReport.Key.UNIT) instanceof List<?>)
-                    .map(fileInfo -> {
 
-                        try {
-                            List<Map<String, Object>> fileUnitInfos = (List<Map<String, Object>>) fileInfo.get(UnitTestReport.Key.UNIT);
-                            var unitTestDefectInfos = fileUnitInfos.stream()
-                                    .map(fileUnitInfo -> {
+        return Optional.ofNullable(info.get(UnitTestReport.Key.FILE))
+                .filter(List.class::isInstance)
+                .map(files -> {
 
-                                        try {
+                    var x = ((List<Map<String, Object>>) files).stream()
+                            .filter(fileInfo -> fileInfo.containsKey(UnitTestReport.Key.UNIT) && (fileInfo.get(UnitTestReport.Key.UNIT) instanceof List<?>))
+                            .map(this::toUnitTestReport)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toUnmodifiableList());
 
-                                            var functionName = (String) fileUnitInfo.get(UnitTestReport.Key.FUNCTION_NAME);
-                                            var divisionByZeroCount = (int) fileUnitInfo.getOrDefault(UnitTestReport.Key.DIV_ZERO, 0);
-                                            var nullAccessCount = (int) fileUnitInfo.getOrDefault(UnitTestReport.Key.NULL_ACCESS, 0);
-                                            var segFaultsCount = (int) fileUnitInfo.getOrDefault(UnitTestReport.Key.SEGFAULTS, 0);
-                                            var arrayOutOfBound = (int) fileUnitInfo.getOrDefault(UnitTestReport.Key.ARRAY_OUT_OF_BOUND, 0);
-                                            var assertsCount = (int) fileUnitInfo.getOrDefault(UnitTestReport.Key.ASSERTS, 0);
-                                            var timeoutsCount = (int) fileUnitInfo.getOrDefault(UnitTestReport.Key.TIMEOUTS, 0);
-                                            var failureFactorsCount = (int) fileUnitInfo.getOrDefault(UnitTestReport.Key.FAILURE_FACTORS, 0);
+                            return x;
 
-                                            return UnitTestDefectInfo.builder()
-                                                    .functionName(functionName)
-                                                    .divisionByZeroCount(divisionByZeroCount)
-                                                    .nullAccessCount(nullAccessCount)
-                                                    .segFaultsCount(segFaultsCount)
-                                                    .assertsCount(assertsCount)
-                                                    .failureFactorsCount(failureFactorsCount)
-                                                    .timeoutsCount(timeoutsCount)
-                                                    .assertsCount(arrayOutOfBound)
-                                                    .build();
-                                        }
-                                        catch (NullPointerException e) {
-                                            throw e;
-                                        }
-                                    })
-                                    .filter(Objects::nonNull)
-                                    .collect(Collectors.toUnmodifiableList());
+                })
+                .orElse(Collections.emptyList());
+    }
 
-                            var filePath = (String) fileInfo.get(UnitTestReport.Key.FILE);
-
-                            return UnitTestReport.builder()
-                                    .file(filePath)
-                                    .defectInfos(unitTestDefectInfos);
-
-                        }
-                        catch (Exception e) {
-                            log.warn(e.getMessage(), e);
-                            log.warn("skip mapping. next mapping try....");
-                            return null;
-                        }
-
-                    })
+    @SuppressWarnings("unchecked")
+    default UnitTestReport toUnitTestReport(Map<String, Object> fileInfo) {
+        try {
+            var defectInfos = ((List<Map<String, Object>>) fileInfo.get(UnitTestReport.Key.UNIT)).stream()
+                    .map(this::toUnitTestDefectInfo)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toUnmodifiableList());
 
-        }
+            String filePath = ((String) fileInfo.get(UnitTestReport.Key.TITLE)).replaceFirst("^src/", "");
 
-        return List.of();
+            return UnitTestReport.builder()
+                    .file(filePath)
+                    .defectInfos(defectInfos)
+                    .build();
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+            log.warn("skip mapping. next mapping try....");
+            return null;
+        }
     }
+
+    default UnitTestDefectInfo toUnitTestDefectInfo(Map<String, Object> unitInfo) {
+        try {
+            return UnitTestDefectInfo.builder()
+                    .functionName(((String) unitInfo.get(UnitTestReport.Key.FUNCTION_NAME)).replaceAll("^[^\\s]+\\s+([^\\(]+)\\s*\\(.*", "$1"))
+                    .divisionByZeroCount(parseIntOrDefault(unitInfo, UnitTestReport.Key.DIV_ZERO, 0))
+                    .nullAccessCount(parseIntOrDefault(unitInfo, UnitTestReport.Key.NULL_ACCESS, 0))
+                    .segFaultsCount(parseIntOrDefault(unitInfo, UnitTestReport.Key.SEGFAULTS, 0))
+                    .arrayOutOfBoundCount(parseIntOrDefault(unitInfo, UnitTestReport.Key.ARRAY_OUT_OF_BOUND, 0))
+                    .assertsCount(parseIntOrDefault(unitInfo, UnitTestReport.Key.ASSERTS, 0))
+                    .timeoutsCount(parseIntOrDefault(unitInfo, UnitTestReport.Key.TIMEOUTS, 0))
+                    .failureFactorsCount(parseIntOrDefault(unitInfo, UnitTestReport.Key.FAILURE_FACTORS, 0))
+                    .build();
+        } catch (NullPointerException e) {
+            log.warn("Null pointer exception while mapping UnitInfo to DefectInfo", e);
+            return null;
+        }
+    }
+
+
+    default Integer parseIntOrDefault(Map<String, Object> map, String key, Integer defaultValue) {
+        // key가 존재하고 값이 null이 아닌 경우만 파싱
+        return Optional.ofNullable(map.containsKey(key) ? map.get(key) : null)
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .map(value -> {
+                    try {
+                        return Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        return defaultValue;
+                    }
+                })
+                .orElse(defaultValue);
+    }
+
 
 }

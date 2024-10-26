@@ -26,7 +26,7 @@ public class UnitTestDefectInfo {
     @Getter
     private final String functionName;
 
-    private final Map<String, Integer> map = new HashMap<>();
+    private final Map<String, Integer> defectOccurrences = new HashMap<>();
 
 
     public UnitTestDefectInfo(String functionName) {
@@ -64,29 +64,29 @@ public class UnitTestDefectInfo {
 
 
     public void put(String key, int value) {
-        map.put(key, value);
+        defectOccurrences.put(key, value);
     }
 
     public int get(String key) {
-        return map.get(key);
+        return defectOccurrences.get(key);
     }
 
     public int getOrDefault(String key, int defaultValue) {
-        return map.getOrDefault(key, defaultValue);
+        return defectOccurrences.getOrDefault(key, defaultValue);
     }
 
     public boolean containsKey(String key) {
-        return map.containsKey(key);
+        return defectOccurrences.containsKey(key);
     }
 
     public boolean isDefectFound() {
-        return map.entrySet().stream()
+        return defectOccurrences.entrySet().stream()
                 .map(Map.Entry::getValue)
                 .anyMatch(count -> count > 0);
     }
 
     public String getDetectedDefectCodes() {
-        return map.entrySet().stream()
+        return defectOccurrences.entrySet().stream()
                 .filter(entry -> entry.getValue() > 0)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.joining(", "));

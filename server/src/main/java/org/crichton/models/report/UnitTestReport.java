@@ -9,6 +9,7 @@ import java.util.List;
 public record UnitTestReport(String file, List<UnitTestDefectInfo> defectInfos) {
     public static class Key {
         public static final String FILE = "file";
+        public static final String TITLE = "title";
         public static final String UNIT = "unit";
         public static final String FUNCTION_NAME = "FunctionName";
         public static final String FILE_PATH = "File Path";

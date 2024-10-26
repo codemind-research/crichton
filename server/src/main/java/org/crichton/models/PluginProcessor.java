@@ -4,9 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import org.crichton.domain.entities.ProjectInformation;
+import org.crichton.domain.repositories.PluginProcessorManager;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
-import org.crichton.domain.utils.mapper.InjectorPluginResultMapper;
+import org.crichton.domain.utils.mapper.report.InjectorPluginResultMapper;
+import org.crichton.domain.utils.mapper.report.UnitTesterPluginResultMapper;
 import org.crichton.util.FileUtils;
 import org.crichton.util.ObjectMapperUtils;
 import org.crichton.util.constants.DirectoryName;
@@ -14,6 +16,7 @@ import org.crichton.util.constants.FileName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import runner.PluginRunner;
+import runner.dto.ProcessedReportDTO;
 import runner.dto.RunResult;
 import runner.util.constants.PluginConfigurationKey;
 
@@ -27,8 +30,10 @@ public class PluginProcessor implements Runnable {
 
     private final Logger log;
 
-    @Getter
+    private final PluginProcessorManager manager;
+
     private final UUID id = UUID.randomUUID();
+
 
     private ProjectInformation targetProject;
 
@@ -46,8 +51,13 @@ public class PluginProcessor implements Runnable {
 
 
     @Builder
-    public PluginProcessor(@NonNull ProjectInformation targetProject, @NonNull String baseDirectoryPath, @NonNull String defectInjectorPluginPath, @NonNull String unitTestPluginPath, Logger log) {
+    public PluginProcessor(@NonNull PluginProcessorManager manager, @NonNull ProjectInformation targetProject, @NonNull String baseDirectoryPath, @NonNull String defectInjectorPluginPath, @NonNull String unitTestPluginPath, Logger log) {
+
+        this.manager = manager;
+        manager.save(this);
+
         this.targetProject = targetProject;
+        targetProject.updatePluginProcessorId(id);
 
         this.workingDirectoryPath = FileUtils.getAbsolutePath(baseDirectoryPath, targetProject.getId().toString());
 
@@ -64,6 +74,8 @@ public class PluginProcessor implements Runnable {
         else {
             this.log = log;
         }
+
+
     }
 
     /**
@@ -88,23 +100,28 @@ public class PluginProcessor implements Runnable {
                 runUnitTesterPlugin();
             }
 
-
-
             if(injectorPluginRunResult != null && !injectorPluginRunResult.getIsSuccess()) {
                 throw new RuntimeException("Injector Plugin processing failed");
             }
-
-
-            if(unitTestPluginRunResult != null && !unitTestPluginRunResult.getIsSuccess()) {
-                throw new RuntimeException("Unit test Plugin processing failed");
+            else if(injectorPluginRunResult != null && injectorPluginRunResult.getIsSuccess()) {
+                log.debug("Save injector plugin result report.");
+                targetProject.setInjectorPluginReport(InjectorPluginResultMapper.INSTANCE.toInjectorPluginReport(injectorPluginRunResult.getData()));
             }
             else {
-                var jsonContent = this.getClass().getResource("/resources-dev/coyote_result.json").getContent();
-                ObjectMapperUtils.saveObjectToJsonFile(unitTestPluginRunResult, Paths.get(this.workingDirectoryPath, DirectoryName.UNIT_TEST).resolve("pluginResult.json").toFile());
+                log.info("Skip injector plugin processing.");
             }
 
-            targetProject.setInjectorPluginReport(InjectorPluginResultMapper.INSTANCE.processedReportDtoToInjectorPluginReport(injectorPluginRunResult.getData()));
-            targetProject.setUnitTestPluginRunResult(unitTestPluginRunResult);
+            if(unitTestPluginRunResult != null && !unitTestPluginRunResult.getIsSuccess()) {
+                throw new RuntimeException("Injector Plugin processing failed");
+            }
+            else if(unitTestPluginRunResult != null && unitTestPluginRunResult.getIsSuccess()) {
+                log.info("Save unit tester plugin result report.");
+                targetProject.setUnitTestPluginReport(UnitTesterPluginResultMapper.INSTANCE.toUnitTestPluginReport(unitTestPluginRunResult.getData()));
+            }
+            else {
+                log.info("Skip unit tester plugin processing.");
+            }
+
             targetProject.updateTestResult(TestResult.Success);
 
         }
@@ -115,8 +132,16 @@ public class PluginProcessor implements Runnable {
             targetProject.updateFailReason(e.getMessage());
         }
         finally {
+
+            log.trace("Disposing plugin resource...");
             targetProject.updateStatus(ProjectStatus.Complete);
+            targetProject.updatePluginProcessorId(null);
             targetProject = null;
+
+            log.info("Manager [{}] is deleting processor with ID: {}", manager.getClass().getSimpleName(), id);
+            manager.deleteById(id);
+
+            log.info("Finished plugin processing.");
         }
     }
 
