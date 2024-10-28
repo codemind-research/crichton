@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.UUID;
 
-@Tag(name = "Project", description = "This API handles analytics requests, viewing analytics status, and removing analytics for analytics targets requested by users.")
+@Tag(name = "Project Controller", description = "This API handles analytics requests, viewing analytics status, and removing analytics for analytics targets requested by users.")
 @CrossOrigin
 @RestController("ProjectController")
 @RequestMapping("/api/v1/crichton/project")
@@ -38,7 +38,6 @@ public class ProjectController {
         this.projectInformationService = projectInformationService;
     }
 
-    @Operation(summary = "분석하기", description = "분석 대상을 프로젝트로 생성하여 분석을 진행합니다.")
     @PostMapping(value = "/run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createProject(@Valid @ModelAttribute CreationProjectInformationDto creationProjectInformationDto) {
         try {
@@ -58,7 +57,6 @@ public class ProjectController {
 
     }
 
-    @Operation(summary = "프로젝트 상태 조회", description = "프로젝트의 상태를 조회 합니다.")
     @GetMapping(value = "/status/{id}")
     public ResponseEntity<?> getProjectStatus(
             @Parameter(description = "분석 요청시 전달 받은 ID", required = true) @PathVariable UUID id) {
