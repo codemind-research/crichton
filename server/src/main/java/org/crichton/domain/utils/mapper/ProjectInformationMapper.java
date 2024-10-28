@@ -51,7 +51,6 @@ public abstract class ProjectInformationMapper {
     @Mapping(target = "pluginProcessorId", ignore = true)
     @Mapping(target = "injectorPluginReport", ignore = true)
     @Mapping(target = "unitTestPluginReport", ignore = true)
-    @Mapping(target = "unitTestPluginRunResult", ignore = true)
     protected abstract ProjectInformation toEntryInternal(CreationProjectInformationDto createdDto);
 
 
