@@ -74,14 +74,19 @@ public abstract class ReportMapper {
 
     @Named("toUnitTestDefectDtos")
     public List<UnitTestDefectDto> toUnitTestDefectDtos(UnitTestPluginReport unitTestPluginReport) {
-        return unitTestPluginReport.getReports().stream()
-                .flatMap(report -> report.defectInfos().stream()
-                        .filter(UnitTestDefectInfo::isDefectFound)
-                        .map(defectInfo -> toUnitTestDefectDto(
-                                report.file(),
-                                defectInfo.getFunctionName(),
-                                defectInfo.getDetectedDefectCodes())))
-                .collect(Collectors.toList());
+        if(unitTestPluginReport != null) {
+            return unitTestPluginReport.getReports().stream()
+                    .flatMap(report -> report.defectInfos().stream()
+                            .filter(UnitTestDefectInfo::isDefectFound)
+                            .map(defectInfo -> toUnitTestDefectDto(
+                                    report.file(),
+                                    defectInfo.getFunctionName(),
+                                    defectInfo.getDetectedDefectCodes())))
+                    .collect(Collectors.toList());
+        }
+        else {
+            return List.of();
+        }
     }
 
     @Mapping(target = "file", source = "file")
