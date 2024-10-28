@@ -32,6 +32,7 @@ public class PluginProcessor implements Runnable {
 
     private final PluginProcessorManager manager;
 
+    @Getter
     private final UUID id = UUID.randomUUID();
 
 
