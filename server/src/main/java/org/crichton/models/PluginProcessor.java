@@ -20,10 +20,15 @@ import runner.dto.ProcessedReportDTO;
 import runner.dto.RunResult;
 import runner.util.constants.PluginConfigurationKey;
 
-import java.nio.file.Paths;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 public class PluginProcessor implements Runnable {
@@ -183,6 +188,41 @@ public class PluginProcessor implements Runnable {
         }
         catch (Exception e) {
             log.warn("defect injector plugin failed", e);
+        }
+        finally {
+            var sourceDirectory = Paths.get(this.workingDirectoryPath).resolve(DirectoryName.SOURCE);
+            var deletingTargets = List.of(
+                    sourceDirectory.resolve(DirectoryName.DEFECT_SIMULATION).toFile(),
+                    sourceDirectory.resolve(FileName.DEFECT_SIMULATION_OIL).toFile(),
+                    sourceDirectory.resolve(FileName.DEFECT_SIMULATION_EXE).toFile(),
+                    sourceDirectory.resolve(FileName.DEFECT_SIMULATION_SOURCE).toFile()
+            ).stream().filter(File::exists).collect(Collectors.toUnmodifiableList());
+
+            for (var target : deletingTargets) {
+                if(target.isDirectory()) {
+                    Files.walkFileTree(target.toPath(), new SimpleFileVisitor<>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            Files.delete(file);
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                            Files.delete(dir);
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                }
+                else {
+                    Files.delete(target.toPath());
+                }
+            }
+
+            var defectSimulationDirectory = sourceDirectory.resolve(DirectoryName.DEFECT_SIMULATION);
+            var defectSimulationOliFile = sourceDirectory.resolve(FileName.DEFECT_SIMULATION_OIL);
+            var defectSimulationExeFile = sourceDirectory.resolve(FileName.DEFECT_SIMULATION_EXE);
+            var defectSimulationSourceFile = sourceDirectory.resolve(FileName.DEFECT_SIMULATION_SOURCE);
         }
 
 
