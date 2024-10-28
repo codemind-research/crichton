@@ -63,18 +63,107 @@ task copyJar(type: Copy, dependsOn: build) {
 
 }
 
-task copyConfig(type: Copy, dependsOn: build) {
+task copyProperteis(dependsOn: build) {
     def destinationDir = file(System.getProperty("user.dir") + "/build/dist/config")
+    def mergedPropertiesFile = new File(destinationDir, "crichton.properties")
 
-    from "$buildDir/resources/main/application.properties"
-    into destinationDir
-    rename("application.properties", "crichton.properties")
+    doLast {
 
-    from "$buildDir/resources/main/logback-config.xml"
-    into destinationDir
+        copy {
+            // 경로 확인 출력
+            println "Destination directory: ${destinationDir.absolutePath}"
+
+
+            // 파일 및 폴더 생성 예외 처리
+            try {
+                // 필요한 디렉터리 생성
+                if (!destinationDir.exists()) {
+                    destinationDir.mkdirs()
+                    println "Created destination directory: ${destinationDir.absolutePath}"
+                }
+
+                def baseProperties = new Properties()
+                def profileProperties = new Properties()
+
+                // 빌드된 application.properties 파일 로드
+                def basePropertiesFile = file("$buildDir/resources/main/application.properties")
+                if (basePropertiesFile.exists()) {
+                    basePropertiesFile.withInputStream { stream ->
+                        baseProperties.load(stream)
+                    }
+                } else {
+                    throw new GradleException("Base properties file not found: ${basePropertiesFile}")
+                }
+
+                // 빌드된 application-${profile}.properties 파일 로드
+                def profilePropertiesFile = file("$buildDir/resources/main/application-${profile}.properties")
+                if (profilePropertiesFile.exists()) {
+                    profilePropertiesFile.withInputStream { stream ->
+                        profileProperties.load(stream)
+                    }
+                } else {
+                    println "Profile-specific properties file not found: ${profilePropertiesFile}, skipping profile properties."
+                }
+
+                // 특정 키 삭제
+                profileProperties.remove("spring.config.activate.on-profile")
+
+                // 기본 설정에 프로파일 설정을 덮어씀
+                baseProperties.putAll(profileProperties)
+
+                // 알파벳 순으로 정렬된 키들로 그룹화
+                def sortedKeys = properties.keySet().sort()
+                def groupedProperties = ["server": [:], "logging": [:], "spring": [:], "crichton": [:]]
+
+                // 키 분류
+                sortedKeys.each { key ->
+                    def matchedGroup = groupedProperties.find { key.startsWith(it.key) }?.key
+                    if (matchedGroup) {
+                        groupedProperties[matchedGroup][key] = baseProperties[key]
+                    } else {
+                        groupedProperties[key] = [(key): baseProperties[key]]
+                    }
+                }
+
+                // 파일에 작성
+                propertiesFile.withWriter { writer ->
+                    groupedProperties.each { group, props ->
+                        writer.write("\n# ${group.toUpperCase()}\n")
+                        props.each { key, value ->
+                            writer.write("$key=$value\n")
+                        }
+                    }
+                }
+
+                // 병합된 설정을 crichton.properties로 저장
+                mergedPropertiesFile.withOutputStream { stream ->
+                    baseProperties.store(stream, null)
+                }
+
+                println "Merged properties file created at ${mergedPropertiesFile.absolutePath} without 'spring.config.activate.on-profile'"
+            } catch (Exception e) {
+                throw new GradleException("Failed to create merged properties file: ${e.message}", e)
+            }
+        }
+    }
 }
 
-task buildServer(dependsOn: [copyJar, copyConfig])
+task copyLogbackConfig(type: Copy, dependsOn: build) {
+    def destinationDir = file(System.getProperty("user.dir") + "/build/dist/config")
+    from "$buildDir/resources/main/logback-spring.xml"
+    into destinationDir
+    rename("logback-spring.xml", "logback-config.xml")
+}
+
+// 설정 파일들 복사 테스크
+task copyConfig(dependsOn: [copyProperteis, copyLogbackConfig])
+
+// 배포를 위한 테스크
+task prepareDeployment (dependsOn: [copyJar, copyConfig]) {
+    doLast {
+        println "Server build completed with merged configuration file excluding 'spring.config.activate.on-profile'."
+    }
+}
 
 
 
