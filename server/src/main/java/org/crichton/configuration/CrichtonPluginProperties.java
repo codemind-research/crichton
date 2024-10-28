@@ -12,9 +12,9 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-@Getter
 @ConfigurationProperties(prefix = "crichton.plugin")
 @Slf4j
+@Getter
 @RequiredArgsConstructor
 public class CrichtonPluginProperties {
 
@@ -24,17 +24,17 @@ public class CrichtonPluginProperties {
 
     private static final String DEFAULT_UNIT_TESTER_PLUGIN_PATH = DEFAULT_PLUGIN_PATH + File.separator + "coyote";
 
-    private final Optional<String> injectorPath;
+    private final String injectorPath;
 
-    private final Optional<String> unitTesterPath;
+    private final String unitTesterPath;
 
     public String getInjectorPath() {
-        var path = injectorPath.orElse(DEFAULT_INJECTOR_PLUGIN_PATH);
+        var path = Optional.ofNullable(injectorPath).orElse(DEFAULT_INJECTOR_PLUGIN_PATH);
         return FileUtils.getAbsolutePath(path);
     }
 
     public String getUnitTesterPath() {
-        var path = unitTesterPath.orElse(DEFAULT_UNIT_TESTER_PLUGIN_PATH);
+        var path = Optional.ofNullable(unitTesterPath).orElse(DEFAULT_UNIT_TESTER_PLUGIN_PATH);
         return FileUtils.getAbsolutePath(path);
     }
 

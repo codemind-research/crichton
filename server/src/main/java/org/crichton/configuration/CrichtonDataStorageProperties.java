@@ -1,6 +1,7 @@
 package org.crichton.configuration;
 
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,16 +10,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.io.File;
 import java.util.Optional;
 
-@Getter
+
 @ConfigurationProperties(prefix = "crichton.data.storage")
 @Slf4j
+@Getter
 @RequiredArgsConstructor
 public class CrichtonDataStorageProperties {
 
-    private final Optional<String> basePath;
+    private static final String DEFAULT_DATA_STORAGE_PATH = System.getProperty("user.home") + File.separator + ".crichton" + File.separator + "data";
+
+    private final String basePath;
 
     public String getBasePath() {
-        return basePath.orElse(System.getProperty("user.home") + File.separator + ".crichton" + File.separator + "data");
+        return Optional.ofNullable(basePath).orElse(DEFAULT_DATA_STORAGE_PATH);
     }
 
     @PostConstruct

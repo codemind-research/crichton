@@ -2,7 +2,6 @@ package org.crichton.mapper;
 
 import org.crichton.domain.utils.mapper.report.ReportMapper;
 import org.crichton.domain.utils.mapper.report.UnitTesterPluginResultMapper;
-import org.crichton.models.report.UnitTestReport;
 import org.crichton.util.ObjectMapperUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
