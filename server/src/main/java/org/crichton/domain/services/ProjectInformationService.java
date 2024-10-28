@@ -1,5 +1,6 @@
 package org.crichton.domain.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.crichton.configuration.CrichtonDataStorageProperties;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
@@ -124,25 +125,24 @@ public class ProjectInformationService implements IProjectInformationService<UUI
     @Override
     public void deleteById(UUID id) throws IOException {
 
-        var entity = repository.findById(id);
+        var entity = repository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        if(entity.isPresent()) {
-            switch(entity.get().getStatus()) {
-                case None, Complete -> {
-                    var directory = new File(crichtonDataStorageProperties.getBasePath() + File.separator + id);
+        switch(entity.getStatus()) {
+            case None, Complete -> {
+                var directory = new File(crichtonDataStorageProperties.getBasePath() + File.separator + id);
 
-                    if(directory.exists()) {
-                        try {
-                            FileUtils.deleteDirectoryRecursively(directory.toPath());
-                        } catch (IOException e) {
-                            throw e;
-                        }
+                if(directory.exists()) {
+                    try {
+                        FileUtils.deleteDirectoryRecursively(directory.toPath());
+                    } catch (IOException e) {
+                        throw e;
                     }
-
-                    repository.deleteById(id);
                 }
-                default -> throw new RuntimeException("현재 분석 중인 프로젝트는 삭제 할 수 없습니다.");
+
+                repository.deleteById(id);
             }
+            default -> throw new RuntimeException("현재 분석 중인 프로젝트는 삭제 할 수 없습니다.");
         }
+
     }
 }

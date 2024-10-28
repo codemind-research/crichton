@@ -20,3 +20,18 @@ subprojects {
         mavenCentral()
     }
 }
+
+// 배포 준비 태스크: 하위 프로젝트 태스크들이 완료된 후 실행됨
+task prepareDeployment {
+    description = "배포를 위해 하위 프로젝트에서 빌드 파일들을 모아 준비합니다."
+    dependsOn(":plugins:injector:copyPlugin", ":plugins:coyote:copyPlugin", ":server:prepareDeploymentServer")
+}
+
+// 하위 프로젝트에서 prepareDeployment를 비활성화
+gradle.projectsEvaluated {
+    subprojects.each { subproject ->
+        subproject.tasks.matching { it.name == "prepareDeployment" }.all { task ->
+            task.enabled = false
+        }
+    }
+}

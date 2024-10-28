@@ -1,6 +1,8 @@
 package runner.process;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import runner.util.CommandBuilder;
 
 import java.io.BufferedReader;
@@ -11,6 +13,7 @@ import java.util.List;
 
 import static runner.Plugin.OUTPUT_PATH;
 
+@Slf4j
 public abstract class ProcessRunner {
 
     protected ProcessBuilder processBuilder;
@@ -21,6 +24,7 @@ public abstract class ProcessRunner {
 
     public boolean run() {
         try {
+            log.info("Starting Runner: {}", this.getClass().getSimpleName());
             processBuilder.command(buildCommand().getCommand());
             Process process = processBuilder.start();
             var stdOutHandle = new Thread(new Runnable() {
@@ -31,7 +35,7 @@ public abstract class ProcessRunner {
                         try(var stdout = new BufferedReader(new InputStreamReader(stream))) {
                             String line;
                             while ((line = stdout.readLine()) != null) {
-                                System.out.println(line);
+                                log.trace(line);
                             }
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -50,7 +54,7 @@ public abstract class ProcessRunner {
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream));
             String line;
             while ((line = errorReader.readLine()) != null) {
-                System.out.println(line);
+                log.trace(line);
             }
             stdOutHandle.start();
             int exitCode = process.waitFor();

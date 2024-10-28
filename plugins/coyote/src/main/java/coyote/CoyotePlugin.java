@@ -10,10 +10,7 @@ import runner.paths.PluginPaths;
 import runner.util.FileUtils;
 
 import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
+import java.nio.file.*;
 
 public class CoyotePlugin implements Plugin {
 
@@ -74,6 +71,4 @@ public class CoyotePlugin implements Plugin {
     public void setLogFilePath(Path logFilePath) {
         this.pluginLogPath = logFilePath;
     }
-
-
 }

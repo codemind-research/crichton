@@ -6,7 +6,6 @@ import org.crichton.configuration.CrichtonDataStorageProperties;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.spec.TestSpecDto;
 import org.crichton.domain.entities.ProjectInformation;
-import org.crichton.models.defect.DefectSpec;
 import org.crichton.util.FileUtils;
 import org.crichton.util.ObjectMapperUtils;
 import org.crichton.util.OperationSystemUtil;
@@ -52,7 +51,6 @@ public abstract class ProjectInformationMapper {
     @Mapping(target = "pluginProcessorId", ignore = true)
     @Mapping(target = "injectorPluginReport", ignore = true)
     @Mapping(target = "unitTestPluginReport", ignore = true)
-    @Mapping(target = "unitTestPluginRunResult", ignore = true)
     protected abstract ProjectInformation toEntryInternal(CreationProjectInformationDto createdDto);
 
 
@@ -61,26 +59,30 @@ public abstract class ProjectInformationMapper {
             var uuid = UUID.randomUUID();
 
             log.info("Create Project File: {}", uuid);
+            String workingDirectory = FileUtils.getAbsolutePath(crichtonDataStorageProperties.getBasePath(), uuid.toString());
 
-            String baseDirPath = crichtonDataStorageProperties.getBasePath() + File.separator + uuid;
+            String sourceDirectoryPath = FileUtils.getAbsolutePath(workingDirectory, DirectoryName.SOURCE);
 
-            log.info("Make project directory: {}", baseDirPath);
-            FileUtils.makeDirectory(baseDirPath);
+            log.info("Make project source directory: {}", sourceDirectoryPath);
+            FileUtils.makeDirectory(sourceDirectoryPath);
+            dto.setSourceDirectoryPath(sourceDirectoryPath);
 
-            var defectDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, DirectoryName.DEFECT);
+            var defectDirectoryPath = FileUtils.getAbsolutePath(workingDirectory, DirectoryName.INJECT_TEST);
 
             log.info("Make project defect directory: {}", defectDirectoryPath);
             FileUtils.makeDirectory(defectDirectoryPath);
+            dto.setSourceDirectoryPath(defectDirectoryPath);
 
-            var unitTestDirectoryPath = FileUtils.getAbsolutePath(baseDirPath, DirectoryName.UNIT_TEST);
+            var unitTestDirectoryPath = FileUtils.getAbsolutePath(workingDirectory, DirectoryName.UNIT_TEST);
 
             log.info("Make project unit test directory: {}", unitTestDirectoryPath);
             FileUtils.makeDirectory(unitTestDirectoryPath);
+            dto.setSourceDirectoryPath(unitTestDirectoryPath);
 
             // sourceCode 파일 압축 해제
             if (dto.getSourceCode() != null) {
                 log.info("unzip source file: {}", dto.getSourceCode());
-                unzipFile(dto.getSourceCode(), baseDirPath);
+                unzipFile(dto.getSourceCode(), sourceDirectoryPath);
             }
 
             // 나머지 파일 저장
@@ -159,16 +161,18 @@ public abstract class ProjectInformationMapper {
 
         try {
 
-            Path testSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.DEFECT).resolve(FileName.TEST_SPEC);
+            final Path sourceDirAbsolutePath = baseDirAbsolutePath.resolve(DirectoryName.SOURCE);
+
+            Path testSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.INJECT_TEST).resolve(FileName.TEST_SPEC);
 
             log.debug("Overwrite the modified values into file '{}'.", testSpecFilePath.toAbsolutePath());
-            ObjectMapperUtils.modifyJsonFile(testSpecFilePath, "tasks.file", (value) ->  convertToLocalPath(baseDirAbsolutePath, value), String.class);
+            ObjectMapperUtils.modifyJsonFile(testSpecFilePath, "tasks.file", (value) ->  convertToLocalPath(sourceDirAbsolutePath, value), String.class);
 
 
-            Path defectSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.DEFECT).resolve(FileName.DEFECT_SPEC);
+            Path defectSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.INJECT_TEST).resolve(FileName.DEFECT_SPEC);
 
             log.debug("Overwrite the modified values into file '{}'.", defectSpecFilePath.toAbsolutePath());
-            ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "target", (value) ->  convertToLocalPath(baseDirAbsolutePath, value), String.class);
+            ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "target", (value) ->  convertToLocalPath(sourceDirAbsolutePath, value), String.class);
 
 
 

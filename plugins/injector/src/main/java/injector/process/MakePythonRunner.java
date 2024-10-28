@@ -14,7 +14,7 @@ public class MakePythonRunner extends PythonProcessRunner {
     public MakePythonRunner(DefectInjectorSetting setting) {
         super();
         this.setting = setting;
-        processBuilder.directory(setting.getProjectWorkspace());
+        processBuilder.directory(setting.getSourceDirectory());
     }
 
     @Override

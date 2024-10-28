@@ -21,7 +21,7 @@ public class InjectionTesterRunner extends DotnetProcessRunner {
         super();
         this.defectSpecId = defectSpecId;
         this.setting = setting;
-        processBuilder.directory(setting.getProjectWorkspace());
+        processBuilder.directory(setting.getSourceDirectory());
         processBuilder.environment().put("VIPER_PATH", setting.getViperPath());
     }
 

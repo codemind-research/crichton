@@ -40,25 +40,22 @@ public class PluginService {
 
     public void runPlugin(ProjectInformation entity) throws Exception {
 
+
         var pluginProcessor = PluginProcessor.builder()
+                .manager(pluginProcessorManager)
                 .targetProject(entity)
                 .baseDirectoryPath(crichtonDataStorageProperties.getBasePath())
                 .defectInjectorPluginPath(crichtonPluginProperties.getInjectorPath())
                 .unitTestPluginPath(crichtonPluginProperties.getUnitTesterPath())
+                .log(log)
                 .build();
-
         try {
-
-            entity.updatePluginProcessorId(pluginProcessor.getId());
-            pluginProcessorManager.save(pluginProcessor);
 
             Thread thread = new Thread(pluginProcessor);
             thread.start();
 
         } catch (Exception e) {
             throw e;
-        } finally {
-            pluginProcessorManager.deleteById(pluginProcessor.getId());
         }
     }
 

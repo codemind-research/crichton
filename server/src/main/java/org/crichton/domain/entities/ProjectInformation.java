@@ -5,12 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.domain.utils.enums.TestResult;
-import org.crichton.models.defect.DefectSpec;
 import org.crichton.models.report.InjectorPluginReport;
 import org.crichton.models.report.UnitTestPluginReport;
 import runner.dto.RunResult;
 
-import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -30,17 +28,17 @@ public class ProjectInformation {
 
     private UUID pluginProcessorId;
 
-    @Setter
-    private List<DefectSpec> defectSpecs;
+    private String sourceDirectoryPath;
+
+    private String injectTestDirectoryPath;
+
+    private String unitTestDirectoryPath;
 
     @Setter
     private InjectorPluginReport injectorPluginReport;
 
     @Setter
     private UnitTestPluginReport unitTestPluginReport;
-
-    @Setter
-    private RunResult unitTestPluginRunResult;
 
 
     public void updateStatus(ProjectStatus status) {

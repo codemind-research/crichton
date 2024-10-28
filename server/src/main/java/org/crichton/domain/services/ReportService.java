@@ -4,12 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NoResultException;
 import org.crichton.application.exceptions.AnalysisErrorException;
 import org.crichton.application.exceptions.code.AnalysisErrorCode;
-import org.crichton.configuration.CrichtonDataStorageProperties;
 import org.crichton.domain.dtos.report.ResponseReportDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.IRepository;
-import org.crichton.domain.utils.mapper.ReportMapper;
-import org.crichton.util.FileUtils;
+import org.crichton.domain.utils.mapper.report.ReportMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,9 +44,6 @@ public class ReportService implements IReportService<UUID> {
                 // Do nothing
             }
         }
-
-        var injectorReport = entity.getInjectorPluginReport();
-        var unitTestReport = entity.getUnitTestPluginRunResult();
 
         return mapper.toResponseReportDto(entity);
     }

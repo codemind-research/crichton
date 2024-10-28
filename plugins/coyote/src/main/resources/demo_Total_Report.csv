@@ -1,0 +1,57 @@
+Project Name,demo,,Selected Files,Selected Functions,Successful Files,Files Without Function,Failed Files,Not Executed Files,Total Files,Successful Functions,Failed Functions,Not Executed Functions,Prebuild Time,Build Time,Test Time
+Date,2024.10.24,,1, 22, 1, 0, 0, 5, 6, 22, 0, 0, 00:00:00, 00:00:02, 00:00:04
+
+,,,Executed Statements,Statements,Executed Branches,Branches,Executed Pairs,Pairs,Statement Coverage,Branch Coverage,MC/DC Coverage,userTestcase,FunctionSetting
+,,,117, 121, 53, 59, 35, 47, 96.69%, 89.83%, 74.47%, 0, 0
+
+Files,Status,Functions,Executed Statements,Statements,Executed Branches,Branches,Executed Pairs,Pairs,Statement Coverage,Branch Coverage,MC/DC Coverage,ASM Failed Functions,Misc Failed Functions
+src/demo.cpp,TEST_SUCCESS,22,117,121,53,59,35,47,96.69,89.83,74.47,0,0
+src/demo2.cpp,TEST_SUCCESS,22,117,121,53,59,35,47,96.69,89.83,74.47,0,0
+Total,,22,117,121,53,59,35,47,96.69%,89.83%,74.47%,0,0
+
+File Path,Function Name,TestCases,Executed Statements,Statements,Executed Branches,Branches,Executed Pairs,Pairs,Statement Coverage,Branch Coverage,MC/DC Coverage,Div_Zero,Null_Access,Asserts,SegFaults,ArrayOutOfBound,TimeOuts,Failure Factors
+src/demo.cpp,void aaa(char * x、 char y、 int z),1,1,1,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,void atest1(int a),3,4,4,3,4,1,2,100.0,75.0,50.0,0,0,1,0,0,0,
+,void atest1_2(int a),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,void atest1_3(int a),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,void atest1_4(int a),3,4,4,3,4,1,2,100.0,75.0,50.0,0,0,1,0,0,0,
+,int btest(int a、 int b),1,2,2,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,int atest3(int a、 int b),5,12,13,5,6,6,7,92.31,83.33,85.71,0,0,0,0,0,0,
+,int atest3_4(int a、 int b),5,9,10,3,4,2,6,90.0,75.0,33.33,0,0,0,0,0,0,
+,int atest3_4_1(int a、 int b),3,7,7,4,4,2,2,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest3_5(int a、 int b),6,11,11,6,6,7,7,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest3_6(int a、 int b),4,6,6,2,2,2,3,100.0,100.0,66.67,0,0,0,0,0,0,
+,int atest5(int a、 int b),1,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest7(int a、 int b),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest8(int a、 int b),4,6,6,3,3,0,0,100.0,100.0,NP,0,0,0,0,0,0,
+,int atest6_1(int a、 int b),7,6,6,4,4,5,6,100.0,100.0,83.33,0,0,0,0,0,0,
+,int atest3_2(int a、 int b),4,6,6,6,6,3,3,100.0,100.0,100.0,0,0,0,0,0,0,
+,int vtest(char * test),1,3,4,1,2,0,1,75.0,50.0,0.0,0,0,0,0,0,0,
+,int atest3_3(int a、 int b),5,10,11,3,4,1,3,90.91,75.0,33.33,0,0,0,0,0,0,
+,void atest2(float a、 int b、 double c),7,6,6,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,void atest2_call(),2,2,2,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,void atest4(int a、 int b),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,int main(),1,2,2,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+src/demo2.cpp,void aaa(char * x、 char y、 int z),1,1,1,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,void atest1(int a),3,4,4,3,4,1,2,100.0,75.0,50.0,0,0,1,0,0,0,
+,void atest1_2(int a),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,void atest1_3(int a),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,void atest1_4(int a),3,4,4,3,4,1,2,100.0,75.0,50.0,0,0,1,0,0,0,
+,int btest(int a、 int b),1,2,2,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,int atest3(int a、 int b),5,12,13,5,6,6,7,92.31,83.33,85.71,0,0,0,0,0,0,
+,int atest3_4(int a、 int b),5,9,10,3,4,2,6,90.0,75.0,33.33,0,0,0,0,0,0,
+,int atest3_4_1(int a、 int b),3,7,7,4,4,2,2,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest3_5(int a、 int b),6,11,11,6,6,7,7,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest3_6(int a、 int b),4,6,6,2,2,2,3,100.0,100.0,66.67,0,0,0,0,0,0,
+,int atest5(int a、 int b),1,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest7(int a、 int b),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,int atest8(int a、 int b),4,6,6,3,3,0,0,100.0,100.0,NP,0,0,0,0,0,0,
+,int atest6_1(int a、 int b),7,6,6,4,4,5,6,100.0,100.0,83.33,0,0,0,0,0,0,
+,int atest3_2(int a、 int b),4,6,6,6,6,3,3,100.0,100.0,100.0,0,0,0,0,0,0,
+,int vtest(char * test),1,3,4,1,2,0,1,75.0,50.0,0.0,0,0,0,0,0,0,
+,int atest3_3(int a、 int b),5,10,11,3,4,1,3,90.91,75.0,33.33,0,0,0,0,0,0,
+,void atest2(float a、 int b、 double c),7,6,6,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,void atest2_call(),2,2,2,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+,void atest4(int a、 int b),2,4,4,2,2,1,1,100.0,100.0,100.0,0,0,0,0,0,0,
+,int main(),1,2,2,0,0,0,0,100.0,NB,NP,0,0,0,0,0,0,
+Total,,71,117,121,53,59,35,47,96.69%,89.83%,74.47%,0,0,2,0,0,0

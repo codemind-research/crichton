@@ -6,6 +6,6 @@ import org.crichton.models.safe.SafeSpec;
 import java.util.List;
 
 @Builder
-public record DefectReport(int defectId, String file, List<SafeSpec> safeSpecs) {
+public record InjectorDefectReport(int defectId, String file, List<SafeSpec> safeSpecs) {
 
 }

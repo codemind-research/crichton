@@ -148,12 +148,12 @@ public class ObjectMapperUtils {
         return result;
     }
 
-    public static <T> List<T> convertJsonContentToList(String jsonString, Class<T> valueType) {
+    public static <T> List<T> convertJsonContentToList(String content, Class<T> valueType) {
 
         List<T> result = new ArrayList<>();
 
         try {
-            JsonNode jsonNode = mapper.readTree(jsonString);
+            JsonNode jsonNode = mapper.readTree(content);
 
             // JSON이 배열인 경우
             if (jsonNode.isArray()) {
@@ -173,9 +173,9 @@ public class ObjectMapperUtils {
         }
     }
 
-    public static <T> T convertJsonStringToObject(String jsonString, Class<T> valueType) {
+    public static <T> T convertJsonStringToObject(String content, Class<T> valueType) {
         try {
-            return mapper.readValue(jsonString, valueType);
+            return mapper.readValue(content, valueType);
         } catch (Exception e) {
             throw new RuntimeException("Error converting JSON string to object", e);
         }

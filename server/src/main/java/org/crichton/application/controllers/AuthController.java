@@ -1,5 +1,6 @@
 package org.crichton.application.controllers;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.crichton.domain.dtos.AuthDTO;
 import org.crichton.domain.services.AccessTokenService;
 import org.crichton.domain.services.RefreshTokenService;
@@ -11,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name = "Auth Controller", description = "APIs related to authentication. " +
-        "This controller provides functionalities for testing and managing authentication processes.")
+//@Tag(name = "Auth Controller", description = "APIs related to authentication. " +
+//        "This controller provides functionalities for testing and managing authentication processes.")
+@Hidden
 @CrossOrigin
 @RestController("AuthController")
 @RequestMapping("/api/v1/crichton/auth")
@@ -23,8 +25,8 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @GetMapping("/token")
-    @Operation(summary = "Generate Token Information", description = "API for generating AccessToken for client usage and RefreshToken for server storage. " +
-            "This endpoint is responsible for creating tokens that enable secure communication between the client and server.")
+//    @Operation(summary = "Generate Token Information", description = "API for generating AccessToken for client usage and RefreshToken for server storage. " +
+//            "This endpoint is responsible for creating tokens that enable secure communication between the client and server.")
     public ResponseEntity<AuthDTO.TokenResponse> getToken(){
         String userId = UUID.randomUUID().toString();
         return ResponseEntity.ok()
@@ -36,7 +38,7 @@ public class AuthController {
     }
 
     @DeleteMapping("/token")
-    @Operation(summary = "Delete Token Information", description = "Deletes RefreshToken information stored in server memory.")
+//    @Operation(summary = "Delete Token Information", description = "Deletes RefreshToken information stored in server memory.")
     public void deleteRefreshToken(@RequestBody AuthDTO.TokenRequest request){
         refreshTokenService.deleteRefreshToken(request.getUserId());
     }

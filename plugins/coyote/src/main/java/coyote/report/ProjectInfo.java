@@ -38,14 +38,18 @@ public class ProjectInfo extends Information<LinkedHashMap<String,Object>>{
     }
 
     public void generateTestCaseMap () {
-        LinkedHashMap<String, Object> testcaseMap = new LinkedHashMap<>();
+        final LinkedHashMap<String, Object> testcaseMap = new LinkedHashMap<>();
+        final Map<String, Object> info = getInfo();
         Arrays.stream(TestCase.values()).toList().forEach( testCase -> {
             String key = testCase.getType();
-            String value = getInfo().get(key).toString();
-            getInfo().remove(key);
-            testcaseMap.put(key,value);
+            if(info.containsKey(key)) {
+                String value = Objects.toString(info.get(key));
+                info.remove(key);
+                testcaseMap.put(key,value);
+            }
         });
-        getInfo().put("testcase", testcaseMap);
+
+        info.put("testcase", testcaseMap);
     }
 
 }

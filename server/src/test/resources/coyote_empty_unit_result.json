@@ -1,0 +1,44 @@
+{
+  "pluginName" : "coyote",
+  "info" : {
+    "project" : {
+      "ProjectName" : ".",
+      "Date" : "2024.10.26",
+      "SelectedFiles" : "2",
+      "SelectedFunctions" : "46",
+      "FilesWithoutFunction" : "0",
+      "TotalFiles" : "2",
+      "NotExecutedFunctions" : "46",
+      "PrebuildTime" : "00:00:02",
+      "BuildTime" : "00:00:08",
+      "TestTime" : "00:00:00",
+      "ExecutedStatements" : "0",
+      "Statements" : "0",
+      "StatementCoverage" : "NL",
+      "Branch_Coverage" : "NB",
+      "MC/DC_Coverage" : "NP",
+      "FunctionSetting" : "0",
+      "Functions" : "46",
+      "ASMFailedFunctions" : "0",
+      "MiscFailedFunctions" : "0",
+      "TestCases" : "0",
+      "Files" : "0 succ 2 fail",
+      "Units" : "0 succ 0 fail",
+      "testcase" : {
+        "Null_Access" : "0",
+        "SegFaults" : "0",
+        "Div_Zero" : "0",
+        "ArrayOutOfBound" : "0",
+        "Asserts" : "0",
+        "TimeOuts" : "0"
+      }
+    },
+    "file" : [ {
+      "title" : "src/demo.cpp",
+      "Status" : "BUILD_COMPILE_FAILED"
+    }, {
+      "title" : "src/a/b/demo.cpp",
+      "Status" : "BUILD_COMPILE_FAILED"
+    } ]
+  }
+}

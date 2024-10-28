@@ -1,8 +1,11 @@
 package runner.process;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+@Slf4j
 public abstract class PythonProcessRunner extends ProcessRunner {
 
     private static final String PYTHON_VERSION_2 = "python";
@@ -11,16 +14,32 @@ public abstract class PythonProcessRunner extends ProcessRunner {
     
     @Override
     protected String getProcessName() {
-        // TODO: 추후 properties를 통해 Python 경로로 해서 반환 처리 해야함    
-        boolean isPython2Installed = checkPython(PYTHON_VERSION_2);
-        boolean isPython3Installed = checkPython(PYTHON_VERSION_3);
+        // TODO: 추후 properties를 통해 Python 경로로 해서 반환 처리 해야함
 
+        String currentPython = PYTHON_VERSION_2;
+
+        boolean isPython2Installed = checkPython(PYTHON_VERSION_2);
+        if(isPython2Installed) {
+            log.debug("Python 2.x installed");
+            currentPython = PYTHON_VERSION_2;
+        }
+
+
+        boolean isPython3Installed = checkPython(PYTHON_VERSION_3);
         if(isPython3Installed) {
-            return PYTHON_VERSION_3;
+            log.debug("Python 3.x installed");
+            currentPython = PYTHON_VERSION_3;
         }
-        else {
-            return PYTHON_VERSION_2;
+
+        if(isPython2Installed && isPython3Installed) {
+            log.info("Using Python 3.x");
         }
+        else if(!isPython2Installed && !isPython3Installed){
+            throw new RuntimeException("Python is not installed");
+        }
+
+        return currentPython;
+
     }
 
 
@@ -30,24 +49,26 @@ public abstract class PythonProcessRunner extends ProcessRunner {
             Process process = processBuilder.start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            log.debug("Checking {}:", command);
+
             String line;
-            System.out.println("Checking " + command + ":");
+            StringBuilder builder = new StringBuilder();
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                builder.append(line).append(System.lineSeparator());
             }
+
+            log.debug(builder.toString());
 
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                System.out.println(command + " is installed and working properly.\n");
                 return true;
             } else {
-                System.out.println(command + " is not installed or there was an issue.\n");
                 return false;
             }
 
 
         } catch (Exception e) {
-            System.out.println(command + " is not available on this system.");
             return false;
         }
     }

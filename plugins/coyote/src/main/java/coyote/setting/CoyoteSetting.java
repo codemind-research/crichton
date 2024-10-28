@@ -20,7 +20,7 @@ public class CoyoteSetting extends PluginSetting {
     public CoyoteSetting(String pluginName, Map<String, String> configuration) {
         super(pluginName, configuration);
 
-        this.unitTestDir = Paths.get(this.workingDirectory.getAbsolutePath(), configuration.getOrDefault(PluginConfigurationKey.UnitTester.DIR_NAME, "coyote_unit_test")).toFile();
+        this.unitTestDir = Paths.get(this.workingDirectory.getAbsolutePath(), configuration.getOrDefault(PluginConfigurationKey.UnitTester.DIRECTORY_NAME, "coyote_unit_test")).toFile();
         this.projectSettingFileName = configuration.getOrDefault(PluginConfigurationKey.UnitTester.UNIT_TEST_PROJECT_SETTING_FILE_NAME,"");
 
         var propertiesDir = configuration.getOrDefault(PluginConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
