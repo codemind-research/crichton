@@ -90,6 +90,8 @@ task copyProperteis(dependsOn: build) {
                 if (basePropertiesFile.exists()) {
                     basePropertiesFile.withInputStream { stream ->
                         baseProperties.load(stream)
+                        // 특정 키 삭제
+                        baseProperties.remove("spring.profiles.active")
                     }
                 } else {
                     throw new GradleException("Base properties file not found: ${basePropertiesFile}")
@@ -100,19 +102,20 @@ task copyProperteis(dependsOn: build) {
                 if (profilePropertiesFile.exists()) {
                     profilePropertiesFile.withInputStream { stream ->
                         profileProperties.load(stream)
+                        // 특정 키 삭제
+                        profileProperties.remove("spring.config.activate.on-profile")
                     }
                 } else {
                     println "Profile-specific properties file not found: ${profilePropertiesFile}, skipping profile properties."
                 }
 
-                // 특정 키 삭제
-                profileProperties.remove("spring.config.activate.on-profile")
+
 
                 // 기본 설정에 프로파일 설정을 덮어씀
                 baseProperties.putAll(profileProperties)
 
                 // 알파벳 순으로 정렬된 키들로 그룹화
-                def sortedKeys = properties.keySet().sort()
+                def sortedKeys = baseProperties.keySet().sort()
                 def groupedProperties = ["server": [:], "logging": [:], "spring": [:], "crichton": [:]]
 
                 // 키 분류
@@ -126,18 +129,13 @@ task copyProperteis(dependsOn: build) {
                 }
 
                 // 파일에 작성
-                propertiesFile.withWriter { writer ->
+                mergedPropertiesFile.withWriter { writer ->
                     groupedProperties.each { group, props ->
                         writer.write("\n# ${group.toUpperCase()}\n")
                         props.each { key, value ->
                             writer.write("$key=$value\n")
                         }
                     }
-                }
-
-                // 병합된 설정을 crichton.properties로 저장
-                mergedPropertiesFile.withOutputStream { stream ->
-                    baseProperties.store(stream, null)
                 }
 
                 println "Merged properties file created at ${mergedPropertiesFile.absolutePath} without 'spring.config.activate.on-profile'"
@@ -159,7 +157,7 @@ task copyLogbackConfig(type: Copy, dependsOn: build) {
 task copyConfig(dependsOn: [copyProperteis, copyLogbackConfig])
 
 // 배포를 위한 테스크
-task prepareDeployment (dependsOn: [copyJar, copyConfig]) {
+task prepareDeploymentServer (dependsOn: [copyJar, copyConfig]) {
     doLast {
         println "Server build completed with merged configuration file excluding 'spring.config.activate.on-profile'."
     }
