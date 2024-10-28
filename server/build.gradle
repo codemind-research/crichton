@@ -21,7 +21,7 @@ apply plugin: 'io.spring.dependency-management'
 // Default는 dev 로 지정
 ext {
     profile = project.hasProperty('profile') ?
-            project.getProperty('profile') :
+            profile :
             (System.hasProperty("spring.profiles.active") ? System.getProperty("spring.profiles.active") : "dev")
 }
 
