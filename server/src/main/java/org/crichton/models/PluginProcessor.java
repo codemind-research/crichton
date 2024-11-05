@@ -243,7 +243,8 @@ public class PluginProcessor implements Runnable {
             var unitTestPluginRunner = new PluginRunner(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN);
             unitTestPluginRunner.check();
             log.info("run unit-tester plugin...");
-            unitTestPluginRunResult = unitTestPluginRunner.run(this.workingDirectoryPath, unitTesterConfiguration);
+            String sourceDirectory = FileUtils.getAbsolutePath(this.workingDirectoryPath, DirectoryName.SOURCE);
+            unitTestPluginRunResult = unitTestPluginRunner.run(sourceDirectory, unitTesterConfiguration);
         }
         catch (Exception e) {
             throw e;
