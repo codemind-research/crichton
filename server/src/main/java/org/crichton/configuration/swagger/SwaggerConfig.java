@@ -61,6 +61,7 @@ public class SwaggerConfig {
                 .info(info)
 //#region Project API
                 .path(ProjectApi.ANALYSIS_RUN_API, new PathItem().post(ProjectApi.getCreateOperation(messageSource, locale)))
+                .path(ProjectApi.ANALYSIS_RETRY_RUN_API, new PathItem().post(ProjectApi.getAnalysisRetryOperation(messageSource, locale)))
                 .path(ProjectApi.GET_STATUS_API, new PathItem().get(ProjectApi.getStatusOperation(messageSource, locale)))
                 .path(ProjectApi.DELETE_PROJECT_API, new PathItem().delete(ProjectApi.getDeleteOperation(messageSource, locale)))
 //#endregion

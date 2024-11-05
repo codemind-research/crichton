@@ -1,26 +1,17 @@
 package org.crichton.domain.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.crichton.application.exceptions.analysis.AnalysisErrorException;
+import org.crichton.application.exceptions.analysis.AnalysisInProgressException;
+import org.crichton.application.exceptions.code.AnalysisErrorCode;
 import org.crichton.configuration.CrichtonDataStorageProperties;
 import org.crichton.configuration.CrichtonPluginProperties;
-import org.crichton.domain.dtos.spec.TestSpecDto;
 import org.crichton.domain.entities.ProjectInformation;
 import org.crichton.domain.repositories.PluginProcessorManager;
+import org.crichton.domain.utils.enums.ProjectStatus;
 import org.crichton.models.PluginProcessor;
-import org.crichton.util.FileUtils;
-import org.crichton.util.ObjectMapperUtils;
-import org.crichton.util.constants.DirectoryName;
-import org.crichton.util.constants.FileName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import runner.PluginRunner;
-import runner.paths.PluginPaths;
-import runner.util.constants.PluginConfigurationKey;
-
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -40,16 +31,28 @@ public class PluginService {
 
     public void runPlugin(ProjectInformation entity) throws Exception {
 
-
-        var pluginProcessor = PluginProcessor.builder()
-                .manager(pluginProcessorManager)
-                .targetProject(entity)
-                .baseDirectoryPath(crichtonDataStorageProperties.getBasePath())
-                .defectInjectorPluginPath(crichtonPluginProperties.getInjectorPath())
-                .unitTestPluginPath(crichtonPluginProperties.getUnitTesterPath())
-                .log(log)
-                .build();
         try {
+
+            log.info("running process check.");
+            if(pluginProcessorManager.hasPluginProcessor()) {
+                throw new AnalysisInProgressException(entity.getId());
+            }
+
+            log.info("entity status check.");
+            if(entity.getStatus() == ProjectStatus.Running) {
+                throw new AnalysisInProgressException(entity.getId());
+            }
+
+
+            var pluginProcessor = PluginProcessor.builder()
+                    .manager(pluginProcessorManager)
+                    .targetProject(entity)
+                    .baseDirectoryPath(crichtonDataStorageProperties.getBasePath())
+                    .defectInjectorPluginPath(crichtonPluginProperties.getInjectorPath())
+                    .unitTestPluginPath(crichtonPluginProperties.getUnitTesterPath())
+                    .log(log)
+                    .build();
+
 
             Thread thread = new Thread(pluginProcessor);
             thread.start();

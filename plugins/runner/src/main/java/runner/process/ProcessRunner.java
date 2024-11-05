@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static runner.Plugin.OUTPUT_PATH;
 
@@ -25,7 +26,11 @@ public abstract class ProcessRunner {
     public boolean run() {
         try {
             log.info("Starting Runner: {}", this.getClass().getSimpleName());
-            processBuilder.command(buildCommand().getCommand());
+
+            var command = buildCommand().getCommand();
+            log.info("executing command: {}", command.stream().collect(Collectors.joining(" ")));
+
+            processBuilder.command(command);
             Process process = processBuilder.start();
             var stdOutHandle = new Thread(new Runnable() {
                 @Override
@@ -58,6 +63,12 @@ public abstract class ProcessRunner {
             }
             stdOutHandle.start();
             int exitCode = process.waitFor();
+
+            if (process.isAlive()) {
+                process.destroyForcibly();
+                log.info("Process killed forcefully");
+            }
+            log.info("Process finished with exit code: {}", exitCode);
             return exitCode == 0;
         }catch (Exception e){
             return false;

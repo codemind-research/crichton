@@ -1,12 +1,8 @@
 package org.crichton.application.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.crichton.application.exceptions.AnalysisErrorException;
+import org.crichton.application.exceptions.analysis.AnalysisErrorException;
 import org.crichton.application.exceptions.CustomException;
 import org.crichton.domain.dtos.report.ResponseReportDto;
 import org.crichton.domain.dtos.response.ErrorResponseDto;

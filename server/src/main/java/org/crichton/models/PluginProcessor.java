@@ -99,7 +99,7 @@ public class PluginProcessor implements Runnable {
     public void run() {
         try {
             log.info("Starting plugin processing...");
-
+            targetProject.updateStatus(ProjectStatus.Running);
             runDefectInjectorPlugin();
 
             if(Paths.get(this.unitTestPluginPath, FileName.UNIT_TESTER_PLUGIN).toFile().exists()) {

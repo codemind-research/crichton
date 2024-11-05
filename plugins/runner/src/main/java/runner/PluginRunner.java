@@ -138,6 +138,7 @@ public class PluginRunner implements Runner  {
 
             return new RunResult(runResult , data);
         }catch (Exception e) {
+            FileUtils.overWriteDump(pluginLogFile.toFile(), e);
             logger.error("Test Failed Plugin Run: {}", pluginName);
             return new RunResult(false, new ProcessedReportDTO());
         }

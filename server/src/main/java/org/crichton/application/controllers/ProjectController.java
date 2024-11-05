@@ -7,10 +7,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.crichton.application.exceptions.analysis.AnalysisErrorException;
+import org.crichton.application.exceptions.analysis.AnalysisInProgressException;
 import org.crichton.domain.dtos.project.CreationProjectInformationDto;
 import org.crichton.domain.dtos.response.CreatedResponseDto;
 import org.crichton.domain.dtos.response.ProjectStatusResponseDto;
 import org.crichton.domain.services.IProjectInformationService;
+import org.crichton.domain.services.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,10 +36,12 @@ public class ProjectController {
     private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
 
     private IProjectInformationService<UUID> projectInformationService;
+    private final PluginService pluginService;
 
     @Autowired
-    public ProjectController(IProjectInformationService<UUID> projectInformationService) {
+    public ProjectController(IProjectInformationService<UUID> projectInformationService, PluginService pluginService) {
         this.projectInformationService = projectInformationService;
+        this.pluginService = pluginService;
     }
 
     @PostMapping(value = "/run", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -50,11 +56,40 @@ public class ProjectController {
                 return ResponseEntity.badRequest().build();
             }
         }
+        catch (AnalysisInProgressException e) {
+            logger.error(e.getErrorCode().getMessage(), e);
+            Map<String, String> body = new HashMap<>();
+            body.put("id", e.getEntityId().toString());
+            body.put("message", "이미 분석 중인 프로젝트가 있습니다. 다음에 다시하세요.");
+            return ResponseEntity.badRequest().body(body);
+        }
         catch (Exception e) {
             logger.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
 
+    @PostMapping(value = "/run/retry/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> retryAnalyis(@Parameter(description = "분석 요청시 전달 받은 ID", required = true) @PathVariable UUID id) {
+        try {
+            var entity =  projectInformationService.findById(id).orElseThrow(EntityNotFoundException::new);
+            pluginService.runPlugin(entity);
+            return ResponseEntity.ok(new CreatedResponseDto(entity.getId()));
+        }
+        catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        catch (AnalysisInProgressException e) {
+            logger.error(e.getErrorCode().getMessage(), e);
+            Map<String, String> body = new HashMap<>();
+            body.put("id", e.getEntityId().toString());
+            body.put("message", "이미 분석 중인 프로젝트가 있습니다. 다음에 다시하세요.");
+            return ResponseEntity.badRequest().body(body);
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping(value = "/status/{id}")

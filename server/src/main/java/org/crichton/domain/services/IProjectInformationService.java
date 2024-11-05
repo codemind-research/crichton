@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface IProjectInformationService<ID> {
 
-    ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) throws IOException;
+    ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) throws Exception;
 
     List<ProjectInformation> findAll();
 

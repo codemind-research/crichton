@@ -41,6 +41,20 @@ public class FileUtils {
         return true;
     }
 
+    public static boolean overWriteDump(File filename, Exception error) {
+        try(var fileWriter = new FileWriter(filename, true);
+            var printWriter = new PrintWriter(fileWriter)) {
+
+            printWriter.println("Exception occurred: " + error.getMessage());
+            error.printStackTrace(printWriter);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     public static void moveFile(String current, String targetDirectory) {
         Path currentPath = Paths.get(current);
         Path targetPath = Paths.get(targetDirectory, currentPath.getFileName().toString());

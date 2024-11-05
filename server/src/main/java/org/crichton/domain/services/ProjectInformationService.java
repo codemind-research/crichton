@@ -48,7 +48,7 @@ public class ProjectInformationService implements IProjectInformationService<UUI
     }
 
     @Override
-    public ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) throws IOException {
+    public ProjectInformation create(CreationProjectInformationDto creationProjectInformationDto) throws Exception {
 
         log.info("creating project information");
 
@@ -56,13 +56,13 @@ public class ProjectInformationService implements IProjectInformationService<UUI
 
         // 1. DefectInjector Plugin 수행
         try {
-            entity.updateStatus(ProjectStatus.Running);
             pluginService.runPlugin(entity);
         } catch (Exception e) {
-            log.error("plugin failed.", e);
+            log.error(e.getMessage(), e);
             entity.updateStatus(ProjectStatus.Complete);
             entity.updateTestResult(TestResult.Fail);
             entity.updateFailReason(e.getMessage());
+            throw e;
         }
 
         // 2. DefectInjector Plugin 수행
