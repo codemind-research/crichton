@@ -53,6 +53,7 @@ public class ProjectInformationService implements IProjectInformationService<UUI
         log.info("creating project information");
 
         var entity = mapper.toEntry(creationProjectInformationDto);
+        repository.save(entity);
 
         // 1. DefectInjector Plugin 수행
         try {
@@ -65,10 +66,7 @@ public class ProjectInformationService implements IProjectInformationService<UUI
             throw e;
         }
 
-        // 2. DefectInjector Plugin 수행
-
-
-        return repository.save(entity);
+        return entity;
     }
 
     @Override

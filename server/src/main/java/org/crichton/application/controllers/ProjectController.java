@@ -69,7 +69,7 @@ public class ProjectController {
         }
     }
 
-    @PostMapping(value = "/run/retry/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/run/retry/{id}")
     public ResponseEntity<?> retryAnalyis(@Parameter(description = "분석 요청시 전달 받은 ID", required = true) @PathVariable UUID id) {
         try {
             var entity =  projectInformationService.findById(id).orElseThrow(EntityNotFoundException::new);

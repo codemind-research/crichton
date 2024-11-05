@@ -2,7 +2,7 @@
 <configuration scan="true" scanPeriod="15 seconds">
 
     <!-- crichton.properties에서 로그 파일 경로 가져오기 -->
-    <property name="LOG_FILE" value="${user.home}/.crichton/logs/crichton-server.log" />
+    <property name="LOG_FILE" value="/app/crichton/logs/crichton-server.log" />
 
     <!-- RollingFileAppender 설정 -->
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
