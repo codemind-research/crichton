@@ -1,5 +1,6 @@
-package org.crichton.application.exceptions;
+package org.crichton.application.exceptions.analysis;
 
+import org.crichton.application.exceptions.CustomException;
 import org.crichton.application.exceptions.code.ErrorCode;
 
 public class AnalysisErrorException extends CustomException {

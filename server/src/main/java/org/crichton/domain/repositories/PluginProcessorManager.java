@@ -14,6 +14,10 @@ public class PluginProcessorManager implements IRepository<PluginProcessor, UUID
 
     private static final Map<UUID, PluginProcessor> store = new ConcurrentHashMap<>();
 
+    public boolean hasPluginProcessor() {
+        return store.size() > 0;
+    }
+
     @Override
     public Optional<PluginProcessor> findById(UUID id) {
         return  Optional.ofNullable(store.getOrDefault(id, null));

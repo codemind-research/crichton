@@ -1,10 +1,14 @@
 package runner.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+@Slf4j
 public class CommandBuilder {
 
     private final List<String> command;
@@ -61,6 +65,5 @@ public class CommandBuilder {
         }
         return this;
     }
-
 
 }

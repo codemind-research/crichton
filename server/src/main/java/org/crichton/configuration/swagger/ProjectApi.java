@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import org.crichton.domain.dtos.response.CreatedResponseDto;
 import org.crichton.domain.dtos.response.ProjectStatusResponseDto;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import java.util.Locale;
      static final String BASE_URL = String.format("%s/project", SwaggerConfig.BASE_API_URL_V1);
 
      static final String ANALYSIS_RUN_API = String.format("%s/run", BASE_URL);
+     static final String ANALYSIS_RETRY_RUN_API = String.format("%s/run/retry/{id}", BASE_URL);
      static final String GET_STATUS_API = String.format("%s/status/{id}", BASE_URL);
      static final String DELETE_PROJECT_API = String.format("%s/remove/{id}", BASE_URL);
 
@@ -67,8 +69,14 @@ import java.util.Locale;
                         .description(messageSource.getMessage("project.create.requestBody", null, locale))
                         .content(new Content().addMediaType("multipart/form-data", new io.swagger.v3.oas.models.media.MediaType().schema(requestSchema))))
                 .responses(new ApiResponses()
-                        .addApiResponse("201", new ApiResponse().description(messageSource.getMessage("project.response.201", null, locale)))
-                        .addApiResponse("400", new ApiResponse().description(messageSource.getMessage("project.response.400", null, locale)))
+                        .addApiResponse("200", new ApiResponse()
+                                .description(messageSource.getMessage("default.response.200", null, locale))
+                                .content(new io.swagger.v3.oas.models.media.Content()
+                                        .addMediaType(MediaType.APPLICATION_JSON_VALUE,
+                                                new io.swagger.v3.oas.models.media.MediaType().schema(CreatedResponseDto.getSchema(messageSource, locale))
+                                        )
+                                ))
+                        .addApiResponse("404", new ApiResponse().description(messageSource.getMessage("default.response.404", null, locale)))
                         .addApiResponse("500", new ApiResponse().description(messageSource.getMessage("project.response.500", null, locale)))
                 );
     }
@@ -96,6 +104,27 @@ import java.util.Locale;
                         .addApiResponse("500", new ApiResponse().description(messageSource.getMessage("project.status.response.500", null, locale))));
 
     }
+
+     static Operation getAnalysisRetryOperation(MessageSource messageSource, Locale locale) {
+         return new Operation()
+                 .summary(messageSource.getMessage("project.retry.summary", null, locale))
+                 .description(messageSource.getMessage("project.retry.description", null, locale))
+                 .parameters(List.of(new io.swagger.v3.oas.models.parameters.Parameter()
+                         .name("id")
+                         .in("path")
+                         .required(true)
+                         .description(messageSource.getMessage("project.id.description", null, locale))))
+                 .responses(new ApiResponses()
+                         .addApiResponse("200", new ApiResponse()
+                                 .description(messageSource.getMessage("default.response.200", null, locale))
+                                 .content(new io.swagger.v3.oas.models.media.Content()
+                                         .addMediaType(MediaType.APPLICATION_JSON_VALUE,
+                                                 new io.swagger.v3.oas.models.media.MediaType().schema(CreatedResponseDto.getSchema(messageSource, locale))
+                                         )
+                                 ))
+                         .addApiResponse("404", new ApiResponse().description(messageSource.getMessage("project.status.response.404", null, locale)))
+                         .addApiResponse("500", new ApiResponse().description(messageSource.getMessage("project.status.response.500", null, locale))));
+     }
 
      static Operation getDeleteOperation(MessageSource messageSource, Locale locale) {
 
