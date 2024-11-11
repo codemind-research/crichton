@@ -11,6 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProcessedReportDTO {
-    private String pluginName;
-    private LinkedHashMap<String,Object> info;
+
+    @Builder.Default
+    private String pluginName = "unknown plugin";
+
+    @Builder.Default
+    private LinkedHashMap<String,Object> info = new LinkedHashMap<>();
 }
