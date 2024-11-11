@@ -219,10 +219,6 @@ public class PluginProcessor implements Runnable {
                 }
             }
 
-            var defectSimulationDirectory = sourceDirectory.resolve(DirectoryName.DEFECT_SIMULATION);
-            var defectSimulationOliFile = sourceDirectory.resolve(FileName.DEFECT_SIMULATION_OIL);
-            var defectSimulationExeFile = sourceDirectory.resolve(FileName.DEFECT_SIMULATION_EXE);
-            var defectSimulationSourceFile = sourceDirectory.resolve(FileName.DEFECT_SIMULATION_SOURCE);
         }
 
 
