@@ -1,6 +1,7 @@
 package runner;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import runner.dto.PluginOption;
@@ -22,9 +23,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 public class PluginRunner implements Runner  {
 
-    private static final Logger logger = LoggerFactory.getLogger(PluginRunner.class);
     private final String pluginName;
     private final Path pluginDirectory;
     private final Path pluginLogFile;
@@ -87,7 +88,7 @@ public class PluginRunner implements Runner  {
     }
 
     @Override
-    public boolean check() {
+    public boolean check() throws NoSuchFileException {
         try {
             if (!pluginLoader.isApplicable(pluginJar)) {
                 var message = String.format("Plugin '%s' not found in directory '%s'", pluginJar.getFileName(), pluginJar.getParent());
@@ -104,6 +105,12 @@ public class PluginRunner implements Runner  {
                 throw new IllegalStateException("Plugin check returned false.");
             }
 
+        }
+        catch (NoSuchFileException e) {
+            throw e;
+        }
+        catch (IllegalStateException e) {
+            throw e;
         }
         catch (IllegalArgumentException e) {
             throw e;
@@ -139,7 +146,7 @@ public class PluginRunner implements Runner  {
             return new RunResult(runResult , data);
         }catch (Exception e) {
             FileUtils.overWriteDump(pluginLogFile.toFile(), e);
-            logger.error("Test Failed Plugin Run: {}", pluginName);
+            log.error("Test Failed Plugin Run: {}", pluginName, e);
             return new RunResult(false, new ProcessedReportDTO());
         }
     }
