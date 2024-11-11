@@ -40,7 +40,7 @@ public abstract class ProcessRunner {
                         try(var stdout = new BufferedReader(new InputStreamReader(stream))) {
                             String line;
                             while ((line = stdout.readLine()) != null) {
-                                log.trace(line);
+                                log.debug(line);
                             }
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -59,7 +59,7 @@ public abstract class ProcessRunner {
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream));
             String line;
             while ((line = errorReader.readLine()) != null) {
-                log.trace(line);
+                log.debug(line);
             }
             stdOutHandle.start();
             int exitCode = process.waitFor();
@@ -71,6 +71,7 @@ public abstract class ProcessRunner {
             log.info("Process finished with exit code: {}", exitCode);
             return exitCode == 0;
         }catch (Exception e){
+            log.error(e.getMessage(), e);
             return false;
         }
     }
