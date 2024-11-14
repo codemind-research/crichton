@@ -57,7 +57,11 @@ public class PluginProcessor implements Runnable {
 
 
     @Builder
-    public PluginProcessor(@NonNull PluginProcessorManager manager, @NonNull ProjectInformation targetProject, @NonNull String baseDirectoryPath, @NonNull String defectInjectorPluginPath, @NonNull String unitTestPluginPath, Logger log) {
+    public PluginProcessor(@NonNull PluginProcessorManager manager,
+                           @NonNull ProjectInformation targetProject,
+                           @NonNull String baseDirectoryPath,
+                           @NonNull String defectInjectorPluginPath,
+                           @NonNull String unitTestPluginPath, Logger log) {
 
         this.manager = manager;
         manager.save(this);

@@ -23,9 +23,6 @@ public interface UnitTesterPluginResultMapper {
     // Add a static method to get the mapper instance
     UnitTesterPluginResultMapper INSTANCE = Mappers.getMapper(UnitTesterPluginResultMapper.class);
 
-
-
-
     @Mapping(target = "pluginName", source = "pluginName")
     @Mapping(target = "reports", source = "info", qualifiedByName = "toUnitTestReports")
     UnitTestPluginReport toUnitTestPluginReport(ProcessedReportDTO report);
