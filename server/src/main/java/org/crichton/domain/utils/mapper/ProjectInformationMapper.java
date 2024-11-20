@@ -99,22 +99,6 @@ public abstract class ProjectInformationMapper {
                 dto.setTestSpec(testSpecDto);
             }
 
-            if (dto.getDefectSpecFile() != null) {
-
-                var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  FileName.DEFECT_SPEC);
-
-                log.info("save defect spec file: {}", defectSpecFilePath);
-                saveFile(dto.getDefectSpecFile(), defectSpecFilePath);
-//
-//                log.info("split defect spec file: {}", dto.getDefectSpecFile());
-//                for (var defectSpec : defectSpecs) {
-//                    var defectSpecFileName = FileName.DEFECT_SPEC.replace(".json", "_" + defectSpec.id() + ".json");
-//                    var defectSpecFilePath = FileUtils.getFilePath(defectDirectoryPath,  defectSpecFileName);
-//                    ObjectMapperUtils.saveObjectToJsonFile(defectSpec, defectSpecFilePath.toFile());
-//                }
-
-            }
-
             if (dto.getSafeSpecFile() != null) {
                 var safeSpecFilePath = FileUtils.getFilePath(defectDirectoryPath, FileName.SAFE_SPEC);
 

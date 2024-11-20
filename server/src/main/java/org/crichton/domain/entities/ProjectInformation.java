@@ -17,9 +17,6 @@ public class ProjectInformation {
 
     private UUID id;
 
-    @Setter
-    private TestSpec testSpec;
-
     private ProjectStatus status;
 
     private TestResult testResult;
