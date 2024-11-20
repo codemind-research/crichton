@@ -1,0 +1,111 @@
+{
+  "defects":
+  [
+    {
+      "id": 3,
+      "trigger": 500,
+      "cycle": 100000,
+      "target": "bmsp_sys_arch.c",
+      "name": "memory_fault",
+      "defect": [
+        {
+          "kind": "taint",
+          "var": "bmsp_sys_arch_P.Constant2_Value",
+          "type": "int",
+          "value": "0",
+          "pattern": "constant"
+        }
+      ],
+      "build": "build1"
+    },
+
+    {
+      "id": 5,
+      "trigger": 500,
+      "cycle": 100000,
+      "target": "bmsp_sys_arch.c",
+      "name": "interface_fault",
+      "defect": [
+        {
+          "kind": "taint",
+          "var": "bmsp_sys_arch_P.Constant6_Value",
+          "type": "int",
+          "value": "40000",
+          "pattern": "constant"
+        },
+        {
+          "kind": "taint",
+          "var": "bmsp_sys_arch_P.Constant2_Value",
+          "type": "int",
+          "value": "0",
+          "pattern": "constant"
+        }
+      ],
+      "build": "build2"
+    }
+  ],
+
+
+  "builds":
+  {
+    "build2": {
+      "tasks": [
+        {
+          "name": "pre_init",
+          "start": 0,
+          "cycle": 1000,
+          "priority": 10,
+          "file": "presetup.c"
+        },
+        {
+          "name": "bmsp_sys_arch_step",
+          "start": 100,
+          "cycle": 100,
+          "priority": 10,
+          "file": "bmsp_sys_arch.c"
+        }
+
+      ],
+
+      "extra_srcs": [
+        "bmsp_sys_arch_data.c",
+        "rtGetInf.c",
+        "rtGetNaN.c",
+        "rt_nonfinite.c"
+      ],
+
+      "stop": 1000
+    },
+
+    "build1":
+    {
+      "tasks": [
+        {
+          "name": "pre_init",
+          "start": 0,
+          "cycle": 1000,
+          "priority": 10,
+          "file": "presetup.c"
+        },
+        {
+          "name": "bmsp_sys_arch_step",
+          "start": 100,
+          "cycle": 100,
+          "priority": 10,
+          "file": "bmsp_sys_arch.c"
+        }
+
+      ],
+
+      "extra_srcs": [
+        "bmsp_sys_arch_data.c",
+        "rtGetInf.c",
+        "rtGetNaN.c",
+        "rt_nonfinite.c"
+      ],
+
+      "stop": 1000
+    }
+
+  }
+}

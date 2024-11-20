@@ -40,6 +40,10 @@ public class ObjectMapperUtils {
         modifyJsonFile(jsonFilePath.toFile(), keyPath, modifier, valueType);
     }
 
+    public static <T> T convertValue(JsonNode jsonNode, Class<?> valueType) {
+        return (T) mapper.convertValue(jsonNode, valueType);
+    }
+
     public static <T> void modifyJsonFile(File jsonFile, String keyPath, ValueModifier<T> modifier, Class<T> valueType) throws IOException {
         // JSON 파일을 읽기
         JsonNode root = mapper.readTree(jsonFile);
@@ -61,7 +65,7 @@ public class ObjectMapperUtils {
     }
 
     // JsonNode에서 특정 키에 대해 값을 수정 (내부 객체 및 배열 포함)
-    private static  <T> void modifyJsonNode(JsonNode node, String[] keyPath, int depth, ValueModifier<T> modifier, Class<T> valueType) {
+    private static  <T> void modifyJsonNode(JsonNode node, String[] keyPath, int depth, ValueModifier<T> modifier, Class<T> valueType) throws IOException {
 
         if (node == null || keyPath.length == 0) {
             return;
@@ -79,6 +83,11 @@ public class ObjectMapperUtils {
             if (currentNode.isValueNode()) {  // TextNode, NumberNode 등의 단순 값 처리
                 modifyKeyValue((ObjectNode) node, currentKey, modifier, valueType);
             }
+            else if (currentNode.isArray()) {
+                // 배열 처리
+                ArrayNode arrayNode = (ArrayNode) currentNode;
+                modifyArrayValues(arrayNode, modifier, valueType);
+            }
         } else {
             // 중간 경로가 배열인 경우
             if (currentNode.isArray()) {
@@ -93,12 +102,10 @@ public class ObjectMapperUtils {
             }
         }
 
-
-
     }
 
     // ObjectNode에서 특정 key의 값을 수정하는 로직
-    private static <T> void modifyKeyValue(ObjectNode objectNode, String keyPath, ValueModifier<T> modifier, Class<T> valueType) {
+    private static <T> void modifyKeyValue(ObjectNode objectNode, String keyPath, ValueModifier<T> modifier, Class<T> valueType) throws IOException {
         JsonNode currentNode = objectNode.get(keyPath);
         if (currentNode != null) {
             // 현재 값을 지정한 타입으로 변환
@@ -110,6 +117,27 @@ public class ObjectMapperUtils {
             // 수정된 값으로 덮어쓰기 (타입에 따라 다르게 처리)
             objectNode.putPOJO(keyPath, modifiedValue);
         }
+    }
+
+    private static <T> void modifyArrayValues(ArrayNode arrayNode, ValueModifier<T> modifier, Class<T> valueType) throws IOException {
+        for (int i = 0; i < arrayNode.size(); i++) {
+            JsonNode elementNode = arrayNode.get(i);
+
+            // 단순 값인 경우만 처리 (문자열, 숫자 등)
+            if (elementNode.isValueNode()) {
+                T currentValue = mapper.convertValue(elementNode, valueType);
+
+                // 수정 로직 적용
+                T modifiedValue = modifier.modifyValue(currentValue);
+
+                // 수정된 값을 배열에 반영
+                arrayNode.set(i, mapper.valueToTree(modifiedValue));
+            }
+        }
+    }
+
+    public static JsonNode getJsonNode(File jsonFile) throws IOException {
+        return mapper.readTree(jsonFile);
     }
 
     public static <T> List<T> convertJsonToList(File jsonFile, Class<T> valueType) throws IOException {

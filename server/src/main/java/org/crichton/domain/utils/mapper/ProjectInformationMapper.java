@@ -1,5 +1,6 @@
 package org.crichton.domain.utils.mapper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.crichton.configuration.CrichtonDataStorageProperties;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring", imports = {UUID.class}, uses = { TestSpecMapper.class })
@@ -36,10 +38,13 @@ public abstract class ProjectInformationMapper {
     private OperationSystemUtil operationSystemUtil;
 
 
-    public ProjectInformation toEntry(CreationProjectInformationDto createdDto) throws IOException {
+    public ProjectInformation toEntry(CreationProjectInformationDto createdDto) throws IOException, NoSuchFieldException {
         createFiles(createdDto);
         var entity = toEntryInternal(createdDto);
-        replaceTestSpecTaskFilePath(entity);
+
+        var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), entity.getId().toString()).toAbsolutePath();
+        processAndSplitTestSpecFiles(baseDirAbsolutePath);
+        replaceTestSpecTaskFilePath(baseDirAbsolutePath);
         return entity;
     };
 
@@ -92,11 +97,6 @@ public abstract class ProjectInformationMapper {
 
                 log.info("save test spec file: {}", testSpecFilePath);
                 saveFile(dto.getTestSpecFile(), testSpecFilePath);
-
-                log.info("Updated JSON file content: {}", testSpecFilePath);
-                var jsonString = Files.readString(testSpecFilePath);
-                var testSpecDto = ObjectMapperUtils.convertJsonStringToObject(jsonString, TestSpecDto.class);
-                dto.setTestSpec(testSpecDto);
             }
 
             if (dto.getSafeSpecFile() != null) {
@@ -139,24 +139,64 @@ public abstract class ProjectInformationMapper {
         }
     }
 
-    protected void replaceTestSpecTaskFilePath(ProjectInformation target) {
+    @SuppressWarnings("unchecked")
+    private void processAndSplitTestSpecFiles(Path baseDirectory) throws IOException, NoSuchFieldException {
 
-        final var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), target.getId().toString()).toAbsolutePath();
+        Path testSpecFilePath = baseDirectory.resolve(DirectoryName.INJECT_TEST).resolve(FileName.TEST_SPEC);
+        var jsonNode = ObjectMapperUtils.getJsonNode(testSpecFilePath.toFile());
+
+        Path injectSpecFilesStoreDirectoryPath = baseDirectory.resolve(DirectoryName.INJECT_TEST);
+        splitDefectsToFile(jsonNode, injectSpecFilesStoreDirectoryPath.resolve(FileName.DEFECT_SPEC));
+        splitBuildsToFiles(jsonNode, injectSpecFilesStoreDirectoryPath);
+    }
+
+    private void splitDefectsToFile(JsonNode jsonNode, Path defectSpecFilePath) throws NoSuchFieldException {
+        if (jsonNode.has("defects")) {
+            log.info("Saving defects to file: {}", defectSpecFilePath);
+            ObjectMapperUtils.saveObjectToJsonFile(jsonNode.get("defects"), defectSpecFilePath.toFile());
+        } else {
+            throw new NoSuchFieldException("Key 'defects' not found in the test specification JSON.");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void splitBuildsToFiles(JsonNode jsonNode, Path injectorDirectoryPath) throws NoSuchFieldException {
+        if (jsonNode.has("builds")) {
+            Map<String, Object> builds = ObjectMapperUtils.convertValue(jsonNode.get("builds"), Map.class);
+            for (var entry : builds.entrySet()) {
+                String buildSpecFileName = entry.getKey() + ".json";
+                Path buildSpecFilePath = injectorDirectoryPath.resolve(buildSpecFileName);
+                log.info("Saving build '{}' to file: {}", entry.getKey(), buildSpecFilePath);
+                ObjectMapperUtils.saveObjectToJsonFile(entry.getValue(), buildSpecFilePath.toFile());
+            }
+        } else {
+            throw new NoSuchFieldException("Key 'builds' not found in the test specification JSON.");
+        }
+    }
+
+    protected void replaceTestSpecTaskFilePath(final Path baseDirAbsolutePath) {
 
         try {
 
             final Path sourceDirAbsolutePath = baseDirAbsolutePath.resolve(DirectoryName.SOURCE);
 
-            Path testSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.INJECT_TEST).resolve(FileName.TEST_SPEC);
-
-            log.debug("Overwrite the modified values into file '{}'.", testSpecFilePath.toAbsolutePath());
-            ObjectMapperUtils.modifyJsonFile(testSpecFilePath, "tasks.file", (value) ->  convertToLocalPath(sourceDirAbsolutePath, value), String.class);
-
-
+            final Path injectTesterDirectoryPath = baseDirAbsolutePath.resolve(DirectoryName.INJECT_TEST).toAbsolutePath();
             Path defectSpecFilePath = baseDirAbsolutePath.resolve(DirectoryName.INJECT_TEST).resolve(FileName.DEFECT_SPEC);
 
             log.debug("Overwrite the modified values into file '{}'.", defectSpecFilePath.toAbsolutePath());
             ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "target", (value) ->  convertToLocalPath(sourceDirAbsolutePath, value), String.class);
+            ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "build", (value) ->  {
+                var buildSpecFile = convertToLocalPath(injectTesterDirectoryPath, String.format("%s.json", value));
+
+                Path buildSpecFilePath = Path.of(buildSpecFile);
+
+                log.debug("Overwrite the modified values into file '{}'.", buildSpecFilePath.toAbsolutePath());
+//                ObjectMapperUtils.modifyJsonFile(buildSpecFile, "tasks.file", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
+                ObjectMapperUtils.modifyJsonFile(buildSpecFile, "extra_srcs", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
+
+
+                return buildSpecFile;
+            }, String.class);
 
 
 

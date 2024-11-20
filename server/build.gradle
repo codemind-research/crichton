@@ -163,6 +163,18 @@ task prepareDeploymentServer (dependsOn: [copyJar, copyConfig]) {
     }
 }
 
+tasks.test {
+    useJUnitPlatform() // JUnit 5 (Jupiter) 플랫폼 사용
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+    // 보고서 설정
+    reports {
+        junitXml.required.set(true) // XML 보고서 활성화
+        html.required.set(true)    // HTML 보고서 활성화
+    }
+}
+
 
 
 
@@ -207,6 +219,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
+    testImplementation 'org.mockito:mockito-core:5.5.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0'
 
     // 파일 및 압축 관련 유틸리티
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14' // zt-zip for ZIP file handling
