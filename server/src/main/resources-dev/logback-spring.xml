@@ -11,7 +11,7 @@
 
 
     <!-- 루트 로거 설정 (필수) -->
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="CONSOLE" />
     </root>
 
