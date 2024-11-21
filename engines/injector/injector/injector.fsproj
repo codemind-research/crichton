@@ -16,7 +16,7 @@
 
     <ItemGroup>
       <Reference Include="CodeLib">
-        <HintPath>..\..\external-tool\lib\CodeLib.dll</HintPath>
+        <HintPath>../../external-tool/lib/CodeLib.dll</HintPath>
       </Reference>
     </ItemGroup>
 
