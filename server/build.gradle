@@ -225,6 +225,8 @@ dependencies {
     // 파일 및 압축 관련 유틸리티
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14' // zt-zip for ZIP file handling
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5' // Zip4j for advanced ZIP handling
+    implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.27.1' // commons-compress for advanced ZIP, TAR, TAR.GZ and etc handling
+
 
     // 기타 유틸리티 라이브러리
     implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0' // Scala 라이브러리

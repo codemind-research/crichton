@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.crichton.domain.utils.anotations.ValidFile;
 import org.crichton.domain.utils.enums.UploadAllowFileDefine;
+import org.crichton.util.FileUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,7 +84,7 @@ public class FileTypeValidator implements ConstraintValidator<ValidFile, Multipa
         }
 
         //허용된 파일 확장자 검사
-        final String detectedMediaType = this.getMimeTypeByTika(file); //확장자 변조한 파일인지 확인을 위한 mime type 얻기
+        final String detectedMediaType = FileUtils.getMimeTypeByTika(file); //확장자 변조한 파일인지 확인을 위한 mime type 얻기
 
         //파일 변조 업로드를 막기위한 mime타입 검사(예. exe파일을 csv로 확장자 변경하는 업로드를 막음)
         if (!ArrayUtils.contains(allowMimeTypes, detectedMediaType)) {
@@ -98,35 +99,6 @@ public class FileTypeValidator implements ConstraintValidator<ValidFile, Multipa
     }
 
 
-    /**
-     * apache Tika라이브러리를 이용해서 파일의 mimeType을 가져옴
-     *
-     * @param multipartFile
-     * @return
-     */
-    private String getMimeTypeByTika(MultipartFile multipartFile) {
-        try(var inputStream = multipartFile.getInputStream()) {
 
-            Tika tika = new Tika();
-
-            // MIME 타입 감지
-            String mimeType = tika.detect(inputStream);
-            log.debug("업로드 요청된 파일 {}의 mimeType:{}", multipartFile.getOriginalFilename(), mimeType);
-
-            // 확장자가 .json이면서 mimeType이 text/plain이거나 application/octet-stream인 경우,
-            // application/json으로 설정
-            String fileExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
-            if ("json".equalsIgnoreCase(fileExtension) &&
-                    ("text/plain".equalsIgnoreCase(mimeType) || "application/octet-stream".equalsIgnoreCase(mimeType))) {
-                mimeType = "application/json";
-            }
-
-            return mimeType;
-
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return null;
-        }
-    }
 
 }

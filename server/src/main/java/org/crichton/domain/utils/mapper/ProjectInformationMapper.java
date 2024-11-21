@@ -87,7 +87,7 @@ public abstract class ProjectInformationMapper {
             // sourceCode 파일 압축 해제
             if (dto.getSourceCode() != null) {
                 log.info("unzip source file: {}", dto.getSourceCode());
-                unzipFile(dto.getSourceCode(), sourceDirectoryPath);
+                FileUtils.CompressFile.extractFile(dto.getSourceCode(), sourceDirectoryPath);
             }
 
             // 나머지 파일 저장
@@ -125,18 +125,6 @@ public abstract class ProjectInformationMapper {
     private String saveFile(MultipartFile file, Path filePath) throws IOException {
         Files.write(filePath, file.getBytes());
         return filePath.toString();
-    }
-
-    // Zip4j를 사용한 압축 해제 메서드
-    private void unzipFile(MultipartFile zipFile, String destDir) throws IOException, ZipException {
-        File tempZipFile = Files.createTempFile("temp", ".zip").toFile();
-        zipFile.transferTo(tempZipFile);
-
-        try (ZipFile zip = new ZipFile(tempZipFile)) {
-            zip.extractAll(destDir);
-        } finally {
-            tempZipFile.delete();
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -191,7 +179,7 @@ public abstract class ProjectInformationMapper {
                 Path buildSpecFilePath = Path.of(buildSpecFile);
 
                 log.debug("Overwrite the modified values into file '{}'.", buildSpecFilePath.toAbsolutePath());
-//                ObjectMapperUtils.modifyJsonFile(buildSpecFile, "tasks.file", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
+                ObjectMapperUtils.modifyJsonFile(buildSpecFile, "tasks.file", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
                 ObjectMapperUtils.modifyJsonFile(buildSpecFile, "extra_srcs", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
 
 
