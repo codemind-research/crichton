@@ -186,8 +186,8 @@ public class FileUtils {
 
         public static void extractFile(MultipartFile file, String destDir) throws IOException {
             // MIME 타입과 확장자 분석
-            String mimeType = getMimeTypeByTika(file);
-            String fileExtension = FileUtils.getMimeTypeByTika(file);
+            String mimeType = FileUtils.getMimeTypeByTika(file);
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 
             UploadAllowFileDefine fileDefine = UploadAllowFileDefine.getByMimeTypeAndExtension(mimeType, fileExtension);
             if (fileDefine == null) {
