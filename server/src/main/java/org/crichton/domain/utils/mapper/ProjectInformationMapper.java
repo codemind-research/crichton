@@ -23,8 +23,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mapper(componentModel = "spring", imports = {UUID.class}, uses = { TestSpecMapper.class })
 public abstract class ProjectInformationMapper {
@@ -173,19 +176,20 @@ public abstract class ProjectInformationMapper {
 
             log.debug("Overwrite the modified values into file '{}'.", defectSpecFilePath.toAbsolutePath());
             ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "target", (value) ->  convertToLocalPath(sourceDirAbsolutePath, value), String.class);
+
+            Set<String> buildSpecFilePaths = ConcurrentHashMap.newKeySet();
             ObjectMapperUtils.modifyJsonFile(defectSpecFilePath, "build", (value) ->  {
-                var buildSpecFile = convertToLocalPath(injectTesterDirectoryPath, String.format("%s.json", value));
+                String buildSpecFilePath = convertToLocalPath(injectTesterDirectoryPath, String.format("%s.json", value));
+                buildSpecFilePaths.add(buildSpecFilePath);
 
-                Path buildSpecFilePath = Path.of(buildSpecFile);
-
-                log.debug("Overwrite the modified values into file '{}'.", buildSpecFilePath.toAbsolutePath());
-                ObjectMapperUtils.modifyJsonFile(buildSpecFile, "tasks.file", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
-                ObjectMapperUtils.modifyJsonFile(buildSpecFile, "extra_srcs", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
-
-
-                return buildSpecFile;
+                return buildSpecFilePath;
             }, String.class);
 
+            for(var buildSpecFilePath : buildSpecFilePaths) {
+                log.debug("Overwrite the modified values into file '{}'.", buildSpecFilePath);
+                ObjectMapperUtils.modifyJsonFile(buildSpecFilePath, "tasks.file", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
+                ObjectMapperUtils.modifyJsonFile(buildSpecFilePath, "extra_srcs", (fileName) ->  convertToLocalPath(sourceDirAbsolutePath, fileName), String.class);
+            }
 
 
         }
