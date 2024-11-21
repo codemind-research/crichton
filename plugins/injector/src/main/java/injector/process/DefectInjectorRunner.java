@@ -32,7 +32,7 @@ public class DefectInjectorRunner extends DotnetProcessRunner {
 
         var arguments = List.of(
                 targetSource,
-                setting.getTestSpecFile(),
+                getTestSpecFile(),
                 getDefectSpecFile(),
                 setting.getSafeSpecFile(),
                 setting.getTrampoline()
@@ -41,6 +41,15 @@ public class DefectInjectorRunner extends DotnetProcessRunner {
         CommandBuilder command = this.buildCommand(setting.getDefectInjectorEngine(), arguments);
 
         return command;
+    }
+
+    private String getTestSpecFile() {
+        if(Objects.isNull(defectSpecId)) {
+            return setting.getTestSpecFile();
+        }
+        else {
+            return setting.getTestSpecFile(defectSpecId);
+        }
     }
 
     private String getDefectSpecFile() {

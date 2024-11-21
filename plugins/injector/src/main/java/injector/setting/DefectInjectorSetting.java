@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import injector.enumerations.InjectorBinaries;
+import injector.utils.DefectInjectorFileUtils;
 import injector.utils.InjectorPluginProperties;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
@@ -36,7 +37,7 @@ public class DefectInjectorSetting extends PluginSetting {
 
     private Integer defectSpecCount = null;
 
-    public DefectInjectorSetting(String pluginName, Map<String, String> configuration) {
+    public DefectInjectorSetting(String pluginName, Map<String, String> configuration) throws Exception {
         super(pluginName, configuration);
 
         this.defectDirectory = Paths.get(this.workingDirectory.getAbsolutePath(), configuration.getOrDefault(PluginConfigurationKey.DefectInjector.DIRECTORY_NAME, "defect")).toFile();
@@ -59,12 +60,25 @@ public class DefectInjectorSetting extends PluginSetting {
 
         var propertiesDir = configuration.getOrDefault(PluginConfigurationKey.PROPERTIES_PATH, PluginPaths.generatePluginSettingsPath(pluginName).toString());
         this.properties = InjectorPluginProperties.loadProperties(propertiesDir);
+        initialize();
 
     }
 
-    public void splitDefectSpecFile() throws Exception{
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+    private void initialize() throws Exception {
+
+        if (!defectDirectory.exists()) {
+            defectDirectory.mkdir();
+        }
+
+        if(this.isMultiMode) {
+            splitDefectSpecFile();
+        }
+
+    }
+
+
+    public void splitDefectSpecFile() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper().configure(JsonParser.Feature.ALLOW_COMMENTS, true);
 
         var defectJsonFile = getDefectSpecFile();
         JsonNode jsonNode = objectMapper.readTree(new File(defectJsonFile));
@@ -102,6 +116,19 @@ public class DefectInjectorSetting extends PluginSetting {
 
     public String getTestSpecFile() {
         return Paths.get(defectDirectory.getAbsolutePath(), testSpecFile).normalize().toAbsolutePath().toString();
+    }
+
+    /**
+     * @param id 특정 회차에 진행한 결함 주입에 사용한 테스트 대상 파일 명세서 JSON 파일을 구합니다.
+     * @return 특정 회차에 진행한 결함 주입에 사용한 테스트 대상 파일 명세서 JSON 파일 이름
+     */
+    public String getTestSpecFile(int id) {
+        try {
+            return DefectInjectorFileUtils.getTestSpecFileName(getDefectSpecFile(id));
+        }
+        catch(Exception e) {
+            return "";
+        }
     }
 
     public String getDefectSpecFile() {
@@ -172,14 +199,7 @@ public class DefectInjectorSetting extends PluginSetting {
     }
 
     public String getTarget(int id) {
-        try {
-            File Json = new File(getDefectNumberJson(id));
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(Json);
-            return rootNode.get("target").asText();
-        }catch (Exception e){
-            return "";
-        }
+        return DefectInjectorFileUtils.getTargetFileName(getDefectSpecFile(id));
     }
 
     public String getTargetCRC(int id) {
