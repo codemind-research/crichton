@@ -3,11 +3,10 @@ package org.crichton.util;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.FileHeader;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.crichton.domain.utils.enums.UploadAllowFileDefine;
@@ -222,25 +221,7 @@ public class FileUtils {
 
         public static void unzipFile(File zipFile, String destDir) throws IOException {
             try (ZipFile zip = new ZipFile(zipFile)) {
-                // ZIP 파일의 모든 항목 가져오기
-                for (FileHeader fileHeader : zip.getFileHeaders()) {
-                    if (!fileHeader.isDirectory()) {
-                        // 항목의 원래 경로 가져오기
-                        String entryName = fileHeader.getFileName();
-
-                        // 최상위 디렉토리 제거
-                        String relativePath = removeTopLevelDirectory(entryName);
-
-                        // 대상 파일 경로 계산
-                        File outputFile = new File(destDir, relativePath);
-                        outputFile.getParentFile().mkdirs(); // 필요한 디렉토리 생성
-
-                        // 파일 추출
-                        zip.extractFile(fileHeader, outputFile.getParent(), outputFile.getName());
-                    }
-                }
-            } catch (ZipException e) {
-                throw new IOException("Failed to extract ZIP file", e);
+                zip.extractAll(destDir);
             }
         }
 
@@ -265,26 +246,13 @@ public class FileUtils {
         public static void extractTarArchive(TarArchiveInputStream tis, String destDir) throws IOException {
             TarArchiveEntry entry;
             while ((entry = tis.getNextTarEntry()) != null) {
-                // 디렉토리 정보 처리
-                String entryName = entry.getName();
-
-                // 최상위 디렉토리 제거
-                String relativePath = removeTopLevelDirectory(entryName);
-
-                // 파일 또는 디렉토리를 생성
-                File outputFile = new File(destDir, relativePath);
+                File outputFile = new File(destDir, entry.getName());
                 if (entry.isDirectory()) {
-                    // 디렉토리 생성
                     outputFile.mkdirs();
                 } else {
-                    // 파일 생성
-                    outputFile.getParentFile().mkdirs(); // 필요한 디렉토리 생성
+                    outputFile.getParentFile().mkdirs();
                     try (OutputStream os = new FileOutputStream(outputFile)) {
-                        byte[] buffer = new byte[1024];
-                        int len;
-                        while ((len = tis.read(buffer)) > 0) {
-                            os.write(buffer, 0, len);
-                        }
+                        IOUtils.copy(tis, os);
                     }
                 }
             }
