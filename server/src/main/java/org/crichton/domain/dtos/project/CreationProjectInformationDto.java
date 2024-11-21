@@ -27,20 +27,12 @@ public class CreationProjectInformationDto {
     private MultipartFile testSpecFile;
 
     @Setter
-    @ValidFile(allowFileDefines = { JSON }, message = "Only JSON files are allowed for defectSpecFile")
-    private MultipartFile defectSpecFile;
-
-    @Setter
     @ValidFile(allowFileDefines = { JSON}, message = "Only JSON files are allowed for safeSpecFile")
     private MultipartFile safeSpecFile;
 
     @Setter
     @ValidFile(allowFileDefines = { JSON }, required = false, message = "Only JSON files are allowed for unitTestSpecFile")
     private MultipartFile unitTestSpecFile;
-
-    @Setter
-    @JsonIgnore
-    private TestSpecDto testSpec = TestSpecDto.builder().build();
 
     @Setter
     @JsonIgnore

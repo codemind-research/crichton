@@ -15,6 +15,7 @@ import org.crichton.models.report.UnitTestPluginReport;
 import org.crichton.models.report.UnitTestReport;
 import org.crichton.models.safe.SafeSpec;
 import org.crichton.util.FileUtils;
+import org.crichton.util.constants.DirectoryName;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -49,7 +50,7 @@ public abstract class ReportMapper {
     @Named("toInjectionTestDefects")
     public List<InjectionTestDefectDto> toInjectionTestDefects(@NonNull UUID projectInformationId, @NonNull List<InjectorDefectReport> injectorDefectReports) {
 
-        String projectDirectoryPath = FileUtils.getAbsolutePath(dataStorageProperties.getBasePath(), projectInformationId.toString());
+        String projectDirectoryPath = FileUtils.getAbsolutePath(dataStorageProperties.getBasePath(), projectInformationId.toString(), DirectoryName.SOURCE);
 
         List<InjectionTestDefectDto> dtos = new ArrayList<>();
         for (InjectorDefectReport injectorDefectReport : injectorDefectReports) {

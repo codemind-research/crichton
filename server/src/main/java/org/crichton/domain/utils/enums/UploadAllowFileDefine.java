@@ -3,6 +3,8 @@ package org.crichton.domain.utils.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 @AllArgsConstructor
 public enum UploadAllowFileDefine {
@@ -21,4 +23,47 @@ public enum UploadAllowFileDefine {
 
     private final String fileExtensionLowerCase; // 파일 확장자(소문자)
     private final String[] allowMimeTypes; // 허용하는 MIME 타입들
+
+    /**
+     * 주어진 MIME 타입이 열거형에 정의된 MIME 타입 중 하나인지 확인
+     */
+    public static UploadAllowFileDefine getByMimeType(String mimeType) {
+        for (UploadAllowFileDefine define : values()) {
+            for (String allowedMimeType : define.getAllowMimeTypes()) {
+                if (allowedMimeType.equalsIgnoreCase(mimeType)) {
+                    return define;
+                }
+            }
+        }
+        return null; // 지원되지 않는 MIME 타입인 경우 null 반환
+    }
+
+    /**
+     * 주어진 파일 확장자가 열거형에 정의된 확장자와 일치하는지 확인
+     */
+    public static UploadAllowFileDefine getByFileExtension(String fileExtension) {
+        for (UploadAllowFileDefine define : values()) {
+            if (define.getFileExtensionLowerCase().equalsIgnoreCase(fileExtension)) {
+                return define;
+            }
+        }
+        return null; // 지원되지 않는 파일 확장자인 경우 null 반환
+    }
+
+    /**
+     * MIME 타입과 파일 확장자를 동시에 확인
+     */
+    public static UploadAllowFileDefine getByMimeTypeAndExtension(String mimeType, String fileExtension) {
+        for (UploadAllowFileDefine define : values()) {
+            if (define.getFileExtensionLowerCase().equalsIgnoreCase(fileExtension)) {
+                for (String allowedMimeType : define.getAllowMimeTypes()) {
+                    if (allowedMimeType.equalsIgnoreCase(mimeType)) {
+                        return define;
+                    }
+                }
+            }
+        }
+        return null; // 둘 다 일치하지 않는 경우 null 반환
+    }
+
 }

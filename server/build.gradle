@@ -163,6 +163,18 @@ task prepareDeploymentServer (dependsOn: [copyJar, copyConfig]) {
     }
 }
 
+tasks.test {
+    useJUnitPlatform() // JUnit 5 (Jupiter) 플랫폼 사용
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+    // 보고서 설정
+    reports {
+        junitXml.required.set(true) // XML 보고서 활성화
+        html.required.set(true)    // HTML 보고서 활성화
+    }
+}
+
 
 
 
@@ -207,17 +219,21 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
+    testImplementation 'org.mockito:mockito-core:5.5.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0'
 
     // 파일 및 압축 관련 유틸리티
     implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.14' // zt-zip for ZIP file handling
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5' // Zip4j for advanced ZIP handling
+    implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.27.1' // commons-compress for advanced ZIP, TAR, TAR.GZ and etc handling
+
 
     // 기타 유틸리티 라이브러리
     implementation group: 'org.scala-lang', name: 'scala3-library_3', version: '3.1.0' // Scala 라이브러리
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0' // Apache Commons Lang
     implementation 'org.junit.jupiter:junit-jupiter-api' // JUnit for Testing
     implementation group: 'org.zeroturnaround', name: 'zt-exec', version: '1.12' // zt-exec for process handling
-    implementation group: 'commons-io', name: 'commons-io', version: '2.13.0' // Apache Commons IO
+    implementation group: 'commons-io', name: 'commons-io', version: '2.18.0' // Apache Commons IO
     implementation 'org.apache.tika:tika-core:2.9.2'    // Apache Tika
 
     implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.6.5'

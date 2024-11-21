@@ -45,10 +45,6 @@ public class DefectInjectorPlugin implements Plugin {
         }
 
         this.setting = new DefectInjectorSetting(pluginOption.pluginName(), pluginOption.pluginSetting());
-
-        if(this.setting.isMultiMode()) {
-            setting.splitDefectSpecFile();
-        }
 //        setting.makeDefectJson();
     }
 

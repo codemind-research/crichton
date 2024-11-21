@@ -2,6 +2,14 @@ package org.crichton.util;
 
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.ZipFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.tika.Tika;
+import org.crichton.domain.utils.enums.UploadAllowFileDefine;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -169,6 +177,129 @@ public class FileUtils {
     public static void makeDirectory(File directory) {
         if(!directory.exists()) {
             directory.mkdirs();
+        }
+    }
+
+    public static class CompressFile {
+        private CompressFile() {
+            throw new IllegalStateException("Utility class");
+        }
+
+        public static void extractFile(MultipartFile file, String destDir) throws IOException {
+            // MIME 타입과 확장자 분석
+            String mimeType = FileUtils.getMimeTypeByTika(file);
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+            UploadAllowFileDefine fileDefine = UploadAllowFileDefine.getByMimeTypeAndExtension(mimeType, fileExtension);
+            if (fileDefine == null) {
+                throw new IOException("Unsupported file format: MIME=" + mimeType + ", Extension=" + fileExtension);
+            }
+
+            File tempFile = Files.createTempFile("temp", "." + fileExtension).toFile();
+            file.transferTo(tempFile);
+
+            try {
+                switch (fileDefine) {
+                    case ZIP:
+                        unzipFile(tempFile, destDir);
+                        break;
+                    case TAR:
+                        extractTarFile(tempFile, destDir);
+                        break;
+                    case GZ:
+                    case TGZ:
+                    case TAR_GZ:
+                        extractTarGzFile(tempFile, destDir);
+                        break;
+                    default:
+                        throw new IOException("Unsupported extraction method for: " + fileDefine.name());
+                }
+            } finally {
+                tempFile.delete();
+            }
+        }
+
+        public static void unzipFile(File zipFile, String destDir) throws IOException {
+            try (ZipFile zip = new ZipFile(zipFile)) {
+                zip.extractAll(destDir);
+            }
+        }
+
+        public static void extractTarGzFile(File tarGzFile, String destDir) throws IOException {
+            try (FileInputStream fis = new FileInputStream(tarGzFile);
+                 BufferedInputStream bis = new BufferedInputStream(fis);
+                 GzipCompressorInputStream gis = new GzipCompressorInputStream(bis);
+                 TarArchiveInputStream tis = new TarArchiveInputStream(gis)) {
+
+                extractTarArchive(tis, destDir);
+            }
+        }
+
+        public static void extractTarFile(File tarFile, String destDir) throws IOException {
+            try (FileInputStream fis = new FileInputStream(tarFile);
+                 TarArchiveInputStream tis = new TarArchiveInputStream(fis)) {
+
+                extractTarArchive(tis, destDir);
+            }
+        }
+
+        public static void extractTarArchive(TarArchiveInputStream tis, String destDir) throws IOException {
+            TarArchiveEntry entry;
+            while ((entry = tis.getNextTarEntry()) != null) {
+                File outputFile = new File(destDir, entry.getName());
+                if (entry.isDirectory()) {
+                    outputFile.mkdirs();
+                } else {
+                    outputFile.getParentFile().mkdirs();
+                    try (OutputStream os = new FileOutputStream(outputFile)) {
+                        IOUtils.copy(tis, os);
+                    }
+                }
+            }
+        }
+
+        /**
+         * 최상위 디렉토리를 제거한 경로 반환
+         * 예: dir1/sub1/file2.txt -> sub1/file2.txt
+         */
+        private static String removeTopLevelDirectory(String entryName) {
+            int firstSlashIndex = entryName.indexOf('/');
+            if (firstSlashIndex >= 0) {
+                return entryName.substring(firstSlashIndex + 1); // 첫 번째 슬래시 이후 경로 반환
+            }
+            return entryName; // 슬래시가 없으면 그대로 반환
+        }
+
+    }
+
+    /**
+     * apache Tika라이브러리를 이용해서 파일의 mimeType을 가져옴
+     *
+     * @param multipartFile
+     * @return
+     */
+    public static String getMimeTypeByTika(MultipartFile multipartFile) {
+        try(var inputStream = multipartFile.getInputStream()) {
+
+            Tika tika = new Tika();
+
+            // MIME 타입 감지
+            String mimeType = tika.detect(inputStream);
+            log.debug("업로드 요청된 파일 {}의 mimeType:{}", multipartFile.getOriginalFilename(), mimeType);
+
+            // 확장자가 .json이면서 mimeType이 text/plain이거나 application/octet-stream인 경우,
+            // application/json으로 설정
+            String fileExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+            if ("json".equalsIgnoreCase(fileExtension) &&
+                    ("text/plain".equalsIgnoreCase(mimeType) || "application/octet-stream".equalsIgnoreCase(mimeType))) {
+                mimeType = "application/json";
+            }
+
+            return mimeType;
+
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
         }
     }
 
