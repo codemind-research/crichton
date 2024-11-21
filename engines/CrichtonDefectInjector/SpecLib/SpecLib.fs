@@ -25,6 +25,7 @@ module TestLib =
     type TestDef = {
         Tasks: TaskDef list
         Stop: int
+        ExtraSrcs: string list
     }
     
     let testParser (obj: JObject):TestDef =
@@ -41,13 +42,18 @@ module TestLib =
             {Name = _name; Start = _start; Cycle = _cycle; Priority = _priority; File = _file; Code = _code }
             
         ))
+
+        let extras = root["extra_srcs"].ToObject<JArray>().Children()
+                     |> Seq.map (fun (i: JToken) -> i.ToObject())
+                     |> Seq.toList
+
         let stop = root["stop"].ToObject<int>()
-        {Tasks = tasks; Stop = stop }
+        { Tasks = tasks; Stop = stop; ExtraSrcs = extras }
         
 module DefectLib =
     type DefectType =
         | Taint of kind:string * var:string * ty:string * value:Common.ValueType * pattern:string * code:string option
-        | BitFlip of kind:string * var:string * ty:string * value:Common.ValueType * pattern:string * code:string option
+        | BitFlip of kind:string * var:string * ty:string * value:Common.ValueType * code:string option
         | Undef
 
     type DefectItem = {
@@ -55,7 +61,7 @@ module DefectLib =
         Target: string //target task name
         Trigger: int
         Repeat: int
-        Defect: DefectType
+        Defect: DefectType list
     }
 
     type DefectModel = {
@@ -71,29 +77,34 @@ module DefectLib =
         let trigger = item["trigger"].ToObject<int>()
         let cycle = item["cycle"].ToObject<int>()
         let target = item["target"].ToObject<string>()
-        let defect = match item["defect"].ToObject<JObject>().First.Path with
-                                | "taint" -> let detail = item["defect"].["taint"]
-                                             let _var = detail["var"].ToObject<string>()
-                                             let _ty = detail["type"].ToObject<string>()
-                                             let _val =  match detail["value"].Type with
-                                                            | JTokenType.Integer -> Common.Integer (detail["value"].ToObject<int>())
-                                                            | JTokenType.String -> Common.Str (detail["value"].ToObject<string>())
-                                                            | JTokenType.Float -> Common.Float (detail["value"].ToObject<float>())
-                                                            | _ -> Common.Unknown ""
-                                             let _pattern = detail["pattern"].ToObject<string>()
-                                             Taint ("taint", _var, _ty, _val, _pattern, None)
-                                | "bitflip" ->  let detail = item["defect"].["bitflip"]
-                                                let _var = detail["var"].ToObject<string>()
-                                                let _ty = detail["type"].ToObject<string>()
-                                                let _val =  match detail["value"].Type with
-                                                                | JTokenType.Integer -> Common.Integer (detail["value"].ToObject<int>())
-                                                                | JTokenType.String -> Common.Str (detail["value"].ToObject<string>())
-                                                                | JTokenType.Float -> Common.Float (detail["value"].ToObject<float>())
-                                                                | _ -> Common.Unknown ""
-                                                let _pattern = detail["pattern"].ToObject<string>()
-                                                BitFlip ("bitflip", _var, _ty, _val, _pattern, None)
-                                | _ -> Undef
-        {Id = id; Trigger = trigger; Repeat = cycle; Target = target; Defect = defect }
+        let defect = item["defect"].ToObject<JArray>()
+        
+        let f acc (x:JToken) =
+            match x["kind"].ToObject<string>() with
+            | "taint" -> let _var = x["var"].ToObject<string>()
+                         let _ty = x["type"].ToObject<string>()
+                         let _val =  match x["value"].Type with
+                                        | JTokenType.Integer -> Common.Integer (x["value"].ToObject<int>())
+                                        | JTokenType.String -> Common.Str (x["value"].ToObject<string>())
+                                        | JTokenType.Float -> Common.Float (x["value"].ToObject<float>())
+                                        | _ -> Common.Unknown ""
+                         let _pattern = x["pattern"].ToObject<string>()
+                         Taint ("taint", _var, _ty, _val, _pattern, None)::acc
+            | "bitflip" ->  let _var = x["var"].ToObject<string>()
+                            let _ty = x["int_type"].ToObject<string>()
+                            let _val =  match x["value"].Type with
+                                            | JTokenType.Integer -> Common.Integer (x["value"].ToObject<int>())
+                                            | JTokenType.String -> Common.Str (x["value"].ToObject<string>())
+                                            | JTokenType.Float -> Common.Float (x["value"].ToObject<float>())
+                                            | _ -> Common.Unknown ""
+                            BitFlip ("bitflip", _var, _ty, _val, None)::acc
+            | kind ->
+                printf($"[WARN] Invalid defect kind: {kind}")
+                acc
+        
+        printfn $"defect: {defect}"
+        let defect' = defect |> Seq.fold f []
+        {Id = id; Trigger = trigger; Repeat = cycle; Target = target; Defect = defect' }
     
     
     

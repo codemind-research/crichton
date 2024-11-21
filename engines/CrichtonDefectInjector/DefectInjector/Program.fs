@@ -9,32 +9,51 @@ type TaskInfo = {
     cycle: int
     priority: int
 }
+
+let mutable temp_count = 0
+let next_temp() =
+    temp_count <- temp_count + 1
+    $"__CDS_TEMP_{temp_count}"
+
+
 let genFault (item: DefectLib.DefectItem) =
     let tName = "crichtonInject_" + item.Id.ToString()
 
     let genTaskCode =
         let mutable taskCode = "TASK(" + tName + ")\n{\n\t"
 
-        let (op, _var, _val) =
-            match item.Defect with
-            | DefectLib.Taint(_, _var, _ty, _val, _pattern, _) ->
-                match _pattern with
-                | "random" -> (" += ", _var, _val)
-                | "add" -> (" += ", _var, _val)
-                | "sub" -> (" -= ", _var, _val)
-                | "mul" -> (" *= ", _var, _val)
-                | "div" -> (" /= ", _var, _val)
-            | DefectLib.BitFlip(_, _var, _ty, _val, _pattern, _) -> (" ^= ", _var, _val)
-            | _ -> ("", "", Common.Integer 0)
+        for x in item.Defect do
+            let code_sub, _val =
+                match x with
+                | DefectLib.Taint(_, _var, _ty, _val, _pattern, _) ->
+                    let op, _var, _val =
+                        match _pattern with
+                        | "random" -> (" += ", _var, _val)
+                        | "add" -> (" += ", _var, _val)
+                        | "sub" -> (" -= ", _var, _val)
+                        | "mul" -> (" *= ", _var, _val)
+                        | "div" -> (" /= ", _var, _val)
+                        | "constant" -> (" = ", _var, _val)
+                        | pat -> printfn $"Unknown defect pattern: {pat}"
+                                 invalidArg "pattern" pat
+                    _var + op, _val
+                                 
+                | DefectLib.BitFlip(_, _var, _ty, _val, _) ->
+                    let temp = next_temp()
+                    $"long* {temp} = ({_ty}*)(void*)(&{_var}); *{temp} ^= ", _val
+                | _ ->
+                    "", Common.Integer 0
+                    
+            let valStr =
+                match _val with
+                | Common.Integer x -> x.ToString()
+                | Common.Str x -> x
+                | Common.Float x -> x.ToString()
+                | Common.Unknown x -> x
 
-        let valStr =
-            match _val with
-            | Common.Integer x -> x.ToString()
-            | Common.Str x -> x
-            | Common.Float x -> x.ToString()
-            | Common.Unknown x -> x
-
-        taskCode <- taskCode + _var + op + valStr + ";\n\tTerminateTask();\n}\n"
+            taskCode <- taskCode + code_sub + valStr + ";\n\t"
+            
+        taskCode <- taskCode + "TerminateTask();\n}\n"
         taskCode
 
     let genAlarmCode = "DeclareAlarm(" + tName + "_alarm);"
@@ -197,6 +216,12 @@ let genOILCode (tasks: TestLib.TestDef) =
   };
 """ tasks.Stop)
     userCode <- userCode + stopCode
+
+    let app_srcs =
+        tasks.ExtraSrcs 
+        |> List.map (fun item -> $"      APP_SRC = \"{item}\";")
+        |> String.concat "\n"
+
     let str = lazy (sprintf """
 OIL_VERSION = "2.5";
 
@@ -225,6 +250,7 @@ CPU only_one_periodic_task {
     };
     BUILD = TRUE {
       APP_SRC = "defectSim.c";
+%s
       TRAMPOLINE_BASE_PATH = "%s";
       APP_NAME = "defectSim_exe";
       CFLAGS="%s";
@@ -235,7 +261,7 @@ CPU only_one_periodic_task {
     APPMODE stdAppmode {};
     %s
     };
-""" trampolinePath CFLAGS userCode)
+""" app_srcs trampolinePath CFLAGS userCode)
     str
 
 let genSrcCode (tasks: TestLib.TestDef) =
