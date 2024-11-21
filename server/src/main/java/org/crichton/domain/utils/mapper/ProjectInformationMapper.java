@@ -46,8 +46,20 @@ public abstract class ProjectInformationMapper {
         var entity = toEntryInternal(createdDto);
 
         var baseDirAbsolutePath = Paths.get(crichtonDataStorageProperties.getBasePath(), entity.getId().toString()).toAbsolutePath();
-        processAndSplitTestSpecFiles(baseDirAbsolutePath);
-        replaceTestSpecTaskFilePath(baseDirAbsolutePath);
+        try {
+            processAndSplitTestSpecFiles(baseDirAbsolutePath);
+            replaceTestSpecTaskFilePath(baseDirAbsolutePath);
+        }
+        catch (Exception e) {
+            if(baseDirAbsolutePath.toFile().exists()) {
+                try {
+                    FileUtils.deleteDirectoryRecursively(baseDirAbsolutePath);
+                } catch (IOException e1) {
+                    throw new IOException(e1);
+                }
+            }
+            throw e;
+        }
         return entity;
     };
 
