@@ -13,10 +13,19 @@ import runner.dto.PluginOption;
 import runner.dto.ProcessedReportDTO;
 import runner.paths.PluginPaths;
 import runner.util.FileUtils;
+import runner.util.constants.DirectoryName;
+import runner.util.constants.FileName;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 public class DefectInjectorPlugin implements Plugin {
 
@@ -92,23 +101,61 @@ public class DefectInjectorPlugin implements Plugin {
 
         for(int i = 1 ; i <= defectSpecCount ; i++) {
             final int defectSpecId = i;
-            if (!runAndContinueOnFailure(RunnerStatus.DEFECT_INJECTOR_RUNNER,
-                    () -> new DefectInjectorRunner(defectSpecId, targetSource, setting).run())) {
-                continue;
-            }
+            try {
+                if (!runAndContinueOnFailure(RunnerStatus.DEFECT_INJECTOR_RUNNER,
+                        () -> new DefectInjectorRunner(defectSpecId, targetSource, setting).run())) {
+                    continue;
+                }
 
-            if (!runAndContinueOnFailure(RunnerStatus.GOIL_RUNNER,
-                    () -> new GoilRunner(setting).run())) {
-                continue;
-            }
+                if (!runAndContinueOnFailure(RunnerStatus.GOIL_RUNNER,
+                        () -> new GoilRunner(setting).run())) {
+                    continue;
+                }
 
-            if (!runAndContinueOnFailure(RunnerStatus.MAKE_PYTHON_RUNNER,
-                    () -> new MakePythonRunner(setting).run())) {
-                continue;
-            }
-            if (!runAndContinueOnFailure(RunnerStatus.INJECTION_TESTER_RUNNER,
-                    () -> new InjectionTesterRunner(defectSpecId, setting).run())) {
-                continue;
+                if (!runAndContinueOnFailure(RunnerStatus.MAKE_PYTHON_RUNNER,
+                        () -> new MakePythonRunner(setting).run())) {
+                    continue;
+                }
+                if (!runAndContinueOnFailure(RunnerStatus.INJECTION_TESTER_RUNNER,
+                        () -> new InjectionTesterRunner(defectSpecId, setting).run())) {
+                    continue;
+                }
+            } finally {
+                Path sourceDirectory = setting.getSourceDirectory().toPath();
+                List<File> deletingTargets = List.of(
+                        sourceDirectory.resolve(DirectoryName.DEFECT_BUILD).toFile(),
+                        sourceDirectory.resolve(DirectoryName.DEFECT_SIMULATION).toFile(),
+                        sourceDirectory.resolve(FileName.DEFECT_SIMULATION_OIL).toFile(),
+                        sourceDirectory.resolve(FileName.DEFECT_SIMULATION_EXE).toFile(),
+                        sourceDirectory.resolve(FileName.DEFECT_SIMULATION_SOURCE).toFile()
+                ).stream().filter(File::exists).collect(Collectors.toUnmodifiableList());
+
+                for (File target : deletingTargets) {
+                    try {
+                        writeFailedLog("Deleting " + target.getAbsolutePath());
+                        if(target.isDirectory()) {
+                            Files.walkFileTree(target.toPath(), new SimpleFileVisitor<>() {
+                                @Override
+                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                                    Files.delete(file);
+                                    return FileVisitResult.CONTINUE;
+                                }
+
+                                @Override
+                                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                                    Files.delete(dir);
+                                    return FileVisitResult.CONTINUE;
+                                }
+                            });
+                        }
+                        else {
+                            Files.delete(target.toPath());
+                        }
+                    }
+                    catch (IOException e) {
+                        writeFailedLog("WARN: " + target.getAbsolutePath() + " delete failed: " + e.getMessage());
+                    }
+                }
             }
 
             isPluginSuccess = true;
