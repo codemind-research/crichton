@@ -87,6 +87,7 @@ let parseLog (log: string) =
    
 
 let monitor (execFile: string, args) =
+    printfn $">>> {execFile} {args}"
     let processInfo = new ProcessStartInfo(execFile, args)
     let mutable otherText = ""
     let mutable printText = ""

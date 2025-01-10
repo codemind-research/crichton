@@ -178,12 +178,20 @@ let modifiedFile
     swOil.Write(oilContents)
 
 let mutable CFLAGS = "-ggdb -DPOSIX"
+let mutable LDFLAGS = ""
 let mutable trampolinePath = "../../.."
 
 
 let genOILCode (tasks: TestLib.TestDef) =
     let mutable userCode = ""
     let mutable cnt  = 1
+    
+    if tasks.CFLAGS.IsSome then
+        CFLAGS <- $"{CFLAGS} {tasks.CFLAGS.Value}"
+        
+    if tasks.LDFLAGS.IsSome then
+        LDFLAGS <- $"{LDFLAGS} {tasks.LDFLAGS.Value}"
+    
     for task in tasks.Tasks do
         let alarmDef = (sprintf """
   ALARM crichton_alarm_%d {
@@ -254,6 +262,7 @@ CPU only_one_periodic_task {
       TRAMPOLINE_BASE_PATH = "%s";
       APP_NAME = "defectSim_exe";
       CFLAGS="%s";
+      LDFLAGS="%s";
       LINKER = "gcc";
       SYSTEM = PYTHON;
     };
@@ -261,7 +270,7 @@ CPU only_one_periodic_task {
     APPMODE stdAppmode {};
     %s
     };
-""" app_srcs trampolinePath CFLAGS userCode)
+""" app_srcs trampolinePath CFLAGS LDFLAGS userCode)
     str
 
 let genSrcCode (tasks: TestLib.TestDef) =
