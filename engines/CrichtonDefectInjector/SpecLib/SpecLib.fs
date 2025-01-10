@@ -26,6 +26,8 @@ module TestLib =
         Tasks: TaskDef list
         Stop: int
         ExtraSrcs: string list
+        CFLAGS: string option
+        LDFLAGS: string option
     }
     
     let testParser (obj: JObject):TestDef =
@@ -48,7 +50,20 @@ module TestLib =
                      |> Seq.toList
 
         let stop = root["stop"].ToObject<int>()
-        { Tasks = tasks; Stop = stop; ExtraSrcs = extras }
+        
+        let cflags =
+            if isNull root["cflags"] then
+                None
+            else
+                Some <| root["cflags"].ToObject<string>()
+        
+        let ldflags =
+            if isNull root["ldflags"] then
+                None
+            else
+                Some <| root["ldflags"].ToObject<string>()
+        
+        { Tasks = tasks; Stop = stop; ExtraSrcs = extras; CFLAGS = cflags; LDFLAGS = ldflags }
         
 module DefectLib =
     type DefectType =
